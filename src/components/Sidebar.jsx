@@ -34,9 +34,8 @@ const Sidebar = () => {
             </Container>
           </ListGroup.Item>
         </NavLink>
-
       </ListGroup>
     </Col >
   )
 }
-export default Sidebar
+export default Sidebar;
