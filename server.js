@@ -13,10 +13,6 @@ const connection = mysql.createConnection({
 });
 connection.connect(() => console.log('Database is working'));
 
-app.get('/test', (req, res) => {
-  res.json({ message: 'Server works' });
-});
-
 //Получение всех курсов
 app.get('/courses', (req, res) => {
     connection.query("SELECT * FROM courses", (error, result) => {
@@ -29,17 +25,24 @@ app.get('/courses', (req, res) => {
 });
 
 //Получение всех модулей и уроков курса
-app.get('/courses/:course', (req, res) => {
-    const course = req.params.course;
-    connection.query("SELECT * FROM modules m LEFT JOIN lessons l on l.module_id=m.id where m.course_id=? ORDER BY m.order_index, l.order_index", [course], (error, result) => {
+app.get('/courses/:courseID', (req, res) => {
+    const courseID = req.params.courseID;
+    //Получение модулей
+    connection.query("SELECT * FROM modules WHERE course_id=? ORDER BY order_index", [courseID], (error, modulesResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
-        return res.status(200).json(result);
+        //Получение уроков
+        connection.query("SELECT * FROM lessons l INNER JOIN modules m ON m.id = l.module_id WHERE m.course_id=? ORDER BY l.order_index", [courseID], (error, lessonsResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            return res.status(200).json({ modules: modulesResult, lessons: lessonsResult });
+        })
     })
 });
-
 
 
 app.listen(port, () => console.log('Server is working'));

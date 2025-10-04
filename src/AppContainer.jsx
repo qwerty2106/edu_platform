@@ -1,5 +1,5 @@
 import React from 'react';
-import { Col, Container, Row, Navbar } from 'react-bootstrap';
+import { Container, Navbar } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx'
 
@@ -14,7 +14,7 @@ class AppContainer extends React.Component {
                     </Container>
                 </Navbar>
 
-                <div className='d-flex flex-grow-1' style={{ minHeight: 0}}>
+                <div className='d-flex flex-grow-1' style={{ minHeight: 0 }}>
                     {/* Sidebar */}
                     <Sidebar />
                     {/* Content */}

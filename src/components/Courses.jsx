@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Col, Container, Row, Card, Button, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getCourses } from '../redux/courses-reducer';
+import { getCourses } from '../redux/course-content-selectors';
+import { getCoursesData } from '../redux/courses-reducer';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -15,7 +16,7 @@ const Course = (props) => {
             <Card style={{ width: '20rem' }} >
                 <Card.Img variant="top" src="images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
                 <Card.Body>
-                    <Card.Title onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
+                    <Card.Title onClick={() => navigate(`/courses/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
                     <Card.Text>{props.description}</Card.Text>
                     <div className='d-flex gap-2'>
                         <Button onClick={onSetEnroll} variant={isEnroll ? "outline-danger" : "light"}>{isEnroll ? "Leave course" : "Learn course"}</Button>
@@ -28,7 +29,7 @@ const Course = (props) => {
 
 class Courses extends React.Component {
     componentDidMount() {
-        this.props.getCourses();
+        this.props.getCoursesData();
     }
     render() {
         //Загрузка курсов
@@ -39,13 +40,13 @@ class Courses extends React.Component {
                 </Container>
             )
         //Курсов нет (пустой массив)
-        if (this.props.courses.length == 0) {
+        if (this.props.courses.length === 0) {
             return (
                 <h1>Courses werent founded</h1>
             )
         }
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} title={course.title} description={course.description} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} />)
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
@@ -61,10 +62,10 @@ class Courses extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        courses: state.courses.courses
+        courses: getCourses(state)
     }
 }
 
 
 
-export default connect(mapStateToProps, { getCourses })(Courses) 
+export default connect(mapStateToProps, { getCoursesData })(Courses) 
