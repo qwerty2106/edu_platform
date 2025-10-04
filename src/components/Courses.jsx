@@ -1,0 +1,70 @@
+import React, { useState } from 'react';
+import { Col, Container, Row, Card, Button, Spinner } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { getCourses } from '../redux/courses-reducer';
+
+const Course = (props) => {
+    const [isEnroll, setEnroll] = useState(false);
+
+    const onSetEnroll = () => (isEnroll ? setEnroll(false) : setEnroll(true));
+    const navigate = useNavigate();
+
+    return (
+        <Col xs={12} className='mb-3' md={4}>
+            <Card style={{ width: '20rem' }} >
+                <Card.Img variant="top" src="images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
+                <Card.Body>
+                    <Card.Title onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
+                    <Card.Text>{props.description}</Card.Text>
+                    <div className='d-flex gap-2'>
+                        <Button onClick={onSetEnroll} variant={isEnroll ? "outline-danger" : "light"}>{isEnroll ? "Leave course" : "Learn course"}</Button>
+                    </div>
+                </Card.Body>
+            </Card>
+        </Col>
+    )
+}
+
+class Courses extends React.Component {
+    componentDidMount() {
+        this.props.getCourses();
+    }
+    render() {
+        //Загрузка курсов
+        if (!this.props.courses)
+            return (
+                <Container className='d-flex justify-content-center align-items-center h-100'>
+                    <Spinner animation='border' variant='dark'></Spinner>
+                </Container>
+            )
+        //Курсов нет (пустой массив)
+        if (this.props.courses.length == 0) {
+            return (
+                <h1>Courses werent founded</h1>
+            )
+        }
+        //Список курсов
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} title={course.title} description={course.description} />)
+        return (
+            <div className='h-100 overflow-auto'>
+                <Container>
+                    <Row>
+                        {coursesElements}
+                    </Row>
+                </Container >
+            </div>
+
+        )
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        courses: state.courses.courses
+    }
+}
+
+
+
+export default connect(mapStateToProps, { getCourses })(Courses) 

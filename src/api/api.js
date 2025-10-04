@@ -1,6 +1,6 @@
 import axios from "axios"
-export const ContentAPI = {
+export const CoursesAPI = {
     getCourses() {
-        return axios.
+        return axios.get('/courses').then(response => response.data);
     }
 }

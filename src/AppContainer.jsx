@@ -6,24 +6,23 @@ import Sidebar from './components/Sidebar.jsx'
 class AppContainer extends React.Component {
     render() {
         return (
-            <Container fluid style={{ height: '100vh' }} data-bs-theme="dark">
+            <Container fluid className='d-flex flex-column p-0' style={{ height: '100vh' }} data-bs-theme="dark" >
                 {/* Navbar */}
-                <Row>
-                    <Navbar bg="dark">
-                        <Container>
-                            <Navbar.Brand>Logo</Navbar.Brand>
-                        </Container>
-                    </Navbar>
-                </Row>
-                <Row>
+                <Navbar bg="dark" className='flex-shrink-0'>
+                    <Container>
+                        <Navbar.Brand>Logo</Navbar.Brand>
+                    </Container>
+                </Navbar>
+
+                <div className='d-flex flex-grow-1' style={{ minHeight: 0}}>
                     {/* Sidebar */}
                     <Sidebar />
                     {/* Content */}
-                    <Col className='p-3'>
+                    <div className='flex-grow-1 p-3' style={{ minHeight: 0, overflow: "hidden" }}>
                         {/* Отрисовка активного маршрута */}
                         <Outlet />
-                    </Col>
-                </Row >
+                    </div>
+                </div>
             </Container >
         )
     }

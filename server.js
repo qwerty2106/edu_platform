@@ -1,15 +1,21 @@
 const express = require('express');
 const app = express();
+app.use(express.json())
 const port = process.env.PORT || 5000;
+
 
 const mysql = require("mysql2");
 const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
     database: "edu_platform_database",
-    password: "210605"
+    password: "2106"
 });
 connection.connect(() => console.log('Database is working'));
+
+app.get('/test', (req, res) => {
+  res.json({ message: 'Server works' });
+});
 
 //Получение всех курсов
 app.get('/courses', (req, res) => {
