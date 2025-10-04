@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Col, Container, Row, Card, Button, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getCourses } from '../redux/course-content-selectors';
-import { getCoursesData } from '../redux/courses-reducer';
+import { getCourses, getIsLoading } from '../redux/courses-selectors';
+import { requestCourses } from '../redux/courses-reducer';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -29,11 +29,11 @@ const Course = (props) => {
 
 class Courses extends React.Component {
     componentDidMount() {
-        this.props.getCoursesData();
+        this.props.requestCourses();  //Загрузка курсов
     }
     render() {
         //Загрузка курсов
-        if (!this.props.courses)
+        if (this.props.isLoading)
             return (
                 <Container className='d-flex justify-content-center align-items-center h-100'>
                     <Spinner animation='border' variant='dark'></Spinner>
@@ -42,7 +42,7 @@ class Courses extends React.Component {
         //Курсов нет (пустой массив)
         if (this.props.courses.length === 0) {
             return (
-                <h1>Courses werent founded</h1>
+                <h1>No courses yet!</h1>
             )
         }
         //Список курсов
@@ -62,10 +62,11 @@ class Courses extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        courses: getCourses(state)
+        courses: getCourses(state),
+        isLoading: getIsLoading(state),
     }
 }
 
 
 
-export default connect(mapStateToProps, { getCoursesData })(Courses) 
+export default connect(mapStateToProps, { requestCourses })(Courses) 

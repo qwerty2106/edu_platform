@@ -3,11 +3,13 @@ import { CoursesAPI } from "../api/api";
 const SET_COURSES = "SET-COURSES";
 const SET_MODULES = "SET-MODULES";
 const SET_LESSONS = "SET-LESSONS";
+const SET_LOADING = "SET-LOADING";
 
 const initialState = {
-    courses: null,
-    modules: null,
-    lessons: null
+    courses: [],
+    modules: [],
+    lessons: [],
+    isLoading: true,
 }
 
 export const coursesReducer = (state = initialState, action) => {
@@ -27,6 +29,11 @@ export const coursesReducer = (state = initialState, action) => {
                 ...state,
                 lessons: action.lessons
             }
+        case SET_LOADING:
+            return {
+                ...state,
+                isLoading: action.isLoading
+            }
         default:
             return state;
     }
@@ -35,23 +42,37 @@ export const coursesReducer = (state = initialState, action) => {
 export const setCourses = (courses) => ({ type: SET_COURSES, courses })
 export const setModules = (modules) => ({ type: SET_MODULES, modules })
 export const setLessons = (lessons) => ({ type: SET_LESSONS, lessons })
+export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
 
-export const getCoursesData = () => {
+export const requestCourses = () => {
     return (dispatch) => {
+        dispatch(setLoading(true));
         CoursesAPI.getCourses()
-            .then(data => dispatch(setCourses(data)))
-            .catch(error => console.log('Get courses error', error))
+            .then(data => {
+                dispatch(setCourses(data));
+                dispatch(setLoading(false));
+            })
+            .catch(error => {
+                console.log('Get courses error', error);
+                dispatch(setLoading(false));
+
+            })
     }
 }
 
 //Получение модулей и уроков курса
-export const getCourseContentData = (courseID) => {
+export const requestCourseModules = (courseID) => {
     return (dispatch) => {
-        CoursesAPI.getCourseContent(courseID)
+        dispatch(setLoading(true));
+        CoursesAPI.getCourseModules(courseID)
             .then(data => {
                 dispatch(setModules(data.modules));
-                dispatch(setLessons(data.lessons))
+                dispatch(setLessons(data.lessons));
+                dispatch(setLoading(false));
             })
-            .catch(error => console.log('Get course content error', error))
+            .catch(error => {
+                console.log('Get course content error', error);
+                dispatch(setLoading(false));
+            })
     }
 }
