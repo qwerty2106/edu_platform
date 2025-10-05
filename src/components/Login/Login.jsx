@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { connect } from "react-redux"
 import SignInContainer from "./SignIn"
 import SignUpContainer from "./SignUp"
+import { Container, Spinner } from "react-bootstrap"
+import { Navigate } from "react-router-dom"
 
 const Login = (props) => {
     //Смена формы входа/регистрации
@@ -9,7 +11,7 @@ const Login = (props) => {
     const onSetCurrentForm = (currentForm) => setCurrentForm(currentForm);
 
     return (
-        <div className="container-fluid bg-dark d-flex flex-column" style={{ height: '100vh' }}>
+        <div className="d-flex flex-column h-100">
             <div className="d-flex gap-3 justify-content-end p-2">
                 <button className="btn btn-primary" onClick={() => onSetCurrentForm('signIn')}>Sign In</button>
                 <button className="btn btn-primary" onClick={() => onSetCurrentForm('signUp')}>Sign Up</button>
@@ -23,13 +25,18 @@ const Login = (props) => {
 
 class LoginContainer extends React.Component {
     render() {
-        console.log(this.props.user);
-        return <Login />     
+        if (this.props.user)
+            return <Navigate to={"/app/courses"} />
+        return (
+            <div className="container-fluid bg-dark d-flex flex-column" style={{ height: '100vh' }}>
+                <Login />
+            </div>
+        )
     }
 }
 const mapStateToProps = (state) => {
     return {
-        user: state.auth.user
+        user: state.auth.user,
     }
 }
 

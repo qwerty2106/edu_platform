@@ -17,7 +17,7 @@ connection.connect(() => console.log('Database is working'));
 const bcrypt = require('bcrypt');
 
 //Получение всех курсов
-app.get('/courses', (req, res) => {
+app.get('/app/courses', (req, res) => {
     connection.query("SELECT * FROM courses", (error, result) => {
         if (error) {
             console.log(error);
@@ -28,7 +28,7 @@ app.get('/courses', (req, res) => {
 });
 
 //Получение всех модулей и уроков курса
-app.get('/courses/:courseID', (req, res) => {
+app.get('/app/courses/:courseID', (req, res) => {
     const courseID = req.params.courseID;
     //Получение модулей
     connection.query("SELECT * FROM modules WHERE course_id=? ORDER BY order_index", [courseID], (error, modulesResult) => {

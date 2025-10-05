@@ -48,15 +48,9 @@ export const requestCourses = () => {
     return (dispatch) => {
         dispatch(setLoading(true));
         CoursesAPI.getCourses()
-            .then(data => {
-                dispatch(setCourses(data));
-                dispatch(setLoading(false));
-            })
-            .catch(error => {
-                console.log('Get courses error', error);
-                dispatch(setLoading(false));
-
-            })
+            .then(data => dispatch(setCourses(data)))
+            .catch(error => console.log('Get courses error', error))
+            .finally(() => dispatch(setLoading(false)))
     }
 }
 
@@ -68,11 +62,8 @@ export const requestCourseModules = (courseID) => {
             .then(data => {
                 dispatch(setModules(data.modules));
                 dispatch(setLessons(data.lessons));
-                dispatch(setLoading(false));
             })
-            .catch(error => {
-                console.log('Get course content error', error);
-                dispatch(setLoading(false));
-            })
+            .catch(error => console.log('Get course content error', error))
+            .finally(() => dispatch(setLoading(false)))
     }
 }

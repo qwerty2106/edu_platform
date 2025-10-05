@@ -2,8 +2,18 @@ import React from 'react';
 import { Container, Navbar } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx'
+import { setUser } from './redux/auth-reducer.js';
+import { connect } from 'react-redux';
 
 class AppContainer extends React.Component {
+    componentDidMount() {
+        const storedUserData = localStorage.getItem('user');
+        //Данные есть в localStorage -> загружаем в state
+        if (storedUserData) {
+            const userData = JSON.parse(storedUserData);  //Из строки в объект  
+            this.props.setUser(userData);
+        }
+    }
     render() {
         return (
             <Container fluid className='d-flex flex-column p-0' style={{ height: '100vh' }} data-bs-theme="dark" >
@@ -28,4 +38,4 @@ class AppContainer extends React.Component {
     }
 }
 
-export default AppContainer
+export default connect(null, { setUser })(AppContainer) 

@@ -7,7 +7,7 @@ const Sidebar = () => {
     <Col xs={2} className='bg-dark p-0' style={{ height: '100vh' }}>
       <ListGroup variant='flush'>
 
-        <NavLink to="/courses" className="text-decoration-none">
+        <NavLink to="/app/courses" className="text-decoration-none" end>
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <TerminalFill style={{ width: '20px', height: '20px' }} />
@@ -17,7 +17,7 @@ const Sidebar = () => {
         </NavLink>
 
 
-        <NavLink to="/profile" className="text-decoration-none">
+        <NavLink to="/app/profile" className="text-decoration-none">
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <PersonFill style={{ width: '20px', height: '20px' }} />
@@ -26,7 +26,7 @@ const Sidebar = () => {
           </ListGroup.Item>
         </NavLink>
 
-        <NavLink to="/chat" className="text-decoration-none">
+        <NavLink to="/app/chat" className="text-decoration-none">
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <ChatDotsFill style={{ width: '20px', height: '20px' }} />

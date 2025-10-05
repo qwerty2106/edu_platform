@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getCourses, getIsLoading } from '../redux/courses-selectors';
 import { requestCourses } from '../redux/courses-reducer';
+import { withAuthRedirect } from '../hoc/withAuthRedirect';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -14,15 +15,15 @@ const Course = (props) => {
     return (
         <Col xs={12} className='mb-3' md={4}>
             <Card style={{ width: '20rem' }} >
-                <Card.Img variant="top" src="images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
+                <Card.Img variant="top" src="/images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
                 <Card.Body>
-                    <Card.Title onClick={() => navigate(`/courses/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
-                    <Card.Text>
+                    <Card.Title onClick={() => navigate(`/app/courses/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
+                    <div>
                         {props.description}
                         <div className='py-2'>
                             <span className='fw-bold'>Stack: {props.stack}</span>
                         </div>
-                    </Card.Text>
+                    </div>
                     <div className='d-flex gap-2'>
                         <Button onClick={onSetEnroll} variant={isEnroll ? "outline-danger" : "light"}>{isEnroll ? "Leave course" : "Learn course"}</Button>
                     </div>
@@ -32,12 +33,15 @@ const Course = (props) => {
     )
 }
 
+
+
 class Courses extends React.Component {
     componentDidMount() {
         this.props.requestCourses();  //Загрузка курсов
     }
     render() {
-        //Загрузка курсов
+        console.log(this.props.user)
+        //Спиннер (загрузка курсов)
         if (this.props.isLoading)
             return (
                 <Container className='d-flex justify-content-center align-items-center h-100'>
@@ -51,7 +55,7 @@ class Courses extends React.Component {
             )
         }
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} user={this.props.user} />)
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
@@ -65,13 +69,16 @@ class Courses extends React.Component {
     }
 }
 
+
 const mapStateToProps = (state) => {
     return {
         courses: getCourses(state),
         isLoading: getIsLoading(state),
+        user: state.auth.user
     }
 }
 
+const AuthRedirectComponent = withAuthRedirect(Courses)
 
 
-export default connect(mapStateToProps, { requestCourses })(Courses) 
+export default connect(mapStateToProps, { requestCourses })(AuthRedirectComponent)
