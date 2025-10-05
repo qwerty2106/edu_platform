@@ -3,6 +3,7 @@ import Courses from './components/Courses';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppContainer from './AppContainer';
 import CourseModules from './components/CourseModules';
+import LoginContainer from './components/Login/LoginContainer';
 
 
 const App = () => {
@@ -14,8 +15,9 @@ const App = () => {
           <Route path='courses/:courseID' element={<CourseModules />} />
           <Route path='profile' element={<h1>Profile</h1>} />
           <Route path='chat' element={<h1>Chat</h1>} />
-          <Route path='*' element={<h1>Not Found</h1>} />
-        </Route>
+        </Route>        
+        <Route path='/login' element={<LoginContainer />} />
+        <Route path='*' element={<h1>Not Found</h1>} />
       </Routes>
     </BrowserRouter>
   );

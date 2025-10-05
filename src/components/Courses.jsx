@@ -17,7 +17,12 @@ const Course = (props) => {
                 <Card.Img variant="top" src="images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
                 <Card.Body>
                     <Card.Title onClick={() => navigate(`/courses/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
-                    <Card.Text>{props.description}</Card.Text>
+                    <Card.Text>
+                        {props.description}
+                        <div className='py-2'>
+                            <span className='fw-bold'>Stack: {props.stack}</span>
+                        </div>
+                    </Card.Text>
                     <div className='d-flex gap-2'>
                         <Button onClick={onSetEnroll} variant={isEnroll ? "outline-danger" : "light"}>{isEnroll ? "Leave course" : "Learn course"}</Button>
                     </div>
@@ -46,7 +51,7 @@ class Courses extends React.Component {
             )
         }
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
