@@ -96,9 +96,9 @@ app.post('/login', (req, res) => {
             return res.status(500).json({ error: "Database error on SELECT" })
         }
         //Неверное имя пользователя
-        if (result.length === 0) {
+        if (result.length === 0) 
             return res.status(401).json({ error: "User doesn't exist" })
-        }
+        
         //Сравнение паролей
         bcrypt.compare(password, result[0].password, (err, isMatch) => {
             if (err) {
@@ -109,11 +109,10 @@ app.post('/login', (req, res) => {
             if (!isMatch)
                 return res.status(401).json({ error: "Incorrect username or password" })
             //Пароль верный
-            else
-                return res.status(200).json({
-                    message: "User authorized successfully",
-                    user: { id: result[0].id, username: username, role: result[0].role, created_date: result[0].created_date.toLocaleString() }
-                })
+            return res.status(200).json({
+                message: "User authorized successfully",
+                user: { id: result[0].id, username: username, role: result[0].role, created_date: result[0].created_date.toLocaleString() }
+            })
         })
     })
 });

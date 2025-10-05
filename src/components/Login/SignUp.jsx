@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { signUp } from "../../redux/auth-reducer";
-import { Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 //Регистрация

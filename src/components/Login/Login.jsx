@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { connect } from "react-redux"
-import SignInContainer from "./SignInContainer"
-import SignUpContainer from "./SignUpContainer"
+import SignInContainer from "./SignIn"
+import SignUpContainer from "./SignUp"
 
 const Login = (props) => {
     //Смена формы входа/регистрации
@@ -23,12 +23,13 @@ const Login = (props) => {
 
 class LoginContainer extends React.Component {
     render() {
-        return <Login />
+        console.log(this.props.user);
+        return <Login />     
     }
 }
 const mapStateToProps = (state) => {
     return {
-        // user: state.auth.user
+        user: state.auth.user
     }
 }
 

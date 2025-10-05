@@ -10,19 +10,19 @@ export const authReducer = (state = initialState, action) => {
         case SET_USER:
             return {
                 ...state,
-                user: { username: action.username, role: action.role },
+                user: action.user,
             }
         default:
             return state
     }
 }
 
-export const setUser = (username, role) => ({ type: SET_USER, username, role })
+export const setUser = (user) => ({ type: SET_USER, user })
 
 export const signUp = (username, password) => {
     return (dispatch) => {
         AuthAPI.signUp(username, password)
-            .then(data => dispatch(setUser(data.username, data.role)))
+            .then(data => dispatch(setUser(data.user)))
             .catch(error => console.log('Sign up error', error))
     }
 }
@@ -30,7 +30,7 @@ export const signUp = (username, password) => {
 export const signIn = (username, password) => {
     return (dispatch) => {
         AuthAPI.signIn(username, password)
-            .then(data => dispatch(setUser(data.username, data.role)))
+            .then(data => dispatch(setUser(data.user)))
             .catch(error => console.log('Sign in error', error))
     }
 }
