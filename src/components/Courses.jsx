@@ -40,7 +40,6 @@ class Courses extends React.Component {
         this.props.requestCourses();  //Загрузка курсов
     }
     render() {
-        console.log(this.props.user)
         //Спиннер (загрузка курсов)
         if (this.props.isLoading)
             return (
@@ -55,7 +54,7 @@ class Courses extends React.Component {
             )
         }
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} user={this.props.user} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
@@ -74,11 +73,8 @@ const mapStateToProps = (state) => {
     return {
         courses: getCourses(state),
         isLoading: getIsLoading(state),
-        user: state.auth.user
     }
 }
 
-const AuthRedirectComponent = withAuthRedirect(Courses)
 
-
-export default connect(mapStateToProps, { requestCourses })(AuthRedirectComponent)
+export default connect(mapStateToProps, { requestCourses })(Courses)

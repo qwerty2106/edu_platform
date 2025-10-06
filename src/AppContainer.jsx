@@ -1,20 +1,24 @@
 import React from 'react';
-import { Container, Navbar } from 'react-bootstrap';
+import { Container, Navbar, Spinner } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx'
 import { setUser } from './redux/auth-reducer.js';
 import { connect } from 'react-redux';
+import { getInitialized } from './redux/app-selectors.js';
+import { initializeApp } from './redux/app-reducer.js';
 
 class AppContainer extends React.Component {
     componentDidMount() {
-        const storedUserData = localStorage.getItem('user');
-        //Данные есть в localStorage -> загружаем в state
-        if (storedUserData) {
-            const userData = JSON.parse(storedUserData);  //Из строки в объект  
-            this.props.setUser(userData);
-        }
+        this.props.initializeApp();
     }
     render() {
+        console.log('render init: ', this.props.initialized);
+        if (!this.props.initialized)
+            return (
+                <Container fluid className='d-flex justify-content-center align-items-center bg-dark' style={{ height: "100vh" }}>
+                    <Spinner animation='border' variant='light'></Spinner>
+                </Container>
+            )
         return (
             <Container fluid className='d-flex flex-column p-0' style={{ height: '100vh' }} data-bs-theme="dark" >
                 {/* Navbar */}
@@ -38,4 +42,10 @@ class AppContainer extends React.Component {
     }
 }
 
-export default connect(null, { setUser })(AppContainer) 
+const mapStateToProps = (state) => {
+    return {
+        initialized: getInitialized(state),
+    }
+}
+
+export default connect(mapStateToProps, { setUser, initializeApp })(AppContainer) 

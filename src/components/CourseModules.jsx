@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
 import { getCourseModules, getIsLoading } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
+import { withAuthRedirect } from "../hoc/withAuthRedirect";
 
 const Lesson = (props) => {
     const navigate = useNavigate();
@@ -67,4 +68,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default (connect(mapStateToProps, { requestCourseModules })(withRouter(CourseModules)));
+export default (connect(mapStateToProps, { requestCourseModules })(withRouter(withAuthRedirect(CourseModules))));
