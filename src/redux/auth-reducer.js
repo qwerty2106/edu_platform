@@ -41,6 +41,13 @@ export const signUp = (username, password) => {
     }
 }
 
+export const logOut = () => {
+    return (dispatch) => {
+        localStorage.removeItem('user');
+        dispatch(setUser(null));
+    }
+}
+
 export const signIn = (username, password) => {
     return (dispatch) => {
         dispatch(setLoading(true))
@@ -48,6 +55,7 @@ export const signIn = (username, password) => {
             .then(data => {
                 dispatch(setUser(data.user));
                 localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+
             })
             .catch(error => console.log('Sign in error', error))
             .finally(() => dispatch(setLoading(false)))

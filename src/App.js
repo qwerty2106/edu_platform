@@ -1,30 +1,50 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Spinner } from 'react-bootstrap';
 import Courses from './components/Courses';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppContainer from './AppContainer';
 import CourseModules from './components/CourseModules';
 import Login from './components/Login/Login';
 import Landing from './components/Landing';
+import React from 'react';
+import { initializeApp } from './redux/app-reducer';
+import { getInitialized } from './redux/app-selectors';
+import { connect } from 'react-redux';
 
+class App extends React.Component {
+  componentDidMount() {
+    this.props.initializeApp();
+  }
+  render() {
+    if (!this.props.initialized)
+      return (
+        <Container fluid className='d-flex justify-content-center align-items-center bg-dark' style={{ height: "100vh" }}>
+          <Spinner animation='border' variant='light'></Spinner>
+        </Container>
+      )
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Landing />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='*' element={<h1>Not Found</h1>} />
 
-const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Landing />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='*' element={<h1>Not Found</h1>} />
-
-        <Route path='/app' element={<AppContainer />}>
-          <Route index element={<Courses />} />
-          <Route path='courses' element={<Courses />} />
-          <Route path='courses/:courseID' element={<CourseModules />} />
-          <Route path='profile' element={<h1>Profile</h1>} />
-          <Route path='chat' element={<h1>Chat</h1>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+          <Route path='/app' element={<AppContainer />}>
+            <Route index element={<Courses />} />
+            <Route path='courses' element={<Courses />} />
+            <Route path='courses/:courseID' element={<CourseModules />} />
+            <Route path='profile' element={<h1>Profile</h1>} />
+            <Route path='chat' element={<h1>Chat</h1>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    );
+  }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    initialized: getInitialized(state),
+  }
+}
+export default connect(mapStateToProps, { initializeApp })(App) 

@@ -3,7 +3,7 @@ import { createSelector } from "reselect";
 export const getCourses = (state) => state.courses.courses;
 export const getModules = (state) => state.courses.modules;
 export const getLessons = (state) => state.courses.lessons;
-export const getIsLoading = (state) => state.courses.isLoading;
+export const getLoadingCourses = (state) => state.courses.isLoading;
 
 export const getCourseModules = createSelector([getModules, getLessons], (modules, lessons) => {
     return modules.map(module => ({

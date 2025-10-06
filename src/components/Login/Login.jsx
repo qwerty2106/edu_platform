@@ -26,7 +26,7 @@ const Login = (props) => {
 class LoginContainer extends React.Component {
     render() {
         if (this.props.user)
-            return <Navigate to={"/app/courses"} />
+            return <Navigate to={"/app"} replace/>
         return (
             <div className="container-fluid bg-dark d-flex flex-column" style={{ height: '100vh' }}>
                 <Login />

@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Col, Container, Row, Card, Button, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getCourses, getIsLoading } from '../redux/courses-selectors';
+import { getCourses, getLoadingCourses } from '../redux/courses-selectors';
 import { requestCourses } from '../redux/courses-reducer';
-import { withAuthRedirect } from '../hoc/withAuthRedirect';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -72,7 +71,7 @@ class Courses extends React.Component {
 const mapStateToProps = (state) => {
     return {
         courses: getCourses(state),
-        isLoading: getIsLoading(state),
+        isLoading: getLoadingCourses(state),
     }
 }
 

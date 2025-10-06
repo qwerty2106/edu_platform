@@ -21,13 +21,13 @@ export const appReducer = (state = initialState, action) => {
 export const setInitialized = () => ({ type: SET_INITIALIZED })
 
 export const initializeApp = () => {
-    return (dispatch) => {
+    return async (dispatch) => {
         const storedUserData = localStorage.getItem('user');
         //Данные есть в localStorage -> загружаем в state
         if (storedUserData) {
             try {
                 const userData = JSON.parse(storedUserData);  //Из строки в объект  
-                dispatch(setUser(userData));
+                await dispatch(setUser(userData));
             }
             catch (error) {
                 console.error('Error parsing user data from localStorage', error);

@@ -3,9 +3,8 @@ import { Accordion, Container, ListGroup, Spinner } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
-import { getCourseModules, getIsLoading } from "../redux/courses-selectors";
+import { getCourseModules, getLoadingCourses } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
-import { withAuthRedirect } from "../hoc/withAuthRedirect";
 
 const Lesson = (props) => {
     const navigate = useNavigate();
@@ -64,8 +63,8 @@ class CourseModules extends React.Component {
 const mapStateToProps = (state) => {
     return {
         courseModules: getCourseModules(state),
-        isLoading: getIsLoading(state),
+        isLoading: getLoadingCourses(state),
     }
 }
 
-export default (connect(mapStateToProps, { requestCourseModules })(withRouter(withAuthRedirect(CourseModules))));
+export default (connect(mapStateToProps, { requestCourseModules })(withRouter(CourseModules)));
