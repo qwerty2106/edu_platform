@@ -10,6 +10,8 @@ import React from 'react';
 import { initializeApp } from './redux/app-reducer';
 import { getInitialized } from './redux/app-selectors';
 import { connect } from 'react-redux';
+import EmailForm from './components/Login/EmailForm';
+import ResetPasswordForm from './components/Login/ResetPasswordForm';
 
 class App extends React.Component {
   componentDidMount() {
@@ -27,6 +29,8 @@ class App extends React.Component {
         <Routes>
           <Route path='/' element={<Landing />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/request-reset' element={<EmailForm />} />
+          <Route path='/reset' element={<ResetPasswordForm />} />
           <Route path='*' element={<h1>Not Found</h1>} />
 
           <Route path='/app' element={<AppContainer />}>

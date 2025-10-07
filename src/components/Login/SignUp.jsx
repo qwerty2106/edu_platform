@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { signUp } from "../../redux/auth-reducer";
 import { useForm } from "react-hook-form";
+import isEmail from "validator/lib/isEmail";
 
 //Регистрация
 const SignUp = (props) => {
+
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onBlur" });
 
     //Регистрация 
     const onSubmit = (data) => {
-        props.signUp(data.username, data.password)
+        props.signUp(data.email, data.username, data.password)
     }
 
     return (
@@ -26,6 +28,19 @@ const SignUp = (props) => {
                 {/* Ошибка */}
                 <div className="invalid-feedback">
                     {errors.username && <p>{errors.username.message}</p>}
+                </div>
+
+                <input {...register("email", {
+                    required: { value: true, message: "This field is required" },
+                    validate: {
+                        isNotEmpty: (value) => value.trim() !== '' || "This field is required",
+                        isValidEmail: (value) => isEmail(value) || "Enter a valid email",
+                    }
+                })} type="email" className={`form-control my-2 ${errors.email ? "is-invalid" : ""}`} placeholder="Enter your email..." />
+
+                {/* Ошибка */}
+                <div className="invalid-feedback">
+                    {errors.email && <p>{errors.email.message}</p>}
                 </div>
 
                 <input {...register("password", {

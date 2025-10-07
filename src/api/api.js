@@ -10,10 +10,16 @@ export const CoursesAPI = {
 };
 
 export const AuthAPI = {
-    signUp(username, password) {
-        return axios.post('/register', { username, password }).then(response => response.data)
+    signUp(username, email, password) {
+        return axios.post('/register', { email, username, password }).then(response => response.data)
     },
-    signIn(username, password) {
-        return axios.post('/login', { username, password }).then(response => response.data)
+    signIn(login, password) {
+        return axios.post('/login', { login, password }).then(response => response.data)
+    },
+    requestReset(email) {
+        return axios.post('/request-reset', { email }).then(response => response.data)
+    },
+    reset(resetToken, newPassword) {
+        return axios.post('/reset', { resetToken, newPassword }).then(response => response.data)
     }
 };

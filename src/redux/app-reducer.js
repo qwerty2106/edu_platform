@@ -20,6 +20,7 @@ export const appReducer = (state = initialState, action) => {
 
 export const setInitialized = () => ({ type: SET_INITIALIZED })
 
+//Инициализация на каждом обновлении
 export const initializeApp = () => {
     return async (dispatch) => {
         const storedUserData = localStorage.getItem('user');
