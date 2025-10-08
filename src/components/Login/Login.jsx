@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { connect } from "react-redux"
 import SignInContainer from "./SignIn"
 import SignUpContainer from "./SignUp"
-import { Container, Spinner } from "react-bootstrap"
 import { Navigate } from "react-router-dom"
 
 const Login = (props) => {
@@ -26,7 +25,7 @@ const Login = (props) => {
 class LoginContainer extends React.Component {
     render() {
         if (this.props.user)
-            return <Navigate to={"/app"} replace/>
+            return <Navigate to={"/app"} replace />
         return (
             <div className="container-fluid bg-dark d-flex flex-column" style={{ height: '100vh' }}>
                 <Login />
@@ -37,6 +36,7 @@ class LoginContainer extends React.Component {
 const mapStateToProps = (state) => {
     return {
         user: state.auth.user,
+
     }
 }
 

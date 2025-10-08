@@ -21,12 +21,12 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
-    host: "smtp.yandex.ru",
+    host: "smtp.mail.ru",
     port: 465,
     secure: true,
     auth: {
-        user: "imshrtlvv@yandex.ru",
-        pass: "q4e566029558cb4057cb5d9f1ecac5693"
+        user: "anna.asessorova.05@mail.ru",
+        pass: "d8eUEBuN9sIquvqxK6cS"
     }
 });
 
@@ -147,7 +147,7 @@ app.post('/login', (req, res) => {
     })
 });
 
-//Запрос на изменение пароля (генерация токена, возврат ссылки)
+//Запрос на изменение пароля (отправка письма)
 app.post('/request-reset', (req, res) => {
     const { email } = req.body;
     connection.query('SELECT * FROM users WHERE email=?', [email], (err, result) => {
@@ -176,7 +176,7 @@ app.post('/request-reset', (req, res) => {
                 }
                 const resetLink = `http://localhost:3000/reset?token=${resetToken}`;
                 const message = {
-                    from: 'edu_platform',
+                    from: 'edu_platform <anna.asessorova.05@mail.ru>',
                     to: `${email}`,
                     subject: "Password reset",
                     html: `<p>Click this link to reset your password: <a href="${resetLink}">Link</a></p>`,
@@ -195,8 +195,7 @@ app.post('/request-reset', (req, res) => {
 
 //Изменнение пароля
 app.post('/reset', (req, res) => {
-    const { newPassword } = req.body;
-    const resetToken = req.query.token;
+    const { resetToken, newPassword } = req.body;
     connection.query('SELECT * FROM users WHERE reset_token=? AND reset_token_exp>?', [resetToken, Date.now()], (err, result) => {
         if (err) {
             console.log(err);

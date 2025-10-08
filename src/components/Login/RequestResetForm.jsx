@@ -1,12 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
 import { useForm } from "react-hook-form";
-import { Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import isEmail from "validator/lib/isEmail";
 import { requestPasswordReset } from "../../redux/auth-reducer";
 
 //Вход
-const EmailForm = (props) => {
+const RequestResetForm = (props) => {
     const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onBlur" });
 
     const onSubmit = (data) => {
@@ -15,7 +15,7 @@ const EmailForm = (props) => {
 
     return (
         <div className="w-25 bg-white rounded-3 text-dark d-flex justify-content-center align-items-center flex-column p-4" >
-            <h1 className="my-3">Password recovery</h1>
+            <h1 className="my-3">Password Reset</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="d-flex flex-column w-100 align-items-center">
 
                 <input {...register("email", {
@@ -39,17 +39,20 @@ const EmailForm = (props) => {
     )
 }
 
-class EmailFormContainer extends React.Component {
+class RequestResetFormContainer extends React.Component {
     render() {
-        return <EmailForm {...this.props} />
+        return (
+            <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
+                <RequestResetForm {...this.props} />
+            </Container>
+        )
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        resetStatus: state.auth.resetStatus,
         isLoading: state.auth.isLoading
     }
 }
 
-export default connect(mapStateToProps, { requestPasswordReset })(EmailFormContainer);
+export default connect(mapStateToProps, { requestPasswordReset })(RequestResetFormContainer);

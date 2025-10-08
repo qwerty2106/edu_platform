@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { signIn } from "../../redux/auth-reducer";
 import { useForm } from "react-hook-form";
 import { Spinner } from "react-bootstrap";
-import EmailForm from "./EmailForm";
 import { useNavigate } from "react-router-dom";
 
 //Вход
@@ -42,7 +41,7 @@ const SignIn = (props) => {
                 </div>
                 {/* Восстановление пароля */}
                 <div>
-                    <span className="text-primary" style={{ cursor: "pointer" }} onClick={navigate('/request-reset')}>Forgot password</span>
+                    <span className="text-primary" style={{ cursor: "pointer" }} onClick={() => navigate('/request-reset')}>Forgot password</span>
                 </div>
                 <button type="submit" disabled={props.isLoading} className="btn btn-primary btn-sm my-2 w-50 ">
                     {props.isLoading ? <Spinner size="sm" /> : 'Sign In'}

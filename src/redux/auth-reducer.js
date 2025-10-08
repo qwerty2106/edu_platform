@@ -3,10 +3,12 @@ import { AuthAPI } from "../api/api.js";
 const SET_USER = 'SET-USER';
 const SET_LOADING = 'SET-LOADING';
 const SET_RESET_STATUS = 'SET-RESET-STATUS';
+const SET_REQUEST_RESET_STATUS = 'SET-REQUEST-RESET-STATUS';
 
 const initialState = {
     user: null,
     isLoading: false,
+    requestResetStatus: null,
     resetStatus: null
 }
 
@@ -22,6 +24,11 @@ export const authReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: action.isLoading
             }
+        case SET_REQUEST_RESET_STATUS:
+            return {
+                ...state,
+                requestResetStatus: action.requestResetStatus
+            }
         case SET_RESET_STATUS:
             return {
                 ...state,
@@ -34,6 +41,7 @@ export const authReducer = (state = initialState, action) => {
 
 export const setUser = (user) => ({ type: SET_USER, user })
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
+export const setRequestResetStatus = (requestResetStatus) => ({ type: SET_REQUEST_RESET_STATUS, requestResetStatus })
 export const setResetStatus = (resetStatus) => ({ type: SET_RESET_STATUS, resetStatus })
 
 export const signUp = (username, password) => {
@@ -71,39 +79,39 @@ export const signIn = (username, password) => {
 }
 
 
-
 export const requestPasswordReset = (email) => {
     return (dispatch) => {
         dispatch(setLoading(true));
-        dispatch(setResetStatus('pending'))
+        dispatch(setRequestResetStatus('pending'));
         AuthAPI.requestReset(email)
-            .then(data => {
-                dispatch(setResetStatus('success'))
-
+            .then(status => {
+                if (status === 200)
+                    dispatch(setRequestResetStatus('success'));
+                else
+                    dispatch(setRequestResetStatus('error'));
             })
             .catch(error => {
-                console.log('Request reset error', error)
-                dispatch(setResetStatus('error'))
-
+                console.log('Request reset error', error);
+                dispatch(setRequestResetStatus('error'));
             })
-            .finally(() => dispatch(setLoading(false)))
+            .finally(() => dispatch(setLoading(false)));
     }
 }
 
-export const passwordReset = (email) => {
+export const passwordReset = (resetToken, newPassword) => {
     return (dispatch) => {
         dispatch(setLoading(true));
         dispatch(setResetStatus('pending'));
-        AuthAPI.reset(email)
+        AuthAPI.reset(resetToken, newPassword)
             .then(data => {
+                dispatch(setUser(data.user));
+                localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
                 dispatch(setResetStatus('success'));
-
             })
             .catch(error => {
                 console.log('Request reset error', error);
                 dispatch(setResetStatus('error'));
-
             })
-            .finally(() => dispatch(setLoading(false)))
+            .finally(() => dispatch(setLoading(false)));
     }
 }

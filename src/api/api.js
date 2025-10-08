@@ -17,7 +17,7 @@ export const AuthAPI = {
         return axios.post('/login', { login, password }).then(response => response.data)
     },
     requestReset(email) {
-        return axios.post('/request-reset', { email }).then(response => response.data)
+        return axios.post('/request-reset', { email }).then(response => response.status)
     },
     reset(resetToken, newPassword) {
         return axios.post('/reset', { resetToken, newPassword }).then(response => response.data)
