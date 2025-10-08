@@ -5,6 +5,7 @@ import { Container, Spinner } from "react-bootstrap";
 import { passwordReset } from "../../redux/auth-reducer";
 import withRouter from "../../common/WithRouter";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import Notify from "../common/Notify";
 
 //Вход
 const ResetForm = (props) => {
@@ -41,13 +42,31 @@ const ResetForm = (props) => {
 }
 
 class ResetFormContainer extends React.Component {
+    //Генерация уведомления 
+    setNotifyText(status) {
+        switch (status) {
+            case 'pending':
+                return 'Changing password...';
+            case 'success':
+                return 'Password changed successfully';
+            case 'error':
+                return 'Changing password error';
+            default:
+                return null;
+        }
+    }
     render() {
+        const notifyText = this.setNotifyText(this.props.resetStatus);
         if (this.props.resetStatus === 'success')
-            return <Navigate to={'/login'} replace/>
+            return <Navigate to={'/login'} replace />
         return (
-            <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
-                <ResetForm {...this.props} />
-            </Container>
+            <>
+                {/* Уведомление */}
+                {notifyText && <Notify text={notifyText} />}
+                <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
+                    <ResetForm {...this.props} />
+                </Container>
+            </>
         )
     }
 }

@@ -8,8 +8,8 @@ const SET_REQUEST_RESET_STATUS = 'SET-REQUEST-RESET-STATUS';
 const initialState = {
     user: null,
     isLoading: false,
-    requestResetStatus: null,
-    resetStatus: null
+    requestResetStatus: '',
+    resetStatus: ''
 }
 
 export const authReducer = (state = initialState, action) => {
@@ -89,6 +89,7 @@ export const requestPasswordReset = (email) => {
                     dispatch(setRequestResetStatus('success'));
                 else
                     dispatch(setRequestResetStatus('error'));
+
             })
             .catch(error => {
                 console.log('Request reset error', error);
