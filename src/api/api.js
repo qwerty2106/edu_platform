@@ -6,7 +6,8 @@ export const CoursesAPI = {
     },
     getCourseModules(courseID) {
         return axios.get(`/app/courses/${courseID}`).then(response => response.data);
-    }
+    },
+    
 };
 
 export const AuthAPI = {

@@ -12,5 +12,13 @@ export const getCourseModules = createSelector([getModules, getLessons], (module
     }))
 })
 
+export const getLesson = createSelector(
+    [getLessons, (state, lessonID) => lessonID],
+    (lessons, lessonID) => {
+        return lessons.find(lesson => lesson.id == lessonID);
+    });
+
+
+
 
 

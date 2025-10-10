@@ -54,7 +54,7 @@ export const requestCourses = () => {
     }
 }
 
-//Получение модулей и уроков курса
+//Получение модулей и уроков выбранного курса
 export const requestCourseModules = (courseID) => {
     return (dispatch) => {
         dispatch(setLoading(true));

@@ -52,7 +52,7 @@ app.get('/app/courses/:courseID', (req, res) => {
             return res.status(500).json({ error: "Database error on SELECT" });
         }
         //Получение уроков
-        connection.query("SELECT * FROM lessons l INNER JOIN modules m ON m.id = l.module_id WHERE m.course_id=? ORDER BY l.order_index", [courseID], (error, lessonsResult) => {
+        connection.query("SELECT l.id, l.title, l.module_id, l.content_path, l.order_index, l.created_date FROM lessons l INNER JOIN modules m ON m.id = l.module_id WHERE m.course_id=? ORDER BY l.order_index", [courseID], (error, lessonsResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });

@@ -1,22 +1,23 @@
 import React from "react";
 import { Accordion, Container, ListGroup, Spinner } from "react-bootstrap";
 import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
 import { getCourseModules, getLoadingCourses } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
 
 const Lesson = (props) => {
     const navigate = useNavigate();
+    const { courseID } = useParams();
     return (
         <ListGroup.Item>
-            <span onClick={() => navigate('/profile')} style={{ cursor: "pointer" }}>{props.title}</span>
+            <span onClick={() => navigate(`/app/courses/${courseID}/${props.id}`)} style={{ cursor: "pointer" }}>{props.title}</span>
         </ListGroup.Item>
     )
 }
 
 const Module = (props) => {
-    const lessonsElements = props.lessons.map(lesson => <Lesson key={lesson.id} id={lesson.id} title={lesson.title} path={lesson.content_path} />)
+    const lessonsElements = props.lessons.map(lesson => <Lesson key={lesson.id} id={lesson.id} title={lesson.title} path={lesson.content_path} moduleID={props.id} />)
     return (
         <Accordion.Item eventKey={props.id}>
             <Accordion.Header>{props.title}</Accordion.Header>
