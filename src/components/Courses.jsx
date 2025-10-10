@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getCourses, getLoadingCourses } from '../redux/courses-selectors';
 import { requestCourses } from '../redux/courses-reducer';
+import Preloader from '../common/Preloader';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -41,19 +42,15 @@ class Courses extends React.Component {
     render() {
         //Спиннер (загрузка курсов)
         if (this.props.isLoading)
-            return (
-                <Container className='d-flex justify-content-center align-items-center h-100'>
-                    <Spinner animation='border' variant='dark'></Spinner>
-                </Container>
-            )
+            return <Preloader />
+
         //Курсов нет (пустой массив)
-        if (this.props.courses.length === 0) {
-            return (
-                <h1>No courses yet!</h1>
-            )
-        }
+        if (this.props.courses.length === 0)
+            return <h1>No courses yet!</h1>
+
         //Список курсов
         const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
+        
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
@@ -62,7 +59,6 @@ class Courses extends React.Component {
                     </Row>
                 </Container >
             </div>
-
         )
     }
 }

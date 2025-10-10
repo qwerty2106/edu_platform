@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
 import { getCourseModules, getLoadingCourses } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
+import Preloader from "../common/Preloader";
 
 const Lesson = (props) => {
     const navigate = useNavigate();
@@ -40,24 +41,16 @@ class CourseModules extends React.Component {
     render() {
         //Загрузка модулей
         if (this.props.isLoading)
-            return (
-                <Container className='d-flex justify-content-center align-items-center h-100'>
-                    <Spinner animation='border' variant='dark'></Spinner>
-                </Container>
-            )
+            return <Preloader />
+
         //Курс без модулей
-        if (this.props.courseModules.length === 0) {
-            return (
-                <h1>No modules yet!</h1>
-            )
-        }
+        if (this.props.courseModules.length === 0)
+            return <h1>No modules yet!</h1>
+
         //Список модулей
         const modulesElements = this.props.courseModules.map(module => <Module key={module.id} id={module.id} title={module.title} lessons={module.lessons} />)
-        return (
-            <Accordion>
-                {modulesElements}
-            </Accordion>
-        )
+
+        return <Accordion>{modulesElements}</Accordion>
     }
 }
 
