@@ -1,43 +1,61 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { getLesson } from "../redux/courses-selectors";
-import parse from "html-react-parser";
+import { getLesson, getLoadingCourses } from "../redux/courses-selectors";
+
 import { Container, Spinner } from "react-bootstrap";
 import ReactMarkdown from 'react-markdown';
+import withRouter from "../common/WithRouter";
+import { requestCourseModules } from "../redux/courses-reducer";
 
-const LessonContent = () => {
-    const { lessonID } = useParams(); //id урока из URL
-
-    //Получение урока из store
-    const lesson = useSelector(state => getLesson(state, lessonID));
-    console.log(lesson)
-
+const Lesson = (props) => {
 
     // Преобразование markdown файла в html
     const [content, setContent] = useState("");
     useEffect(() => {
-        const encodedPath = encodeURI(lesson.content_path)
+        if (!props.lesson) return;
+        const encodedPath = encodeURI(props.lesson.content_path)
         fetch(encodedPath)
             .then(res => res.text())
             .then(text => setContent(text))
             .catch(err => console.log(err));
-    }, [lesson])
+    }, [props.lesson])
 
 
     return (
         <div>
-            {content
-                ? <ReactMarkdown>{content}</ReactMarkdown>
-                //Загрузка урока
-                : <Container className='d-flex justify-content-center align-items-center' style={{ height: "100vh" }}>
-                    <Spinner animation='border' variant='dark'></Spinner>
-                </Container>}
+            <ReactMarkdown>{content}</ReactMarkdown>
         </div>
     )
 }
 
+class LessonContent extends React.Component {
+    componentDidMount() {
+        const courseID = this.props.router?.params?.courseID;
+        this.props.requestCourseModules(courseID);
+    }
+    render() {
+        //Загрузка урока
+        if (this.props.isLoading)
+            return (
+                <Container className='d-flex justify-content-center align-items-center h-100'>
+                    <Spinner animation='border' variant='dark'></Spinner>
+                </Container>
+            )
+        return (
+            <Lesson {...this.props} />
+        )
+    }
+}
+
+const mapStateToProps = (state, ownProps) => {
+    const lessonID = ownProps.router?.params?.lessonID; //courseID из URL
+    console.log('lessonID', lessonID)
+    return {
+        lesson: getLesson(state, lessonID),
+        isLoading: getLoadingCourses(state),
+    }
+}
 
 
-
-export default LessonContent;
+export default withRouter(connect(mapStateToProps, {requestCourseModules})(LessonContent));
