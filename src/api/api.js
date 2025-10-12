@@ -7,12 +7,12 @@ export const CoursesAPI = {
     getCourseModules(courseID) {
         return axios.get(`/app/courses/${courseID}`).then(response => response.data);
     },
-    
+
 };
 
 export const AuthAPI = {
     signUp(username, email, password) {
-        return axios.post('/register', { email, username, password }).then(response => response.data)
+        return axios.post('/register', { username, email, password }).then(response => response.data)
     },
     signIn(login, password) {
         return axios.post('/login', { login, password }).then(response => response.data)
@@ -23,4 +23,10 @@ export const AuthAPI = {
     reset(resetToken, newPassword) {
         return axios.post('/reset', { resetToken, newPassword }).then(response => response.data)
     }
+};
+
+export const ChatAPI = {
+    getRooms(userID) {
+        return axios.get('/app/rooms', { headers: { 'userID': userID } }).then(response => response.data);
+    },
 };

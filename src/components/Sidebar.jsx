@@ -26,7 +26,7 @@ const Sidebar = () => {
           </ListGroup.Item>
         </NavLink>
 
-        <NavLink to="/app/chat" className="text-decoration-none">
+        <NavLink to="/app/rooms" className="text-decoration-none">
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <ChatDotsFill style={{ width: '20px', height: '20px' }} />

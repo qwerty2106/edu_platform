@@ -9,20 +9,26 @@ import Preloader from "../common/Preloader";
 const Lesson = (props) => {
     // Преобразование markdown файла в html
     const [content, setContent] = useState("");
+    //Загрузка (преобразование файла)
+    const [isLoading, setLoading] = useState(true);
+
     useEffect(() => {
-        if (!props.lesson) return;
+        if (!props.lesson) {
+            setLoading(false);
+            return;
+        };
         //Кодировка некорректных символов в названии файла
-        const encodedPath = encodeURI(props.lesson.content_path)
+        const encodedPath = encodeURI(props.lesson.content_path);
+        setLoading(true);
         fetch(encodedPath)
             .then(res => res.text()) //Запись файла в строчку
             .then(text => setContent(text))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+            .finally(() => setLoading(false))
     }, [props.lesson])
 
-    return content
-        ? <div><ReactMarkdown>{content}</ReactMarkdown></div>
-        //Урока не существует
-        : <h1>No lesson yet!</h1>;
+    if (isLoading) return <Preloader />
+    return content ? <div><ReactMarkdown>{content}</ReactMarkdown></div> : <h1>No lesson yet!</h1>
 }
 
 class LessonContent extends React.Component {
@@ -48,4 +54,4 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 //withRouter достпупен в mapStateToProps
-export default withRouter(connect(mapStateToProps, { requestCourseModules })(LessonContent)); 
+export default withRouter(connect(mapStateToProps, { requestCourseModules })(LessonContent));

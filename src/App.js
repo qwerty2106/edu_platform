@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import RequestResetForm from './components/Login/RequestResetForm';
 import ResetForm from './components/Login/ResetForm';
 import LessonContent from './components/LessonContent';
+import Rooms from './components/Chat/Room';
 
 class App extends React.Component {
   componentDidMount() {
@@ -40,7 +41,7 @@ class App extends React.Component {
             <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
             <Route path='courses/:courseID' element={<CourseModules />} />
             <Route path='profile' element={<h1>Profile</h1>} />
-            <Route path='chat' element={<h1>Chat</h1>} />
+            <Route path='rooms' element={<Rooms />} />
           </Route>
         </Routes>
       </BrowserRouter>

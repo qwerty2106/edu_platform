@@ -11,7 +11,7 @@ const SignUp = (props) => {
 
     //Регистрация 
     const onSubmit = (data) => {
-        props.signUp(data.email, data.username, data.password)
+        props.signUp(data.username, data.email, data.password)
     }
 
     return (

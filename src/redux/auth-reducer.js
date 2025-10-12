@@ -44,10 +44,10 @@ export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
 export const setRequestResetStatus = (requestResetStatus) => ({ type: SET_REQUEST_RESET_STATUS, requestResetStatus })
 export const setResetStatus = (resetStatus) => ({ type: SET_RESET_STATUS, resetStatus })
 
-export const signUp = (username, password) => {
+export const signUp = (username, email, password) => {
     return (dispatch) => {
         dispatch(setLoading(true));
-        AuthAPI.signUp(username, password)
+        AuthAPI.signUp(username, email, password)
             .then(data => {
                 dispatch(setUser(data.user));
                 localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
