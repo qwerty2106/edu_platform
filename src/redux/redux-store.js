@@ -3,12 +3,14 @@ import { coursesReducer } from "./courses-reducer";
 import { authReducer } from "./auth-reducer";
 import { appReducer } from "./app-reducer";
 import { chatReducer } from "./chat-reducer";
+import { roomsReducer } from "./rooms-reducer";
 
 const rootReducer = combineReducers({
     courses: coursesReducer,
     auth: authReducer,
     app: appReducer,
-    chat: chatReducer,
+    rooms: roomsReducer,
+    chat: chatReducer
 });
 
 const store = configureStore({

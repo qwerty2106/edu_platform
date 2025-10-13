@@ -1,0 +1,84 @@
+import React from "react";
+import { requestMessages } from "../../redux/chat-reducer";
+import { getLoadingMessages, getMessages } from "../../redux/chat-selectors";
+import { getUser } from "../../redux/auth-selectors"
+import Message from "./Message";
+import Input from "./Input";
+import { Col, Container, Row } from "react-bootstrap";
+import { connect } from "react-redux";
+import withRouter from "../../common/WithRouter";
+import Preloader from "../../common/Preloader";
+
+const Chat = (props) => {
+    const messageElements = props.messages.map(message => <Message key={message.id} username={message.username} message={message.message} />)
+    return (
+        <Container fluid className="p-0" style={{ height: "100vh", display: "grid", gridTemplateRows: "auto 1fr auto", overflowX: "hidden" }}>
+
+            {/* Шапка */}
+            <Row className="p-3 bg-dark text-white">
+                <Col>
+                    <h3>Room name</h3>
+                    <div className="d-flex gap-2 align-items-center">
+                        <div className={'bg-danger'} style={{ width: "10px", height: "10px", borderRadius: "50%" }}></div>
+                        <h6 className="m-0">online: 0</h6>
+                    </div>
+
+                    {/* <div className="d-flex gap-2 align-items-center">
+                        <div className={props.joinUsers.length === 0 ? 'bg-danger' : 'bg-success'} style={{ width: "10px", height: "10px", borderRadius: "50%" }}></div>
+                        <h6 className="m-0">online: {props.joinUsers.length}</h6>
+                    </div> */}
+
+                </Col>
+            </Row>
+
+            {/* Сообщения */}
+            <Row className="p-2" style={{ overflowY: "auto" }}>
+                <Col className="d-flex flex-column gap-2">
+                    {messageElements}
+                </Col>
+            </Row>
+
+            {/* Строка ввода */}
+            <Row>
+                <Col><Input user={props.user.username} /></Col>
+            </Row>
+
+            {/* Уведомление */}
+            {/* <ToastContainer position="top-end" className="p-3">
+                <Toast show={showNotify} onClose={toggleNotify}>
+                    <Toast.Header>
+                        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+                        <strong className="me-auto">{room.name}</strong>
+                        <small>just now</small>
+                    </Toast.Header>
+                    <Toast.Body>{props.notify}</Toast.Body>
+                </Toast>
+            </ToastContainer> */}
+        </Container>
+    )
+}
+
+
+class ChatContainer extends React.Component {
+    componentDidMount() {
+        const chatID = this.props.router.params.chatID;
+        this.props.requestMessages(chatID);
+    }
+
+    render() {
+        if (this.props.isLoading) {
+            return <Preloader />
+        }
+        return <Chat {...this.props} />
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        messages: getMessages(state),
+        isLoading: getLoadingMessages(state),
+        user: getUser(state)
+    }
+}
+
+export default connect(mapStateToProps, { requestMessages })(withRouter(ChatContainer))

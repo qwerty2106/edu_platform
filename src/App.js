@@ -1,19 +1,20 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Spinner } from 'react-bootstrap';
-import Courses from './components/Courses';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppContainer from './AppContainer';
-import CourseModules from './components/CourseModules';
-import Login from './components/Login/Login';
-import Landing from './components/Landing';
-import React from 'react';
-import { initializeApp } from './redux/app-reducer';
-import { getInitialized } from './redux/app-selectors';
-import { connect } from 'react-redux';
-import RequestResetForm from './components/Login/RequestResetForm';
-import ResetForm from './components/Login/ResetForm';
-import LessonContent from './components/LessonContent';
-import Rooms from './components/Chat/Room';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Container, Spinner } from "react-bootstrap";
+import Courses from "./components/Courses";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AppContainer from "./AppContainer";
+import CourseModules from "./components/CourseModules";
+import Login from "./components/Login/Login";
+import Landing from "./components/Landing";
+import React from "react";
+import { initializeApp } from "./redux/app-reducer";
+import { getInitialized } from "./redux/app-selectors";
+import { connect } from "react-redux";
+import RequestResetForm from "./components/Login/RequestResetForm";
+import ResetForm from "./components/Login/ResetForm";
+import LessonContent from "./components/LessonContent";
+import Rooms from "./components/Chat/Room";
+import Chat from "./components/Chat/Chat";
 
 class App extends React.Component {
   componentDidMount() {
@@ -41,7 +42,8 @@ class App extends React.Component {
             <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
             <Route path='courses/:courseID' element={<CourseModules />} />
             <Route path='profile' element={<h1>Profile</h1>} />
-            <Route path='rooms' element={<Rooms />} />
+            <Route path='chats' element={<Rooms />} />
+            <Route path='chats/:chatID' element={<Chat />} />
           </Route>
         </Routes>
       </BrowserRouter>

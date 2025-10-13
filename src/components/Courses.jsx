@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Col, Container, Row, Card, Button, Spinner } from 'react-bootstrap';
+import { Col, Container, Row, Card, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getCourses, getLoadingCourses } from '../redux/courses-selectors';
@@ -50,7 +50,7 @@ class Courses extends React.Component {
 
         //Список курсов
         const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
-        
+
         return (
             <div className='h-100 overflow-auto'>
                 <Container>

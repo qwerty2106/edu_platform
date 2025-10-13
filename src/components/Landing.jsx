@@ -1,6 +1,5 @@
 import { Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"
-import Notify from "./common/Notify";
 
 const Landing = () => {
     const navigate = useNavigate();

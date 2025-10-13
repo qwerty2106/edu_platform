@@ -237,9 +237,9 @@ app.post('/reset', (req, res) => {
 });
 
 //Получение всех сообщений
-app.get('/chat/:currentChat', (req, res) => {
-    const currentChat = req.params.currentChat;
-    connection.query("SELECT * FROM messages WHERE chat_id = ?", [currentChat], (err, result) => {
+app.get('/app/chats/:chatID', (req, res) => {
+    const chatID = req.params.chatID;
+    connection.query("SELECT * FROM messages WHERE chat_id = ?", [chatID], (err, result) => {
         if (err) {
             console.log(err)
             return res.status(500).json({ error: "Database error on SELECT" })
@@ -249,7 +249,7 @@ app.get('/chat/:currentChat', (req, res) => {
 })
 
 //Получение всех комнат
-app.get('/app/rooms', (req, res) => {
+app.get('/app/chats', (req, res) => {
     const userID = req.get('userID'); //headers
     connection.query(`SELECT c.id, title, description, DATE_FORMAT(created_date, '%d.%m.%Y, %H:%i:%s') as created_date FROM chats c
                         WHERE 

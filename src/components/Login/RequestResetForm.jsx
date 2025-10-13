@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Container, Spinner } from "react-bootstrap";
 import isEmail from "validator/lib/isEmail";
 import { requestPasswordReset } from "../../redux/auth-reducer";
-import Notify from "../common/Notify";
+import Notify from "../../common/Notify";
 
 //Вход
 const RequestResetForm = (props) => {

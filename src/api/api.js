@@ -27,6 +27,9 @@ export const AuthAPI = {
 
 export const ChatAPI = {
     getRooms(userID) {
-        return axios.get('/app/rooms', { headers: { 'userID': userID } }).then(response => response.data);
+        return axios.get('/app/chats', { headers: { 'userID': userID } }).then(response => response.data);
     },
+    getMessages(chatID) {
+        return axios.get(`/app/chats/${chatID}`).then(response => response.data);
+    }
 };

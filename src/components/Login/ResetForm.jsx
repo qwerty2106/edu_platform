@@ -3,9 +3,8 @@ import { connect } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Container, Spinner } from "react-bootstrap";
 import { passwordReset } from "../../redux/auth-reducer";
-import withRouter from "../../common/WithRouter";
-import { Navigate, useParams, useSearchParams } from "react-router-dom";
-import Notify from "../common/Notify";
+import { Navigate, useSearchParams } from "react-router-dom";
+import Notify from "../../common/Notify";
 
 //Вход
 const ResetForm = (props) => {

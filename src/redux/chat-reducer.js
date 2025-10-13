@@ -1,19 +1,19 @@
-import { ChatAPI } from "../api/api";
+import { ChatAPI } from "../api/api"
 
-const SET_ROOMS = 'SET-ROOMS';
+const SET_MESSAGES = 'SET-MESSAGES'
 const SET_LOADING = "SET-LOADING";
 
 const initialState = {
-    rooms: [],
+    messages: [],
     isLoading: true,
 }
 
 export const chatReducer = (state = initialState, action) => {
     switch (action.type) {
-        case SET_ROOMS:
+        case SET_MESSAGES:
             return {
                 ...state,
-                rooms: action.rooms
+                messages: action.messages
             }
         case SET_LOADING:
             return {
@@ -25,17 +25,15 @@ export const chatReducer = (state = initialState, action) => {
     }
 }
 
-export const setRooms = (rooms) => ({ type: SET_ROOMS, rooms });
+export const setMessages = (messages) => ({ type: SET_MESSAGES, messages });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 
-
-export const requestRooms = () => {
-    return async (dispatch) => {
+export const requestMessages = (chatID) => {
+    return (dispatch) => {
         dispatch(setLoading(true));
-        const storedUserData = JSON.parse(localStorage.getItem('user')); //Из объекта в строку
-        ChatAPI.getRooms(storedUserData.id)
-            .then(data => dispatch(setRooms(data)))
-            .catch(error => console.log('Get rooms error', error))
+        ChatAPI.getMessages(chatID)
+            .then(data => dispatch(setMessages(data)))
+            .catch(error => console.log('Get messages error', error))
             .finally(() => dispatch(setLoading(false)))
     }
 }
