@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
-import { getLoadingUser, getUser } from "../redux/auth-selectors";
+import { getUser } from "../redux/auth-selectors";
 
 //HOC проверки авторизации (запрет на рутинг)
 export const withAuthRedirect = (Component) => {
@@ -15,7 +15,7 @@ export const withAuthRedirect = (Component) => {
         }
     }
 
-    const mapStateToProps = (state) => ({ user: getUser(state), isLoading: getLoadingUser(state) });
+    const mapStateToProps = (state) => ({ user: getUser(state) });
     return connect(mapStateToProps)(RedirectComponent);
 }
 

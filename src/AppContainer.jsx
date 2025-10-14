@@ -1,9 +1,10 @@
-import { Button, Container, Navbar, Spinner } from 'react-bootstrap';
+import { Button, Container, Navbar } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx'
 import { withAuthRedirect } from './hoc/withAuthRedirect.js';
 import { logOut } from './redux/auth-reducer.js';
 import { useDispatch } from 'react-redux';
+
 
 const AppContainer = (props) => {
     const dispatch = useDispatch();

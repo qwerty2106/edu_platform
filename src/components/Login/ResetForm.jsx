@@ -41,31 +41,11 @@ const ResetForm = (props) => {
 }
 
 class ResetFormContainer extends React.Component {
-    //Генерация уведомления 
-    setNotifyText(status) {
-        switch (status) {
-            case 'pending':
-                return 'Changing password...';
-            case 'success':
-                return 'Password changed successfully';
-            case 'error':
-                return 'Changing password error';
-            default:
-                return null;
-        }
-    }
     render() {
-        const notifyText = this.setNotifyText(this.props.resetStatus);
-        if (this.props.resetStatus === 'success')
-            return <Navigate to={'/login'} replace />
         return (
-            <>
-                {/* Уведомление */}
-                {notifyText && <Notify text={notifyText} />}
-                <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
-                    <ResetForm {...this.props} />
-                </Container>
-            </>
+            <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
+                <ResetForm {...this.props} />
+            </Container>
         )
     }
 }
@@ -73,7 +53,6 @@ class ResetFormContainer extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLoading: state.auth.isLoading,
-        resetStatus: state.auth.resetStatus
     }
 }
 

@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
 import { Container, Spinner } from "react-bootstrap";
 import Courses from "./components/Courses";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -15,38 +16,51 @@ import ResetForm from "./components/Login/ResetForm";
 import LessonContent from "./components/LessonContent";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
+import Notify from "./common/Notify.jsx"
+import { getRequestResetStatus, getResetStatus, getSignInStatus, getSignUpStatus } from "./redux/auth-selectors";
 
 class App extends React.Component {
   componentDidMount() {
     this.props.initializeApp();
   }
   render() {
+    const notifies = [
+      this.props.resetStatus,
+      this.props.requestResetStatus,
+      this.props.signInStatus,
+      this.props.signUpStatus
+    ].filter(obj => Object.keys(obj).length > 0);
+
     if (!this.props.initialized)
       return (
         <Container fluid className='d-flex justify-content-center align-items-center bg-dark' style={{ height: "100vh" }}>
           <Spinner animation='border' variant='light'></Spinner>
         </Container>
       )
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Landing />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/request-reset' element={<RequestResetForm />} />
-          <Route path='/reset' element={<ResetForm />} />
-          <Route path='*' element={<h1>Not Found</h1>} />
 
-          <Route path='/app' element={<AppContainer />}>
-            <Route index element={<Courses />} />
-            <Route path='courses' element={<Courses />} />
-            <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
-            <Route path='courses/:courseID' element={<CourseModules />} />
-            <Route path='profile' element={<h1>Profile</h1>} />
-            <Route path='chats' element={<Rooms />} />
-            <Route path='chats/:chatID' element={<Chat />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    return (
+      <>
+        <Notify notifies={notifies} />
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Landing />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/request-reset' element={<RequestResetForm />} />
+            <Route path='/reset' element={<ResetForm />} />
+            <Route path='*' element={<h1>Not Found</h1>} />
+
+            <Route path='/app' element={<AppContainer />}>
+              <Route index element={<Courses />} />
+              <Route path='courses' element={<Courses />} />
+              <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
+              <Route path='courses/:courseID' element={<CourseModules />} />
+              <Route path='profile' element={<h1>Profile</h1>} />
+              <Route path='chats' element={<Rooms />} />
+              <Route path='chats/:chatID' element={<Chat />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </>
     );
   }
 }
@@ -54,6 +68,10 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
   return {
     initialized: getInitialized(state),
+    resetStatus: getResetStatus(state),
+    requestResetStatus: getRequestResetStatus(state),
+    signInStatus: getSignInStatus(state),
+    signUpStatus: getSignUpStatus(state),
   }
 }
 export default connect(mapStateToProps, { initializeApp })(App) 

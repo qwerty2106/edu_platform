@@ -8,6 +8,9 @@ import { Col, Container, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import withRouter from "../../common/WithRouter";
 import Preloader from "../../common/Preloader";
+import { withChatRedirect } from "../../hoc/withChatRedirect";
+import { getLoadingRooms, getRooms } from "../../redux/rooms-selectors";
+import { requestRooms } from "../../redux/rooms-reducer";
 
 const Chat = (props) => {
     const messageElements = props.messages.map(message => <Message key={message.id} username={message.username} message={message.message} />)
@@ -77,8 +80,10 @@ const mapStateToProps = (state) => {
     return {
         messages: getMessages(state),
         isLoading: getLoadingMessages(state),
-        user: getUser(state)
+        user: getUser(state),
+        rooms: getRooms(state),
+        isLoadingRooms: getLoadingRooms(state)
     }
 }
 
-export default connect(mapStateToProps, { requestMessages })(withRouter(ChatContainer))
+export default connect(mapStateToProps, { requestMessages })(withRouter(withChatRedirect(ChatContainer)))

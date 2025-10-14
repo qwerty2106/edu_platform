@@ -41,30 +41,12 @@ const RequestResetForm = (props) => {
 }
 
 class RequestResetFormContainer extends React.Component {
-    //Генерация уведомления 
-    setNotifyText(status) {
-        switch (status) {
-            case 'pending':
-                return 'Sending message...';
-            case 'success':
-                return 'Message sent successfully';
-            case 'error':
-                return 'Error sending message';
-            default:
-                return null;
-        }
-    }
     render() {
-        const notifyText = this.setNotifyText(this.props.requestResetStatus);
         return (
-            <>
-                {/* Уведомление */}
-                {notifyText && <Notify text={notifyText} />}
-                < Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }
-                }>
-                    <RequestResetForm {...this.props} />
-                </Container >
-            </>
+            < Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }
+            }>
+                <RequestResetForm {...this.props} />
+            </Container >
         )
     }
 }
@@ -74,7 +56,6 @@ class RequestResetFormContainer extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLoading: state.auth.isLoading,
-        requestResetStatus: state.auth.requestResetStatus,
     }
 }
 
