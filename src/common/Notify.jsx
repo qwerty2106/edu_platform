@@ -8,7 +8,7 @@ const Notify = (props) => {
         props.notifies.forEach(notify => {
             switch (notify.status) {
                 case 'info':
-                    toast.info(notify.message)
+                    toast.pending(notify.message)
                     break;
                 case 'success':
                     toast.success(notify.message)
