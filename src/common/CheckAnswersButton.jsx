@@ -1,17 +1,22 @@
+import { useDispatch } from "react-redux";
 import { Slide, toast, ToastContainer } from "react-toastify";
+import { setNotify } from "../redux/app-reducer";
 
 const CheckAnswersButton = () => {
+    const dispatch = useDispatch();
     const handleCheck = () => {
         const correct = document.querySelectorAll('input[correct]:checked');
         const questions = document.querySelectorAll('input[correct]');
 
-        toast.info(`Correct answers: ${correct.length} of ${questions.length}`, { transition: Slide })
+        if (correct.length === questions.length)
+            dispatch(setNotify({ status: 'success', message: 'Excellent! All answers are correct!' }));
+        else if (correct.length === 0)
+            dispatch(setNotify({ status: 'error', message: 'No correct answers. Try again!' }));
+        else
+            dispatch(setNotify({ status: 'info', message: `You got ${correct.length} correct answers out of ${questions.length}` }));
     };
-
-    return <div>
-        <button className="btn btn-primary" onClick={handleCheck}>Check</button>
-        <ToastContainer hideProgressBar={true} autoClose={2000} />
-    </div>
+    return <button className="btn btn-primary" onClick={handleCheck}>Check</button>
 };
+
 
 export default CheckAnswersButton;

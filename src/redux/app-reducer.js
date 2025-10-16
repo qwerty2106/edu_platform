@@ -1,9 +1,11 @@
 import { setUser } from "./auth-reducer";
 
 const SET_INITIALIZED = 'SET-INITIALIZED';
+const SET_NOTIFY = 'SET-NOTIFY';
 
 const initialState = {
     initialized: false,
+    notify: {}
 }
 
 export const appReducer = (state = initialState, action) => {
@@ -13,12 +15,18 @@ export const appReducer = (state = initialState, action) => {
                 ...state,
                 initialized: true
             }
+        case SET_NOTIFY:
+            return {
+                ...state,
+                notify: action.notify
+            }
         default:
             return state
     }
 }
 
 export const setInitialized = () => ({ type: SET_INITIALIZED })
+export const setNotify = (notify) => ({ type: SET_NOTIFY, notify })
 
 //Инициализация на каждом обновлении
 export const initializeApp = () => {

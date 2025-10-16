@@ -9,7 +9,7 @@ import Login from "./components/Login/Login";
 import Landing from "./components/Landing";
 import React from "react";
 import { initializeApp } from "./redux/app-reducer";
-import { getInitialized } from "./redux/app-selectors";
+import { getInitialized, getNotify } from "./redux/app-selectors";
 import { connect } from "react-redux";
 import RequestResetForm from "./components/Login/RequestResetForm";
 import ResetForm from "./components/Login/ResetForm";
@@ -24,13 +24,6 @@ class App extends React.Component {
     this.props.initializeApp();
   }
   render() {
-    const notifies = [
-      this.props.resetStatus,
-      this.props.requestResetStatus,
-      this.props.signInStatus,
-      this.props.signUpStatus
-    ].filter(obj => Object.keys(obj).length > 0);
-
     if (!this.props.initialized)
       return (
         <Container fluid className='d-flex justify-content-center align-items-center bg-dark' style={{ height: "100vh" }}>
@@ -40,7 +33,7 @@ class App extends React.Component {
 
     return (
       <>
-        <Notify notifies={notifies} />
+        <Notify notify={this.props.notify} />
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<Landing />} />
@@ -68,10 +61,7 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
   return {
     initialized: getInitialized(state),
-    resetStatus: getResetStatus(state),
-    requestResetStatus: getRequestResetStatus(state),
-    signInStatus: getSignInStatus(state),
-    signUpStatus: getSignUpStatus(state),
+    notify: getNotify(state)
   }
 }
 export default connect(mapStateToProps, { initializeApp })(App) 
