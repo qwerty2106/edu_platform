@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Container, Spinner } from "react-bootstrap";
 import { passwordReset } from "../../redux/auth-reducer";
 import { Navigate, useSearchParams } from "react-router-dom";
-import Notify from "../../common/Notify";
 
 //Вход
 const ResetForm = (props) => {
@@ -42,6 +41,8 @@ const ResetForm = (props) => {
 
 class ResetFormContainer extends React.Component {
     render() {
+        if (this.props.user)
+            return <Navigate to={'/app'} />
         return (
             <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
                 <ResetForm {...this.props} />
@@ -53,6 +54,7 @@ class ResetFormContainer extends React.Component {
 const mapStateToProps = (state) => {
     return {
         isLoading: state.auth.isLoading,
+        user: state.auth.user,
     }
 }
 

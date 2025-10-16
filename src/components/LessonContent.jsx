@@ -5,6 +5,10 @@ import ReactMarkdown from 'react-markdown';
 import withRouter from "../common/WithRouter";
 import { requestCourseModules } from "../redux/courses-reducer";
 import Preloader from "../common/Preloader";
+import Prism from "prismjs";
+import "prism-themes/themes/prism-ghcolors.css";
+import rehypeRaw from "rehype-raw";
+import CheckAnswersButton from "../common/CheckAnswersButton";
 
 const Lesson = (props) => {
     // Преобразование markdown файла в html
@@ -27,8 +31,18 @@ const Lesson = (props) => {
             .finally(() => setLoading(false))
     }, [props.lesson])
 
+    //Подсветка кода
+    useEffect(() => {
+        if (content) Prism.highlightAll();
+    }, [content]);
+
     if (isLoading) return <Preloader />
-    return content ? <div><ReactMarkdown>{content}</ReactMarkdown></div> : <h1>No lesson yet!</h1>
+    return content
+        ? <div>
+            <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
+            <CheckAnswersButton />
+        </div >
+        : <h1>No lesson yet!</h1>
 }
 
 class LessonContent extends React.Component {
@@ -53,5 +67,5 @@ const mapStateToProps = (state, ownProps) => {
     }
 }
 
-//withRouter достпупен в mapStateToProps
+//withRouter доступен в mapStateToProps
 export default withRouter(connect(mapStateToProps, { requestCourseModules })(LessonContent));

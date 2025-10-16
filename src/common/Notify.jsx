@@ -8,7 +8,7 @@ const Notify = (props) => {
         props.notifies.forEach(notify => {
             switch (notify.status) {
                 case 'info':
-                    toast.pending(notify.message)
+                    toast.info(notify.message)
                     break;
                 case 'success':
                     toast.success(notify.message)
@@ -20,7 +20,7 @@ const Notify = (props) => {
         });
     }, [props.notifies]);
 
-    return <ToastContainer />
+    return <ToastContainer hideProgressBar={true} autoClose={2000} />
 };
 
 export default Notify;

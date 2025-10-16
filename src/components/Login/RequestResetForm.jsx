@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Container, Spinner } from "react-bootstrap";
 import isEmail from "validator/lib/isEmail";
 import { requestPasswordReset } from "../../redux/auth-reducer";
-import Notify from "../../common/Notify";
 
 //Вход
 const RequestResetForm = (props) => {
@@ -43,8 +42,7 @@ const RequestResetForm = (props) => {
 class RequestResetFormContainer extends React.Component {
     render() {
         return (
-            < Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }
-            }>
+            < Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
                 <RequestResetForm {...this.props} />
             </Container >
         )
