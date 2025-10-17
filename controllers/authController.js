@@ -6,12 +6,12 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
-    host: "smtp.mail.ru",
-    port: 465,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     secure: true,
     auth: {
-        user: "anna.asessorova.05@mail.ru",
-        pass: "d8eUEBuN9sIquvqxK6cS"
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
     }
 });
 

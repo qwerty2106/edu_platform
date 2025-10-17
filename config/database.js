@@ -1,10 +1,10 @@
 //БД
 const mysql = require("mysql2");
 const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "edu_platform_database",
-    password: "2106"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD
 });
 connection.connect(() => console.log('Database is working'));
 
