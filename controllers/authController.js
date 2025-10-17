@@ -127,7 +127,7 @@ exports.requestReset = (req, res) => {
                     console.log(err);
                     return res.status(500).json({ error: "Database error on UPDATE" });
                 }
-                const resetLink = `http://localhost:3000/reset?token=${resetToken}`;
+                const resetLink = `http://localhost:3000/auth/reset?token=${resetToken}`;
                 const message = {
                     from: 'edu_platform <anna.asessorova.05@mail.ru>',
                     to: `${email}`,
