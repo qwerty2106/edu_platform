@@ -9,7 +9,7 @@ export const withAuthRedirect = (Component) => {
         render() {
             //Пользователь не авторизован -> редирект на форму с логином
             if (!this.props.user)
-                return <Navigate to={"/login"} replace />
+                return <Navigate to={"/auth/login"} replace />
             //Пользователь авторизован -> отображение текущего компонента
             return <Component{...this.props} />;
         }

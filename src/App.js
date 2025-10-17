@@ -16,8 +16,7 @@ import ResetForm from "./components/Login/ResetForm";
 import LessonContent from "./components/LessonContent";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
-import Notify from "./common/Notify.jsx"
-import { getRequestResetStatus, getResetStatus, getSignInStatus, getSignUpStatus } from "./redux/auth-selectors";
+import Notify from "./common/Notify.jsx";
 
 class App extends React.Component {
   componentDidMount() {
@@ -37,9 +36,9 @@ class App extends React.Component {
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<Landing />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/request-reset' element={<RequestResetForm />} />
-            <Route path='/reset' element={<ResetForm />} />
+            <Route path='/auth/login' element={<Login />} />
+            <Route path='/auth/request-reset' element={<RequestResetForm />} />
+            <Route path='/auth/reset' element={<ResetForm />} />
             <Route path='*' element={<h1>Not Found</h1>} />
 
             <Route path='/app' element={<AppContainer />}>

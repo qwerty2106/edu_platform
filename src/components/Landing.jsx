@@ -7,7 +7,7 @@ const Landing = () => {
         <Container fluid className="bg-dark text-white " style={{ height: "100vh" }}>
             <h1>Landing Page</h1>
 
-            <button onClick={() => navigate('/login')} className="btn btn-primary">Begin</button>
+            <button onClick={() => navigate('/auth/login')} className="btn btn-primary">Begin</button>
         </Container>
     )
 }

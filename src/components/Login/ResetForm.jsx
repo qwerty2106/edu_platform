@@ -42,7 +42,7 @@ const ResetForm = (props) => {
 class ResetFormContainer extends React.Component {
     render() {
         if (this.props.user)
-            return <Navigate to={'/app'} />
+            return <Navigate to={'/app'} replace />
         return (
             <Container fluid className="bg-dark d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
                 <ResetForm {...this.props} />

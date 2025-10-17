@@ -41,7 +41,7 @@ const SignIn = (props) => {
                 </div>
                 {/* Восстановление пароля */}
                 <div>
-                    <span className="text-primary" style={{ cursor: "pointer" }} onClick={() => navigate('/request-reset')}>Forgot password</span>
+                    <span className="text-primary" style={{ cursor: "pointer" }} onClick={() => navigate('/auth/request-reset')}>Forgot password</span>
                 </div>
                 <button type="submit" disabled={props.isLoading} className="btn btn-primary btn-sm my-2 w-50 ">
                     {props.isLoading ? <Spinner size="sm" /> : 'Sign In'}
