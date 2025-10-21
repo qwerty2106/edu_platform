@@ -1,4 +1,4 @@
-import { AuthAPI } from "../api/api.js";
+import { AuthAPI } from "../service/api";
 import { setNotify } from "./app-reducer.js";
 
 const SET_USER = 'SET-USER';

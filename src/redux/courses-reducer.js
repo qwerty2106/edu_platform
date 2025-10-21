@@ -1,4 +1,4 @@
-import { CoursesAPI } from "../api/api";
+import { CoursesAPI } from "../service/api";
 
 const SET_COURSES = "SET-COURSES";
 const SET_MODULES = "SET-MODULES";

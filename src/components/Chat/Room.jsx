@@ -45,7 +45,6 @@ const Room = (props) => {
 class RoomsContainer extends React.Component {
     componentDidMount() {
         this.props.requestRooms();
-        console.log('rooms: ', this.props.rooms)
     }
     render() {
         //Спиннер (загрузка чатов)

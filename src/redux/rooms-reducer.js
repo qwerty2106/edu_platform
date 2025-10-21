@@ -1,4 +1,4 @@
-import { ChatAPI } from "../api/api";
+import { ChatAPI } from "../service/api";
 
 const SET_ROOMS = 'SET-ROOMS';
 const SET_LOADING = "SET-LOADING";

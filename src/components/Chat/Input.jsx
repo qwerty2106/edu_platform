@@ -1,19 +1,26 @@
 import { InputGroup, Container, Form, Button } from "react-bootstrap";
 import { useForm } from "react-hook-form"
+import { getUser } from "../../redux/auth-selectors";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { sendMessage } from "../../redux/chat-reducer";
 
 const Input = (props) => {
-    const { register, handleSubmit } = useForm()
+    const { chatID } = useParams();
+    const user = useSelector(getUser);
+    const dispatch = useDispatch();
+    const { register, handleSubmit } = useForm();
 
     // Отправка сообщения
     const onSubmit = (data) => {
-        // props.sendMessage(data.message)
+        dispatch(sendMessage(data.message, user.username, chatID));
     }
 
     return (
-        <Container fluid className="bg-dark p-3 text-white">
+        <Container fluid className="bg-dark p-3 text-white rounded-3">
             <Form className="d-flex gap-2" onSubmit={handleSubmit(onSubmit)}>
                 <InputGroup size="sm">
-                    <InputGroup.Text>{props.username}</InputGroup.Text>
+                    <InputGroup.Text>{user.username}</InputGroup.Text>
                     <Form.Control type="text" placeholder="Type something..." {...register("message", { required: true, validate: (value) => value.trim() !== '' })}></Form.Control>
                 </InputGroup>
                 <Button size="sm" variant="primary" type="submit">Send</Button>
@@ -21,4 +28,7 @@ const Input = (props) => {
         </Container>
     )
 }
-export default Input
+
+
+
+export default Input;

@@ -1,5 +1,5 @@
 import React from "react";
-import { requestMessages } from "../../redux/chat-reducer";
+import { joinUser, listenReceiveMessage, requestMessages } from "../../redux/chat-reducer";
 import { getLoadingMessages, getMessages } from "../../redux/chat-selectors";
 import { getUser } from "../../redux/auth-selectors"
 import Message from "./Message";
@@ -10,41 +10,33 @@ import withRouter from "../../common/WithRouter";
 import Preloader from "../../common/Preloader";
 import { withChatRedirect } from "../../hoc/withChatRedirect";
 import { getLoadingRooms, getRooms } from "../../redux/rooms-selectors";
-import { requestRooms } from "../../redux/rooms-reducer";
 
 const Chat = (props) => {
     const messageElements = props.messages.map(message => <Message key={message.id} username={message.username} message={message.message} />)
     return (
-        <Container fluid className="p-0" style={{ height: "100vh", display: "grid", gridTemplateRows: "auto 1fr auto", overflowX: "hidden" }}>
+        <Container fluid className="p-1" style={{ height: "100vh", }}>
 
             {/* Шапка */}
-            <Row className="p-3 bg-dark text-white">
-                <Col>
-                    <h3>Room name</h3>
-                    <div className="d-flex gap-2 align-items-center">
-                        <div className={'bg-danger'} style={{ width: "10px", height: "10px", borderRadius: "50%" }}></div>
-                        <h6 className="m-0">online: 0</h6>
-                    </div>
+            <div className="p-3 bg-dark text-white rounded-3">
+                <h3>Room name</h3>
+                <div className="d-flex gap-2 align-items-center">
+                    <div className={'bg-danger'} style={{ width: "10px", height: "10px", borderRadius: "50%" }}></div>
+                    <h6 className="m-0">online: 0</h6>
+                </div>
 
-                    {/* <div className="d-flex gap-2 align-items-center">
+                {/* <div className="d-flex gap-2 align-items-center">
                         <div className={props.joinUsers.length === 0 ? 'bg-danger' : 'bg-success'} style={{ width: "10px", height: "10px", borderRadius: "50%" }}></div>
                         <h6 className="m-0">online: {props.joinUsers.length}</h6>
                     </div> */}
-
-                </Col>
-            </Row>
+            </div>
 
             {/* Сообщения */}
-            <Row className="p-2" style={{ overflowY: "auto" }}>
-                <Col className="d-flex flex-column gap-2">
-                    {messageElements}
-                </Col>
-            </Row>
+            <div className="d-flex flex-column gap-2 py-2" style={{ overflowY: "auto" }}>
+                {messageElements}
+            </div>
 
             {/* Строка ввода */}
-            <Row>
-                <Col><Input user={props.user.username} /></Col>
-            </Row>
+            <Input />
 
             {/* Уведомление */}
             {/* <ToastContainer position="top-end" className="p-3">
@@ -66,6 +58,11 @@ class ChatContainer extends React.Component {
     componentDidMount() {
         const chatID = this.props.router.params.chatID;
         this.props.requestMessages(chatID);
+
+        //Подписки на события 1 раз
+        this.props.listenReceiveMessage();
+
+        this.props.joinUser(this.props.user.username, chatID);
     }
 
     render() {
@@ -86,4 +83,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { requestMessages })(withRouter(withChatRedirect(ChatContainer)))
+export default connect(mapStateToProps, { requestMessages, joinUser, listenReceiveMessage })(withRouter(withChatRedirect(ChatContainer)))
