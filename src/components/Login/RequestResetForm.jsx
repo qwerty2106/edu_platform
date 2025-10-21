@@ -7,10 +7,11 @@ import { requestPasswordReset } from "../../redux/auth-reducer";
 
 //Вход
 const RequestResetForm = (props) => {
-    const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onBlur" });
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({ mode: "onBlur" });
 
     const onSubmit = (data) => {
         props.requestPasswordReset(data.email);
+        reset();
     }
 
     return (

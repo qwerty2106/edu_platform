@@ -7,11 +7,12 @@ import { Navigate, useSearchParams } from "react-router-dom";
 
 //Вход
 const ResetForm = (props) => {
-    const { register, handleSubmit, formState: { errors } } = useForm({ mode: "onBlur" });
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({ mode: "onBlur" });
     const [searchParams] = useSearchParams(); //Берется первый элемент и переименовывается
     const resetToken = searchParams.get('token');
     const onSubmit = (data) => {
         props.passwordReset(resetToken, data.password);
+        reset();
     }
 
     return (

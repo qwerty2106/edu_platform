@@ -1,10 +1,10 @@
 import React from "react";
-import { joinUser, listenReceiveMessage, requestMessages } from "../../redux/chat-reducer";
+import { joinUser, leaveUser, listenReceiveMessage, requestMessages } from "../../redux/chat-reducer";
 import { getLoadingMessages, getMessages } from "../../redux/chat-selectors";
 import { getUser } from "../../redux/auth-selectors"
 import Message from "./Message";
 import Input from "./Input";
-import { Col, Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { connect } from "react-redux";
 import withRouter from "../../common/WithRouter";
 import Preloader from "../../common/Preloader";
@@ -37,18 +37,6 @@ const Chat = (props) => {
 
             {/* Строка ввода */}
             <Input />
-
-            {/* Уведомление */}
-            {/* <ToastContainer position="top-end" className="p-3">
-                <Toast show={showNotify} onClose={toggleNotify}>
-                    <Toast.Header>
-                        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
-                        <strong className="me-auto">{room.name}</strong>
-                        <small>just now</small>
-                    </Toast.Header>
-                    <Toast.Body>{props.notify}</Toast.Body>
-                </Toast>
-            </ToastContainer> */}
         </Container>
     )
 }
@@ -63,6 +51,11 @@ class ChatContainer extends React.Component {
         this.props.listenReceiveMessage();
 
         this.props.joinUser(this.props.user.username, chatID);
+    };
+
+    componentWillUnmount() {
+        const chatID = this.props.router.params.chatID;
+        this.props.leaveUser(this.props.user.username, chatID);
     }
 
     render() {
@@ -83,4 +76,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { requestMessages, joinUser, listenReceiveMessage })(withRouter(withChatRedirect(ChatContainer)))
+export default connect(mapStateToProps, { requestMessages, joinUser, listenReceiveMessage, leaveUser })(withRouter(withChatRedirect(ChatContainer)))

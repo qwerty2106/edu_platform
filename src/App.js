@@ -17,10 +17,13 @@ import LessonContent from "./components/LessonContent";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
+import { listenReceiveMessage } from "./redux/chat-reducer.js";
 
 class App extends React.Component {
   componentDidMount() {
     this.props.initializeApp();
+    this.props.listenReceiveMessage();
+
   }
   render() {
     if (!this.props.initialized)
@@ -60,7 +63,7 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
   return {
     initialized: getInitialized(state),
-    notify: getNotify(state)
+    notify: getNotify(state),
   }
 }
-export default connect(mapStateToProps, { initializeApp })(App) 
+export default connect(mapStateToProps, { initializeApp, listenReceiveMessage })(App) 

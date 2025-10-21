@@ -9,11 +9,12 @@ const Input = (props) => {
     const { chatID } = useParams();
     const user = useSelector(getUser);
     const dispatch = useDispatch();
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, reset } = useForm();
 
     // Отправка сообщения
     const onSubmit = (data) => {
         dispatch(sendMessage(data.message, user.username, chatID));
+        reset();
     }
 
     return (
