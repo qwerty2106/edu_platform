@@ -8,7 +8,7 @@ import CourseModules from "./components/CourseModules";
 import Login from "./components/Login/Login";
 import Landing from "./components/Landing";
 import React from "react";
-import { initializeApp } from "./redux/app-reducer";
+import { initializeApp, listenNotify } from "./redux/app-reducer";
 import { getInitialized, getNotify } from "./redux/app-selectors";
 import { connect } from "react-redux";
 import RequestResetForm from "./components/Login/RequestResetForm";
@@ -17,14 +17,13 @@ import LessonContent from "./components/LessonContent";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
-import { listenReceiveMessage } from "./redux/chat-reducer.js";
 
 class App extends React.Component {
   componentDidMount() {
     this.props.initializeApp();
-    this.props.listenReceiveMessage();
-
+    this.props.listenNotify();
   }
+
   render() {
     if (!this.props.initialized)
       return (
@@ -66,4 +65,4 @@ const mapStateToProps = (state) => {
     notify: getNotify(state),
   }
 }
-export default connect(mapStateToProps, { initializeApp, listenReceiveMessage })(App) 
+export default connect(mapStateToProps, { initializeApp, listenNotify })(App);

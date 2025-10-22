@@ -1,11 +1,13 @@
+import webSocketService from "../service/webSocketService";
 import { setUser } from "./auth-reducer";
 
 const SET_INITIALIZED = 'SET-INITIALIZED';
 const SET_NOTIFY = 'SET-NOTIFY';
 
+
 const initialState = {
     initialized: false,
-    notify: {}
+    notify: {},
 }
 
 export const appReducer = (state = initialState, action) => {
@@ -25,8 +27,8 @@ export const appReducer = (state = initialState, action) => {
     }
 }
 
-export const setInitialized = () => ({ type: SET_INITIALIZED })
-export const setNotify = (notify) => ({ type: SET_NOTIFY, notify })
+export const setInitialized = () => ({ type: SET_INITIALIZED });
+export const setNotify = (notify) => ({ type: SET_NOTIFY, notify });
 
 //Инициализация на каждом обновлении
 export const initializeApp = () => {
@@ -44,6 +46,15 @@ export const initializeApp = () => {
             }
         }
         dispatch(setInitialized());
+    }
+}
+
+//Подписка на получение уведомлений о сообщениях
+export const listenNotify = () => {
+    return (dispatch) => {
+        webSocketService.listenNotify((data) => {
+            dispatch(setNotify({ status: data.status, message: data.message }));
+        })
     }
 }
 

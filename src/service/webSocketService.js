@@ -7,6 +7,7 @@ class WebSocketService {
         this.socket = io('http://localhost:5000');
         //Флаги подписки на события (предотвращение повтора)
         this.isSubscribeMessage = false;
+        this.isSubscribeNotify = false
     };
 
     //Отправка подключенного пользователя
@@ -16,7 +17,7 @@ class WebSocketService {
 
     //Отправка отключенного пользователя
     leaveUser(username, chatID) {
-        this.socket.emit('leave', { username, chatID })
+        this.socket.emit('leave', { username, chatID });
     };
 
     //Отправка сообщения
@@ -31,7 +32,12 @@ class WebSocketService {
         this.isSubscribeMessage = true;
     };
 
-
+    //Подписка на уведомления
+    listenNotify(setNotify) {
+        if (this.isSubscribeNotify) return;
+        this.socket.on('notify', (notify) => setNotify(notify));
+        this.isSubscribeNotify = true;
+    };
 }
 
 export default new WebSocketService();

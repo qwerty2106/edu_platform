@@ -1,5 +1,4 @@
 import { useDispatch } from "react-redux";
-import { Slide, toast, ToastContainer } from "react-toastify";
 import { setNotify } from "../redux/app-reducer";
 
 const CheckAnswersButton = () => {
