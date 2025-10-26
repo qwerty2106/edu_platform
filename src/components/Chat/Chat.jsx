@@ -1,5 +1,5 @@
 import React from "react";
-import { joinUser, leaveUser, listenReceiveMessage, requestMessages } from "../../redux/chat-reducer";
+import { joinUser, leaveUser, listenReceiveMessage, requestMessages} from "../../redux/chat-reducer";
 import { getLoadingMessages, getMessages } from "../../redux/chat-selectors";
 import { getUser } from "../../redux/auth-selectors"
 import Message from "./Message";
@@ -49,6 +49,7 @@ class ChatContainer extends React.Component {
 
         //Подписки на события 1 раз
         this.props.listenReceiveMessage();
+
 
         this.props.joinUser(this.props.user.username, chatID);
     };

@@ -1,11 +1,16 @@
 import { ChatAPI } from "../service/api";
+import webSocketService from "../service/webSocketService";
 
 const SET_ROOMS = 'SET-ROOMS';
 const SET_LOADING = "SET-LOADING";
+const SET_ROOMS_STATS = 'SET-ROOMS-STATS';
+const SET_MESSAGE_STATS = 'SET-MESSAGE-STATS';
 
 const initialState = {
     rooms: [],
     isLoading: true,
+    roomStats: null,
+    messageStats: null
 }
 
 export const roomsReducer = (state = initialState, action) => {
@@ -20,6 +25,16 @@ export const roomsReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: action.isLoading
             }
+        case SET_ROOMS_STATS:
+            return {
+                ...state,
+                roomStats: action.roomStats
+            }
+        case SET_MESSAGE_STATS:
+            return {
+                ...state,
+                messageStats: action.messageStats
+            }
         default:
             return state
     }
@@ -27,6 +42,8 @@ export const roomsReducer = (state = initialState, action) => {
 
 export const setRooms = (rooms) => ({ type: SET_ROOMS, rooms });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
+export const setRoomStats = (roomStats) => ({ type: SET_ROOMS_STATS, roomStats });
+export const setMessageStats = (messageStats) => ({ type: SET_MESSAGE_STATS, messageStats });
 
 
 export const requestRooms = () => {
@@ -36,8 +53,28 @@ export const requestRooms = () => {
         ChatAPI.getRooms(storedUserData.id)
             .then(data => dispatch(setRooms(data)))
             .catch(error => console.log('Get rooms error', error))
-            .finally(() => dispatch(setLoading(false)))
-    }
-}
+            .finally(() => dispatch(setLoading(false)));
+    };
+};
+
+
+//Подписка на получение статистики по онлайн-пользователям
+export const listenRoomStats = () => {
+    return (dispatch) => {
+        webSocketService.listenRoomStats((roomStats) => {
+            dispatch(setRoomStats(roomStats));
+        });
+    };
+};
+
+//Подписка на получение статистики по сообщениям
+export const listenMessageStats = () => {
+    return (dispatch) => {
+        webSocketService.listenMessageStats((messageStats) => {
+            dispatch(setMessageStats(messageStats));
+        });
+    };
+};
+
 
 

@@ -1,16 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
-import { requestRooms } from "../../redux/rooms-reducer";
-import { getLoadingRooms, getRooms } from "../../redux/rooms-selectors";
+import { listenMessageStats, listenRoomStats, requestRooms } from "../../redux/rooms-reducer";
+import { getLoadingRooms, getMessageStats, getRooms, getRoomStats } from "../../redux/rooms-selectors";
 import { ChatDotsFill } from "react-bootstrap-icons";
 import Preloader from "../../common/Preloader";
 import { Col, Container, Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import webSocketService from "../../service/webSocketService";
 
 const Room = (props) => {
     //Кол-во онлайн-пользователей в комнате
-    const usersCount = 0
-    const messageCount = 0
+    const usersCount = props.roomStats?.[props.id] || 0;
+    const messageCount = props.messageStats?.[props.id] || 0;
     return (
         <Row className="d-flex align-items-center w-100 p-2 border rounded-3 ">
             <Col xs={6}>
@@ -44,6 +45,14 @@ const Room = (props) => {
 
 class RoomsContainer extends React.Component {
     componentDidMount() {
+        //Подписки на обновление статистики (1 раз)
+        this.props.listenRoomStats();
+        this.props.listenMessageStats();
+
+        //Получение статистики
+        webSocketService.requestRoomStats();
+        webSocketService.requestMessageStats();
+
         this.props.requestRooms();
     }
     render() {
@@ -56,7 +65,7 @@ class RoomsContainer extends React.Component {
             return <h1>No rooms yet!</h1>
 
         //Список комнат
-        const roomsElements = this.props.rooms.map(room => <Room key={room.id} id={room.id} title={room.title} description={room.description} createdDate={room.created_date} />);
+        const roomsElements = this.props.rooms.map(room => <Room key={room.id} id={room.id} title={room.title} description={room.description} createdDate={room.created_date} roomStats={this.props.roomStats} messageStats={this.props.messageStats} />);
         return <div>
             {/* Шапка */}
             <Container className='p-3 gap-3 d-grid'>
@@ -76,7 +85,9 @@ const mapStateToProps = (state) => {
     return {
         rooms: getRooms(state),
         isLoading: getLoadingRooms(state),
+        roomStats: getRoomStats(state),
+        messageStats: getMessageStats(state),
     }
 }
 
-export default connect(mapStateToProps, { requestRooms })(RoomsContainer)
+export default connect(mapStateToProps, { requestRooms, listenMessageStats, listenRoomStats })(RoomsContainer)

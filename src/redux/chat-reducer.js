@@ -34,7 +34,7 @@ export const chatReducer = (state = initialState, action) => {
 
 export const setMessages = (messages) => ({ type: SET_MESSAGES, messages });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
-export const addMessage = (message) => ({ type: ADD_MESSAGE, message })
+export const addMessage = (message) => ({ type: ADD_MESSAGE, message });
 
 export const requestMessages = (chatID) => {
     return (dispatch) => {
@@ -75,3 +75,4 @@ export const listenReceiveMessage = () => {
         })
     };
 };
+
