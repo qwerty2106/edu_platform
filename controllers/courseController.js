@@ -30,3 +30,16 @@ exports.getCourseContent = (req, res) => {
         })
     })
 };
+
+//Выполенние урока
+exports.completeLesson = (req, res) => {
+    const { userID } = req.body;
+    const { courseID, lessonID } = req.params;
+    connection.query("INSERT INTO completed_lessons(user_id, course_id, lesson_id) VALUES (?, ?, ?)", [userID, courseID, lessonID], (error, result) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Database error on INSERT" });
+        }
+        return res.status(201).json({ message: "Lesson completed successfully" });
+    })
+};

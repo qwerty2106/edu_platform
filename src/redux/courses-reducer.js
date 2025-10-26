@@ -54,6 +54,21 @@ export const requestCourses = () => {
     }
 }
 
+export const requestCompleteLesson = (userID, courseID, lessonID) => {
+    return (dispatch) => {
+        dispatch(setLoading(true));
+        CoursesAPI.completeLesson(userID, courseID, lessonID)
+            .then(status => {
+                if (status === 201)
+                    console.log('Lesson completed successfully');
+                else
+                    console.error('Complete lesson error');
+            })
+            .catch(error => console.log('Complete lesson error', error))
+            .finally(() => dispatch(setLoading(false)))
+    };
+};
+
 //Получение модулей и уроков выбранного курса
 export const requestCourseModules = (courseID) => {
     return (dispatch) => {
