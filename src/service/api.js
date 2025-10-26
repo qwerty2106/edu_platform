@@ -4,13 +4,12 @@ export const CoursesAPI = {
     getCourses() {
         return axios.get('/app/courses').then(response => response.data);
     },
-    getCourseModules(courseID) {
-        return axios.get(`/app/courses/${courseID}`).then(response => response.data);
+    getCourseModules(courseID, userID) {
+        return axios.get(`/app/courses/${courseID}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
     completeLesson(userID, courseID, lessonID) {
         return axios.post(`/app/courses/${courseID}/${lessonID}`, { userID }).then(response => response.status)
     }
-
 };
 
 export const AuthAPI = {

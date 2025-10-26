@@ -1,24 +1,27 @@
 import React from "react";
-import { Accordion, Container, ListGroup, Spinner } from "react-bootstrap";
+import { Accordion, ListGroup } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
 import { getCourseModules, getLoadingCourses } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
 import Preloader from "../common/Preloader";
+import { getUser } from "../redux/auth-selectors";
+import { AwardFill } from "react-bootstrap-icons";
 
 const Lesson = (props) => {
     const navigate = useNavigate();
     const { courseID } = useParams();
     return (
-        <ListGroup.Item>
+        <ListGroup.Item className="d-flex gap-2 align-items-center">
             <span onClick={() => navigate(`/app/courses/${courseID}/${props.id}`)} style={{ cursor: "pointer" }}>{props.title}</span>
+            {props.isCompleted ? <AwardFill style={{ color: 'gold' }} /> : null}
         </ListGroup.Item>
     )
 }
 
 const Module = (props) => {
-    const lessonsElements = props.lessons.map(lesson => <Lesson key={lesson.id} id={lesson.id} title={lesson.title} path={lesson.content_path} moduleID={props.id} />)
+    const lessonsElements = props.lessons.map(lesson => <Lesson key={lesson.id} id={lesson.id} title={lesson.title} path={lesson.content_path} moduleID={props.id} isCompleted={lesson.is_completed} />)
     return (
         <Accordion.Item eventKey={props.id}>
             <Accordion.Header>{props.title}</Accordion.Header>
@@ -36,7 +39,7 @@ const Module = (props) => {
 class CourseModules extends React.Component {
     componentDidMount() {
         const courseID = this.props.router.params.courseID;  //courseID из URL
-        this.props.requestCourseModules(courseID);  //Загрузка данных для аккордеона
+        this.props.requestCourseModules(courseID, this.props.user.id);  //Загрузка данных для аккордеона
     }
     render() {
         //Загрузка модулей
@@ -58,6 +61,7 @@ const mapStateToProps = (state) => {
     return {
         courseModules: getCourseModules(state),
         isLoading: getLoadingCourses(state),
+        user: getUser(state),
     }
 }
 

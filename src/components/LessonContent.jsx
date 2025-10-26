@@ -9,6 +9,7 @@ import Prism from "prismjs";
 import "prism-themes/themes/prism-ghcolors.css";
 import rehypeRaw from "rehype-raw";
 import CheckAnswersButton from "../common/CheckAnswersButton";
+import { getUser } from "../redux/auth-selectors";
 
 const Lesson = (props) => {
     // Преобразование markdown файла в html
@@ -49,7 +50,7 @@ class LessonContent extends React.Component {
     componentDidMount() {
         //Загрузка модулей и уроков при обновлении страницы в state
         const courseID = this.props.router.params.courseID;
-        this.props.requestCourseModules(courseID);
+        this.props.requestCourseModules(courseID, this.props.user.id);
     }
     render() {
         //Загрузка урока 
@@ -64,6 +65,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         lesson: getLesson(state, lessonID),
         isLoading: getLoadingCourses(state),
+        user: getUser(state),
     }
 }
 

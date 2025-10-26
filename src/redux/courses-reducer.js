@@ -70,10 +70,10 @@ export const requestCompleteLesson = (userID, courseID, lessonID) => {
 };
 
 //Получение модулей и уроков выбранного курса
-export const requestCourseModules = (courseID) => {
+export const requestCourseModules = (courseID, userID) => {
     return (dispatch) => {
         dispatch(setLoading(true));
-        CoursesAPI.getCourseModules(courseID)
+        CoursesAPI.getCourseModules(courseID, userID)
             .then(data => {
                 dispatch(setModules(data.modules));
                 dispatch(setLessons(data.lessons));
