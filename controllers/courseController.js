@@ -44,3 +44,5 @@ exports.completeLesson = (req, res) => {
         return res.status(201).json({ message: "Lesson completed successfully" });
     })
 };
+
+

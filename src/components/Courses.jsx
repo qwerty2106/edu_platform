@@ -11,11 +11,11 @@ const Course = (props) => {
 
     const onSetEnroll = () => (isEnroll ? setEnroll(false) : setEnroll(true));
     const navigate = useNavigate();
-
+    console.log(props.img)
     return (
         <Col xs={12} className='mb-3' md={4}>
             <Card style={{ width: '20rem' }} >
-                <Card.Img variant="top" src="/images/courses/to-do-list.png" style={{ objectFit: "cover" }} />
+                <Card.Img variant="top" src={props.img} style={{ objectFit: "cover" }} />
                 <Card.Body>
                     <Card.Title onClick={() => navigate(`/app/courses/${props.id}`)} style={{ cursor: 'pointer' }}>{props.title}</Card.Title>
                     <div>
@@ -49,7 +49,7 @@ class Courses extends React.Component {
             return <h1>No courses yet!</h1>
 
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} id={course.id} title={course.title} description={course.description} stack={course.stack} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} {...course} />)
 
         return (
             <div className='h-100 overflow-auto'>

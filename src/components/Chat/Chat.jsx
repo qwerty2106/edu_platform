@@ -60,9 +60,8 @@ class ChatContainer extends React.Component {
     }
 
     render() {
-        if (this.props.isLoading) {
+        if (this.props.isLoading)
             return <Preloader />
-        }
         return <Chat {...this.props} />
     }
 }

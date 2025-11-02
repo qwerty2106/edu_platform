@@ -89,32 +89,19 @@ module.exports = (io) => {
             const key = getMessageKey(chatID);
             const encrypted = encryptAES256(message, key);
             //Добавление записи в БД
-            connection.query("INSERT INTO messages(message, iv, username, chat_id) VALUES(?, ?, ?, ?)", [encrypted.message, encrypted.iv, username, chatID], (err, insertRes) => {
+            connection.query("INSERT INTO messages(message, iv, username, chat_id) VALUES(?, ?, ?, ?)", [encrypted.message, encrypted.iv, username, chatID], (err, result) => {
                 if (err) {
                     console.log(err);
                     return;
                 }
-                //Получение информации о добавленной записи
-                connection.query("SELECT * FROM messages WHERE id = ?", [insertRes.insertId], (err, selectRes) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    const data = selectRes[0];
-                    const sameKey = getMessageKey(chatID);
-                    const decrypted = decryptAES256({
-                        message: data.message,
-                        iv: data.iv
-                    }, sameKey);
-                    //Отправка сообщения в чат
-                    io.to(chatID).emit('receive-message', {
-                        id: data.id,
-                        username: data.username,
-                        message: decrypted,
-                        chatId: data.chat_id,
-                        createdDate: data.created_date
-                    });
-                    emitMessageStatsToAll();
+                io.to(chatID).emit('receive-message', {
+                    id: result.insertId,
+                    username: username,
+                    message: message,
+                    chatId: chatID,
+                    createdDate: new Date().toLocaleString()
                 });
+                emitMessageStatsToAll();
             });
         });
 

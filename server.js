@@ -16,10 +16,12 @@ webSocketServer(io);
 const authRouter = require("./routes/authRouter");
 const courseRouter = require("./routes/courseRouter");
 const chatRouter = require("./routes/chatRouter");
+const profileRouter = require("./routes/profileRouter");
 
 //Маршруты и их обработчики
 app.use('/auth', authRouter);
 app.use('/app', courseRouter);
 app.use('/app', chatRouter);
+app.use('/app', profileRouter);
 
 server.listen(5000, () => console.log('Server is working'));

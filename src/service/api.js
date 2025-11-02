@@ -35,3 +35,9 @@ export const ChatAPI = {
         return axios.get(`/app/chats/${chatID}`).then(response => response.data);
     }
 };
+
+export const ProfileAPI = {
+    getUserProgress(userID) {
+        return axios.get(`/app/profile/${userID}`).then(response => response.data);
+    },
+};

@@ -1,8 +1,11 @@
 import { Col, Container, ListGroup } from 'react-bootstrap';
 import { PersonFill, TerminalFill, ChatDotsFill } from 'react-bootstrap-icons';
+import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { getUser } from '../redux/auth-selectors';
 
 const Sidebar = () => {
+  const user = useSelector(getUser);
   return (
     <Col xs={2} className='bg-dark p-0' style={{ height: '100vh' }}>
       <ListGroup variant='flush'>
@@ -17,7 +20,7 @@ const Sidebar = () => {
         </NavLink>
 
 
-        <NavLink to="/app/profile" className="text-decoration-none">
+        <NavLink to={`/app/profile/${user.id}`} className="text-decoration-none">
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <PersonFill style={{ width: '20px', height: '20px' }} />
@@ -38,4 +41,6 @@ const Sidebar = () => {
     </Col >
   )
 }
+
+
 export default Sidebar;

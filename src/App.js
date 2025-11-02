@@ -17,6 +17,7 @@ import LessonContent from "./components/LessonContent";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
+import Profile from "./components/Profile/Profile.jsx";
 
 class App extends React.Component {
   componentDidMount() {
@@ -48,7 +49,7 @@ class App extends React.Component {
               <Route path='courses' element={<Courses />} />
               <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
               <Route path='courses/:courseID' element={<CourseModules />} />
-              <Route path='profile' element={<h1>Profile</h1>} />
+              <Route path='profile/:userID' element={<Profile />} />
               <Route path='chats' element={<Rooms />} />
               <Route path='chats/:chatID' element={<Chat />} />
             </Route>
