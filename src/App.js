@@ -47,7 +47,7 @@ class App extends React.Component {
             <Route path='/app' element={<AppContainer />}>
               <Route index element={<Courses />} />
               <Route path='courses' element={<Courses />} />
-              <Route path='courses/:courseID/:lessonID' element={<LessonContent />} />
+              <Route path='courses/:courseID/:moduleID/:lessonID' element={<LessonContent />} />
               <Route path='courses/:courseID' element={<CourseModules />} />
               <Route path='profile/:userID' element={<Profile />} />
               <Route path='chats' element={<Rooms />} />

@@ -6,7 +6,7 @@ import { getUser } from "../redux/auth-selectors";
 
 const CheckAnswersButton = () => {
     const dispatch = useDispatch();
-    const { courseID, lessonID } = useParams();
+    const { courseID, moduleID, lessonID } = useParams();
     const user = useSelector(getUser);
     console.log(user.id, courseID, lessonID);
     const handleCheck = () => {
@@ -16,18 +16,17 @@ const CheckAnswersButton = () => {
         if (questions.length !== 0) {
             if (correct.length === questions.length) {
                 dispatch(setNotify({ status: 'success', message: 'Excellent! All answers are correct!' }));
-                dispatch(requestCompleteLesson(user.id, courseID, lessonID));
+                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, true));
             }
-
-            else if (correct.length === 0)
+            else if (correct.length === 0) {
                 dispatch(setNotify({ status: 'error', message: 'No correct answers. Try again!' }));
+                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, false));
+            }
             else {
                 dispatch(setNotify({ status: 'info', message: `You got ${correct.length} correct answers out of ${questions.length}` }));
-                dispatch(requestCompleteLesson(user.id, courseID, lessonID));
+                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, false));
             }
-
         }
-
     };
     return <button className="btn btn-primary" onClick={handleCheck}>Check</button>
 };

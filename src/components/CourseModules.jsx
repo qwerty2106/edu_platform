@@ -14,7 +14,7 @@ const Lesson = (props) => {
     const { courseID } = useParams();
     return (
         <ListGroup.Item className="d-flex gap-2 align-items-center">
-            <span onClick={() => navigate(`/app/courses/${courseID}/${props.id}`)} style={{ cursor: "pointer" }}>{props.title}</span>
+            <span onClick={() => navigate(`/app/courses/${courseID}/${props.moduleID}/${props.id}`)} style={{ cursor: "pointer" }}>{props.title}</span>
             {props.isCompleted ? <AwardFill style={{ color: 'gold' }} /> : null}
         </ListGroup.Item>
     )

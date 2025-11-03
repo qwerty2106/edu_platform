@@ -7,8 +7,8 @@ export const CoursesAPI = {
     getCourseModules(courseID, userID) {
         return axios.get(`/app/courses/${courseID}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
-    completeLesson(userID, courseID, lessonID) {
-        return axios.post(`/app/courses/${courseID}/${lessonID}`, { userID }).then(response => response.status)
+    completeLesson(userID, courseID, moduleID, lessonID, passed) {
+        return axios.post(`/app/courses/${courseID}/${moduleID}/${lessonID}`, { userID, passed }).then(response => response.status)
     }
 };
 

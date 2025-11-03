@@ -11,25 +11,31 @@ import withRouter from "../../common/WithRouter";
 const UserProgress = (props) => {
     return (
         <div className="bg-dark rounded-3 text-white p-2 d-flex align-items-center gap-3">
-            <Image src={props.img}  style={{ objectFit: 'cover', width: '50px', height: '50px' }} />
+            <Image src={props.img} style={{ objectFit: 'cover', width: '50px', height: '50px' }} />
             <div className="d-flex flex-column">
                 <h6 className="m-0">{props.title}</h6>
-                    <ProgressBar variant="success" now={props.percent} label={`${props.percent}%`} />
+                <ProgressBar variant="success" now={props.percent} label={`${props.percent}%`} />
             </div>
         </div>
     )
 }
 
-const ProgressChart = (props) => {
-    return (
-        <div className="bg-dark rounded-3 text-white p-2 d-flex align-items-center gap-3">
-            
-        </div>
-    )
+const LineChart = (props) => {
+    const data = {
+        //labels:
+        dataset: [
+            {
+                label: 'activity',
+                //data
+            }
+        ]
+
+    }
 }
 
+
 const Profile = (props) => {
-const userProgressElements = props.userProgress.map(userProgress => <UserProgress key={userProgress.id} img={userProgress.img} title={userProgress.title} percent={userProgress.completion_percent} />)
+    const userProgressElements = props.userProgress.map(userProgress => <UserProgress key={userProgress.id} img={userProgress.img} title={userProgress.title} percent={userProgress.completion_percent} />)
     return (
         <Container fluid className="p-1" style={{ height: "100vh" }}>
             <div className="d-flex">

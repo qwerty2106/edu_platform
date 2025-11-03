@@ -54,10 +54,10 @@ export const requestCourses = () => {
     }
 }
 
-export const requestCompleteLesson = (userID, courseID, lessonID) => {
+export const requestCompleteLesson = (userID, courseID, moduleID, lessonID, passed) => {
     return (dispatch) => {
         dispatch(setLoading(true));
-        CoursesAPI.completeLesson(userID, courseID, lessonID)
+        CoursesAPI.completeLesson(userID, courseID, moduleID, lessonID, passed)
             .then(status => {
                 if (status === 201)
                     console.log('Lesson completed successfully');

@@ -22,7 +22,13 @@ exports.getCourseContent = (req, res) => {
             return res.status(500).json({ error: "Database error on SELECT" });
         }
         //Получение уроков
-        connection.query("SELECT l.id, l.title, l.module_id, l.content_path, l.order_index, l.created_date, CASE WHEN cl.user_id IS NULL THEN FALSE ELSE TRUE END AS is_completed FROM lessons l INNER JOIN modules m ON m.id = l.module_id LEFT JOIN completed_lessons cl ON cl.lesson_id = l.id and cl.user_id = ? WHERE m.course_id=? ORDER BY l.order_index", [userID, courseID], (error, lessonsResult) => {
+        connection.query(`SELECT DISTINCT l.id, l.title, l.module_id, l.content_path, l.order_index, l.created_date, 
+                CASE WHEN EXISTS (SELECT 1 FROM completed_lessons cl WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE)  
+                THEN TRUE ELSE FALSE END AS is_completed 
+                FROM lessons l 
+                INNER JOIN modules m ON m.id = l.module_id
+                WHERE m.course_id = ?
+                ORDER BY l.order_index`, [userID, courseID], (error, lessonsResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
@@ -34,9 +40,9 @@ exports.getCourseContent = (req, res) => {
 
 //Выполенние урока
 exports.completeLesson = (req, res) => {
-    const { userID } = req.body;
-    const { courseID, lessonID } = req.params;
-    connection.query("INSERT INTO completed_lessons(user_id, course_id, lesson_id) VALUES (?, ?, ?)", [userID, courseID, lessonID], (error, result) => {
+    const { userID, passed } = req.body;
+    const { courseID, moduleID, lessonID } = req.params;
+    connection.query("INSERT INTO completed_lessons(user_id, course_id, module_id, lesson_id, passed) VALUES (?, ?, ?, ?, ?)", [userID, courseID, moduleID, lessonID, passed], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on INSERT" });
@@ -44,5 +50,4 @@ exports.completeLesson = (req, res) => {
         return res.status(201).json({ message: "Lesson completed successfully" });
     })
 };
-
 
