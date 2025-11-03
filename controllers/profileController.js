@@ -12,7 +12,7 @@ exports.getUserCourses = (req, res) => {
     })
 };
 
-//Получение процента прохождения курсов
+//Получение статистики (процент прохождения курса) и активности (дата, кол-во выполненных уроков)
 exports.getUserProgress = (req, res) => {
     const userID = req.params.userID;
     connection.query(`SELECT c.id, c.title, c.img, COUNT(DISTINCT l.id) AS total_lessons, COUNT(DISTINCT CASE WHEN cl.passed = TRUE THEN cl.lesson_id END) AS completed_lessons, 
@@ -27,11 +27,17 @@ exports.getUserProgress = (req, res) => {
         INNER JOIN lessons l ON l.module_id = m.id
         LEFT JOIN completed_lessons cl ON cl.lesson_id = l.id AND cl.user_id = uc.user_id
         WHERE uc.user_id = ?
-        GROUP BY c.id, c.title, c.img`, [userID], (error, result) => {
+        GROUP BY c.id, c.title, c.img`, [userID], (error, statisticsResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
-        return res.status(200).json(result);
-    })
+        connection.query("SELECT COUNT(*) as lessons_count, DATE(created_date) as completed_date FROM completed_lessons WHERE user_id = ? GROUP BY DATE(created_date) ORDER BY completed_date DESC", [userID], (error, activityResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            return res.status(200).json({ 'statistics': statisticsResult, 'activity': activityResult });
+        });
+    });
 };

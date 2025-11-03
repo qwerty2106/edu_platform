@@ -4,7 +4,10 @@ const SET_LOADING = "SET-LOADING";
 const SET_USER_PROGRESS = 'SET-USER-PROGRESS';
 
 const initialState = {
-    userProgress: [],
+    userProgress: {
+        statistics: [],
+        activity: []
+    },
     isLoading: true,
 }
 
@@ -27,8 +30,6 @@ export const profileReducer = (state = initialState, action) => {
 
 export const setUserProgress = (userProgress) => ({ type: SET_USER_PROGRESS, userProgress });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
-
-
 
 export const requestUserProgress = (userID) => {
     return async (dispatch) => {
