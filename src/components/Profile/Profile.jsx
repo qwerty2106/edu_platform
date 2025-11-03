@@ -4,18 +4,18 @@ import React from "react"
 import { Container, Image, ProgressBar } from "react-bootstrap"
 import { PersonFill } from 'react-bootstrap-icons';
 import { requestUserProgress } from "../../redux/profile-reducer";
-import { getProfileLoading, getUserProgress } from "../../redux/profile-selector";
+import { getProfileLoading, getUserCompletionStats, getUserProgress } from "../../redux/profile-selector";
 import Preloader from "../../common/Preloader";
 import withRouter from "../../common/WithRouter";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
 } from 'chart.js';
 import { Line } from "react-chartjs-2";
 
@@ -32,13 +32,13 @@ const UserProgress = (props) => {
 }
 
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
 );
 
 const LineChart = (props) => {
@@ -49,17 +49,17 @@ const LineChart = (props) => {
         }),
         datasets: [
             {
-                label: 'activity',
+                label: 'Tasks count done per day',
                 data: props.activity.map((data) => data.lessons_count),
                 lineTension: 0.5,
-                backgroundColor: '#9F7AEA',
-                borderColor: '#9F7AEA',
-                pointBorderColor: '#B57295',
-                pointBackgroundColor: '#fff',
+                backgroundColor: '#332D2D',
+                borderColor: '#332D2D',
+                pointBorderColor: '#DC4C64',
+                pointBackgroundColor: '#ffffff',
                 pointBorderWidth: 1,
                 pointHoverRadius: 5,
-                pointHoverBackgroundColor: '#D6BCFA',
-                pointHoverBorderColor: '#D6BCFA',
+                pointHoverBackgroundColor: '#DC4C64',
+                pointHoverBorderColor: '#332D2D',
                 pointRadius: 3,
             }
         ]
@@ -85,10 +85,20 @@ const Profile = (props) => {
     return (
         <Container fluid className="p-1" style={{ height: "100vh" }}>
             <div className="d-flex">
-                <div className="w-75 d-flex flex-column gap-5">
+                <div className="w-75 d-flex flex-column gap-3">
                     <div className="bg-dark rounded-3 p-3 text-white">
                         <h2>Hello {props.user.username}!</h2>
                         <p>It's good to see you again.</p>
+                    </div>
+                    <div className="d-flex gap-3 w-50">
+                        <div className="d-flex w-50 bg-dark text-white justify-content-center align-items-center gap-3 p-3 rounded-3">
+                            <h1>{props.userCompletionStats.completedCount}</h1>
+                            <h6>Courses<br />completed</h6>
+                        </div>
+                        <div className="d-flex w-50 bg-dark text-white justify-content-center align-items-center gap-3 p-3 rounded-3">
+                            <h1>{props.userCompletionStats.inProcessCount}</h1>
+                            <h6>Courses<br />in progress</h6>
+                        </div>
                     </div>
                     <div>
                         <LineChart activity={props.userProgress.activity} userID={props.user.id} />
@@ -128,6 +138,7 @@ const mapStateToProps = (state) => {
         user: getUser(state),
         isLoading: getProfileLoading(state),
         userProgress: getUserProgress(state),
+        userCompletionStats: getUserCompletionStats(state)
     }
 }
 
