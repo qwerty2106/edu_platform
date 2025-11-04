@@ -1,9 +1,9 @@
 import { ChatAPI } from "../service/api"
 import webSocketService from "../service/webSocketService";
 
-const SET_MESSAGES = 'SET-MESSAGES'
-const SET_LOADING = "SET-LOADING";
-const ADD_MESSAGE = 'ADD-MESSAGE';
+const SET_MESSAGES = 'chat/SET-MESSAGES'
+const SET_LOADING = "chat/SET-LOADING";
+const ADD_MESSAGE = 'chat/ADD-MESSAGE';
 
 const initialState = {
     messages: [],
@@ -37,12 +37,16 @@ export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 export const addMessage = (message) => ({ type: ADD_MESSAGE, message });
 
 export const requestMessages = (chatID) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        ChatAPI.getMessages(chatID)
-            .then(data => dispatch(setMessages(data)))
-            .catch(error => console.log('Get messages error', error))
-            .finally(() => dispatch(setLoading(false)));
+        try {
+            const data = await ChatAPI.getMessages(chatID);
+            dispatch(setMessages(data));
+        }
+        catch (error) {
+            console.log('Get messages error', error);
+        }
+        dispatch(setLoading(false));
     };
 };
 

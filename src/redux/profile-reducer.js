@@ -1,7 +1,7 @@
 import { ProfileAPI } from "../service/api";
 
-const SET_LOADING = "SET-LOADING";
-const SET_USER_PROGRESS = 'SET-USER-PROGRESS';
+const SET_LOADING = "profile/SET-LOADING";
+const SET_USER_PROGRESS = 'profile/SET-USER-PROGRESS';
 
 const initialState = {
     userProgress: {
@@ -34,9 +34,13 @@ export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 export const requestUserProgress = (userID) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
-        ProfileAPI.getUserProgress(userID)
-            .then(data => dispatch(setUserProgress(data)))
-            .catch(error => console.log('Get users courses error', error))
-            .finally(() => dispatch(setLoading(false)));
+        try {
+            const data = await ProfileAPI.getUserProgress(userID);
+            dispatch(setUserProgress(data));
+        }
+        catch (error) {
+            console.log('Get users courses error', error);
+        }
+        dispatch(setLoading(false));
     };
 };

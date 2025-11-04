@@ -1,9 +1,9 @@
 import { CoursesAPI } from "../service/api";
 
-const SET_COURSES = "SET-COURSES";
-const SET_MODULES = "SET-MODULES";
-const SET_LESSONS = "SET-LESSONS";
-const SET_LOADING = "SET-LOADING";
+const SET_COURSES = "courses/SET-COURSES";
+const SET_MODULES = "courses/SET-MODULES";
+const SET_LESSONS = "courses/SET-LESSONS";
+const SET_LOADING = "courses/SET-LOADING";
 
 const initialState = {
     courses: [],
@@ -45,40 +45,48 @@ export const setLessons = (lessons) => ({ type: SET_LESSONS, lessons })
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
 
 export const requestCourses = () => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        CoursesAPI.getCourses()
-            .then(data => dispatch(setCourses(data)))
-            .catch(error => console.log('Get courses error', error))
-            .finally(() => dispatch(setLoading(false)))
+        try {
+            const data = await CoursesAPI.getCourses();
+            dispatch(setCourses(data));
+        }
+        catch (error) {
+            console.log('Get courses error', error);
+        }
+        dispatch(setLoading(false));
     }
 }
 
 export const requestCompleteLesson = (userID, courseID, moduleID, lessonID, passed) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        CoursesAPI.completeLesson(userID, courseID, moduleID, lessonID, passed)
-            .then(status => {
-                if (status === 201)
-                    console.log('Lesson completed successfully');
-                else
-                    console.error('Complete lesson error');
-            })
-            .catch(error => console.log('Complete lesson error', error))
-            .finally(() => dispatch(setLoading(false)))
-    };
-};
+        try {
+            const status = await CoursesAPI.completeLesson(userID, courseID, moduleID, lessonID, passed);
+            if (status === 201)
+                console.log('Lesson completed successfully');
+            else
+                console.error('Complete lesson error');
+        }
+        catch (error) {
+            console.log('Complete lesson error', error);
+        }
+        dispatch(setLoading(false));
+    }
+}
 
 //Получение модулей и уроков выбранного курса
 export const requestCourseModules = (courseID, userID) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        CoursesAPI.getCourseModules(courseID, userID)
-            .then(data => {
-                dispatch(setModules(data.modules));
-                dispatch(setLessons(data.lessons));
-            })
-            .catch(error => console.log('Get course content error', error))
-            .finally(() => dispatch(setLoading(false)))
+        try {
+            const data = await CoursesAPI.getCourseModules(courseID, userID);
+            dispatch(setModules(data.modules));
+            dispatch(setLessons(data.lessons));
+        }
+        catch (error) {
+            console.log('Get course content error', error);
+        }
+        dispatch(setLoading(false));
     }
 }

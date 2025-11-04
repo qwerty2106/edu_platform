@@ -1,10 +1,10 @@
 import { ChatAPI } from "../service/api";
 import webSocketService from "../service/webSocketService";
 
-const SET_ROOMS = 'SET-ROOMS';
-const SET_LOADING = "SET-LOADING";
-const SET_ROOMS_STATS = 'SET-ROOMS-STATS';
-const SET_MESSAGE_STATS = 'SET-MESSAGE-STATS';
+const SET_ROOMS = 'rooms/SET-ROOMS';
+const SET_LOADING = "rooms/SET-LOADING";
+const SET_ROOMS_STATS = 'rooms/SET-ROOMS-STATS';
+const SET_MESSAGE_STATS = 'rooms/SET-MESSAGE-STATS';
 
 const initialState = {
     rooms: [],
@@ -50,10 +50,14 @@ export const requestRooms = () => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         const storedUserData = JSON.parse(localStorage.getItem('user')); //Из объекта в строку
-        ChatAPI.getRooms(storedUserData.id)
-            .then(data => dispatch(setRooms(data)))
-            .catch(error => console.log('Get rooms error', error))
-            .finally(() => dispatch(setLoading(false)));
+        try {
+            const data = await ChatAPI.getRooms(storedUserData.id);
+            dispatch(setRooms(data));
+        }
+        catch (error) {
+            console.log('Get rooms error', error);
+        }
+        dispatch(setLoading(false));
     };
 };
 

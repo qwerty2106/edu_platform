@@ -7,25 +7,19 @@ import { requestUserProgress } from "../../redux/profile-reducer";
 import { getProfileLoading, getUserCompletionStats, getUserProgress } from "../../redux/profile-selector";
 import Preloader from "../../common/Preloader";
 import withRouter from "../../common/WithRouter";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-} from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line } from "react-chartjs-2";
+import { useNavigate } from "react-router-dom";
 
 const UserProgress = (props) => {
+    const navigate = useNavigate();
     return (
         <div className="bg-dark rounded-3 text-white p-2 d-flex align-items-center gap-3">
             <Image src={props.img} style={{ objectFit: 'cover', width: '50px', height: '50px' }} />
-            <div className="d-flex flex-column">
+            <div className="d-flex gap-3 justify-content-between flex-grow-1 align-items-center px-3">
                 <h6 className="m-0">{props.title}</h6>
-                <ProgressBar variant="success" now={props.percent} label={`${props.percent}%`} />
+                <ProgressBar variant="success" now={props.percent} label={`${props.percent}%`} style={{ width: '50%' }} />
+                <button className="btn btn-primary" onClick={() => navigate(`/app/courses/${props.id}`)}>Learn</button>
             </div>
         </div>
     )
@@ -81,7 +75,7 @@ const LineChart = (props) => {
 
 
 const Profile = (props) => {
-    const userProgressElements = props.userProgress.statistics.map(userProgress => <UserProgress key={userProgress.id} img={userProgress.img} title={userProgress.title} percent={userProgress.completion_percent} />)
+    const userProgressElements = props.userProgress.statistics.map(userProgress => <UserProgress key={userProgress.id} id={userProgress.id} img={userProgress.img} title={userProgress.title} percent={userProgress.completion_percent} />)
     return (
         <Container fluid className="p-1" style={{ height: "100vh" }}>
             <div className="d-flex">

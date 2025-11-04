@@ -1,8 +1,8 @@
 import { AuthAPI } from "../service/api";
 import { setNotify } from "./app-reducer.js";
 
-const SET_USER = 'SET-USER';
-const SET_LOADING = 'SET-LOADING';
+const SET_USER = 'auth/SET-USER';
+const SET_LOADING = 'auth/SET-LOADING';
 
 const initialState = {
     user: null,
@@ -30,19 +30,19 @@ export const setUser = (user) => ({ type: SET_USER, user });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 
 export const signUp = (username, email, password) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        AuthAPI.signUp(username, email, password)
-            .then(data => {
-                dispatch(setUser(data.user));
-                localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
-                dispatch(setNotify({ status: 'success', message: 'The user was successfully created' }));
-            })
-            .catch(error => {
-                console.log('Sign up error', error);
-                dispatch(setNotify({ status: 'error', message: 'User creation error' }));
-            })
-            .finally(() => dispatch(setLoading(false)))
+        try {
+            const data = await AuthAPI.signUp(username, email, password);
+            dispatch(setUser(data.user));
+            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            dispatch(setNotify({ status: 'success', message: 'The user was successfully created' }));
+        }
+        catch (error) {
+            console.log('Sign up error', error);
+            dispatch(setNotify({ status: 'error', message: 'User creation error' }));
+        }
+        dispatch(setLoading(false));
     }
 }
 
@@ -54,56 +54,54 @@ export const logOut = () => {
 }
 
 export const signIn = (username, password) => {
-    return (dispatch) => {
-        dispatch(setLoading(true))
-        AuthAPI.signIn(username, password)
-            .then(data => {
-                dispatch(setUser(data.user));
-                localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
-                dispatch(setNotify({ status: 'success', message: 'Successful login' }));
-
-            })
-            .catch(error => {
-                console.log('Login error', error);
-                dispatch(setNotify({ status: 'error', message: 'Login error' }));
-            })
-            .finally(() => dispatch(setLoading(false)))
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            const data = AuthAPI.signIn(username, password);
+            dispatch(setUser(data.user));
+            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            dispatch(setNotify({ status: 'success', message: 'Successful login' }));
+        }
+        catch (error) {
+            console.log('Login error', error);
+            dispatch(setNotify({ status: 'error', message: 'Login error' }));
+        }
+        dispatch(setLoading(false));
     }
 }
 
 
 export const requestPasswordReset = (email) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        AuthAPI.requestReset(email)
-            .then(status => {
-                if (status === 200)
-                    dispatch(setNotify({ status: 'success', message: 'The email was sent successfully' }));
-                else
-                    dispatch(setNotify({ status: 'error', message: 'Error sending email' }));
-
-            })
-            .catch(error => {
-                console.log('Request reset error', error);
+        try {
+            const status = AuthAPI.requestReset(email);
+            if (status === 200)
+                dispatch(setNotify({ status: 'success', message: 'The email was sent successfully' }));
+            else
                 dispatch(setNotify({ status: 'error', message: 'Error sending email' }));
-            })
-            .finally(() => dispatch(setLoading(false)));
+        }
+        catch (error) {
+            console.log('Request reset error', error);
+            dispatch(setNotify({ status: 'error', message: 'Error sending email' }));
+        }
+        dispatch(setLoading(false));
     }
 }
 
 export const passwordReset = (resetToken, newPassword) => {
-    return (dispatch) => {
+    return async (dispatch) => {
         dispatch(setLoading(true));
-        AuthAPI.reset(resetToken, newPassword)
-            .then(data => {
-                dispatch(setUser(data.user));
-                localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
-                dispatch(setNotify({ status: 'success', message: 'Password changed successfully' }));
-            })
-            .catch(error => {
-                console.log('Request reset error', error);
-                dispatch(setNotify({ status: 'error', message: 'Error changing password' }));
-            })
-            .finally(() => dispatch(setLoading(false)));
+        try {
+            const data = AuthAPI.reset(resetToken, newPassword);
+            dispatch(setUser(data.user));
+            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            dispatch(setNotify({ status: 'success', message: 'Password changed successfully' }));
+        }
+        catch (error) {
+            console.log('Request reset error', error);
+            dispatch(setNotify({ status: 'error', message: 'Error changing password' }));
+        }
+        dispatch(setLoading(false));
     }
 }
