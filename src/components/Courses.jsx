@@ -35,12 +35,16 @@ const Course = (props) => {
 }
 
 class Courses extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { pageSize: 3, page: 1 };
+    }
     componentDidMount() {
-        this.props.requestCourses();  //Загрузка курсов
+        this.props.requestCourses(this.state.page, this.state.pageSize);  //Загрузка курсов
     }
     handlePageChange = (page) => {
         this.props.setCurrentPage(page);
-        this.props.requestCourses(page, 3);
+        this.props.requestCourses(page, this.state.pageSize);
     }
     render() {
         //Спиннер (загрузка курсов)
@@ -52,12 +56,12 @@ class Courses extends React.Component {
             return <h1>No courses yet!</h1>
 
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} {...course} />)
+        const coursesElements = this.props.courses.map(course => <Course key={course.id} {...course} />);
 
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
-                    <MyPagination itemsCount={this.props.coursesCount} pageSize={3} currentPage={this.props.currentPage} onPageChange={this.handlePageChange} />
+                    <MyPagination itemsCount={this.props.coursesCount} pageSize={this.state.pageSize} currentPage={this.props.currentPage} onPageChange={this.handlePageChange} />
                     <Row>
                         {coursesElements}
                     </Row>
