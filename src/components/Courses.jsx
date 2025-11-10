@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Col, Container, Row, Card, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getCourses, getLoadingCourses } from '../redux/courses-selectors';
-import { requestCourses } from '../redux/courses-reducer';
+import { getCourses, getCoursesCount, getCurrentPage, getLoadingCourses } from '../redux/courses-selectors';
+import { requestCourses, setCurrentPage } from '../redux/courses-reducer';
 import Preloader from '../common/Preloader';
+import MyPagination from '../common/Pagination';
 
 const Course = (props) => {
     const [isEnroll, setEnroll] = useState(false);
@@ -33,11 +34,13 @@ const Course = (props) => {
     )
 }
 
-
-
 class Courses extends React.Component {
     componentDidMount() {
         this.props.requestCourses();  //Загрузка курсов
+    }
+    handlePageChange = (page) => {
+        this.props.setCurrentPage(page);
+        this.props.requestCourses(page, 3);
     }
     render() {
         //Спиннер (загрузка курсов)
@@ -54,6 +57,7 @@ class Courses extends React.Component {
         return (
             <div className='h-100 overflow-auto'>
                 <Container>
+                    <MyPagination itemsCount={this.props.coursesCount} pageSize={3} currentPage={this.props.currentPage} onPageChange={this.handlePageChange} />
                     <Row>
                         {coursesElements}
                     </Row>
@@ -68,8 +72,10 @@ const mapStateToProps = (state) => {
     return {
         courses: getCourses(state),
         isLoading: getLoadingCourses(state),
+        coursesCount: getCoursesCount(state),
+        currentPage: getCurrentPage(state),
     }
 }
 
 
-export default connect(mapStateToProps, { requestCourses })(Courses)
+export default connect(mapStateToProps, { requestCourses, setCurrentPage })(Courses)
