@@ -57,7 +57,8 @@ export const signIn = (username, password) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = AuthAPI.signIn(username, password);
+            const data = await AuthAPI.signIn(username, password);
+            console.log(data.user)
             dispatch(setUser(data.user));
             localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
             dispatch(setNotify({ status: 'success', message: 'Successful login' }));
@@ -75,7 +76,7 @@ export const requestPasswordReset = (email) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const status = AuthAPI.requestReset(email);
+            const status = await AuthAPI.requestReset(email);
             if (status === 200)
                 dispatch(setNotify({ status: 'success', message: 'The email was sent successfully' }));
             else
@@ -93,7 +94,7 @@ export const passwordReset = (resetToken, newPassword) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = AuthAPI.reset(resetToken, newPassword);
+            const data = await AuthAPI.reset(resetToken, newPassword);
             dispatch(setUser(data.user));
             localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
             dispatch(setNotify({ status: 'success', message: 'Password changed successfully' }));

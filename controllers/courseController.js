@@ -2,15 +2,16 @@ const connection = require('../config/database');
 
 //Получение всех курсов
 exports.getCourses = (req, res) => {
+    //Пагинация
     const page = parseInt(req.query.page) || 1;
-    const count = parseInt(req.query.count) || 3;
-
-    connection.query("SELECT * FROM courses LIMIT ? OFFSET ?", [count, (page - 1) * count], (error, coursesResult) => {
+    const count = parseInt(req.query.count) || 1;
+    //Все курсы
+    connection.query('SELECT * FROM total_courses_view LIMIT ? OFFSET ?', [count, (page - 1) * count], (error, coursesResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
-
+        //Кол-во курсов
         connection.query("SELECT COUNT(*) as totalCount FROM courses", (error, totalCountResult) => {
             if (error) {
                 console.log(error);

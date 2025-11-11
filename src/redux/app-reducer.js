@@ -4,7 +4,6 @@ import { setUser } from "./auth-reducer";
 const SET_INITIALIZED = 'SET-INITIALIZED';
 const SET_NOTIFY = 'SET-NOTIFY';
 
-
 const initialState = {
     initialized: false,
     notify: {},

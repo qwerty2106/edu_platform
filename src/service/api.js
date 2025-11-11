@@ -37,7 +37,7 @@ export const ChatAPI = {
 };
 
 export const ProfileAPI = {
-    getUserProgress(userID) {
-        return axios.get(`/app/profile/${userID}`).then(response => response.data);
+    getUserProgress(userID, currentPage, pageSize) {
+        return axios.get(`/app/profile/${userID}?page=${currentPage}&count=${pageSize}`).then(response => response.data);
     },
 };

@@ -3,13 +3,14 @@ import { getUser } from "../../redux/auth-selectors"
 import React from "react"
 import { Container, Image, ProgressBar } from "react-bootstrap"
 import { PersonFill } from 'react-bootstrap-icons';
-import { requestUserProgress } from "../../redux/profile-reducer";
-import { getProfileLoading, getUserCompletionStats, getUserProgress } from "../../redux/profile-selector";
+import { requestUserProgress, setCurrentPage } from "../../redux/profile-reducer";
+import { getCoursesCount, getCurrentPage, getProfileLoading, getUserCompletionStats, getUserProgress } from "../../redux/profile-selector";
 import Preloader from "../../common/Preloader";
 import withRouter from "../../common/WithRouter";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
+import MyPagination from "../../common/Pagination";
 
 const UserProgress = (props) => {
     const navigate = useNavigate();
@@ -99,7 +100,11 @@ const Profile = (props) => {
                     </div>
                     <div>
                         <h4>Courses</h4>
-                        {userProgressElements}
+                        <MyPagination itemsCount={props.coursesCount} pageSize={props.pageSize} currentPage={props.currentPage} onPageChange={props.handlePageChange} />
+                        <div className="d-flex flex-column gap-2">
+                           {userProgressElements} 
+                        </div>
+                        
                     </div>
                 </div>
                 <div className="d-flex flex-column align-items-center flex-grow-1 p-1">
@@ -115,14 +120,23 @@ const Profile = (props) => {
 }
 
 class ProfileContainer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { pageSize: 2, page: 1 };
+    }
+    handlePageChange = (page) => {
+        const userID = this.props.router.params.userID;
+        this.props.setCurrentPage(page);
+        this.props.requestUserProgress(userID, page, this.state.pageSize);
+    }
     componentDidMount() {
         const userID = this.props.router.params.userID;
-        this.props.requestUserProgress(userID);
+        this.props.requestUserProgress(userID, this.state.page, this.state.pageSize);
     }
     render() {
         if (this.props.isLoading)
             return <Preloader />
-        return <Profile {...this.props} />
+        return <Profile {...this.props} pageSize={this.state.pageSize} handlePageChange={this.handlePageChange} />
     }
 }
 
@@ -132,8 +146,10 @@ const mapStateToProps = (state) => {
         user: getUser(state),
         isLoading: getProfileLoading(state),
         userProgress: getUserProgress(state),
-        userCompletionStats: getUserCompletionStats(state)
+        userCompletionStats: getUserCompletionStats(state),
+        currentPage: getCurrentPage(state),
+        coursesCount: getCoursesCount(state),
     }
 }
 
-export default connect(mapStateToProps, { requestUserProgress })(withRouter(ProfileContainer));
+export default connect(mapStateToProps, { requestUserProgress, setCurrentPage })(withRouter(ProfileContainer));
