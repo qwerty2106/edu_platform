@@ -60,11 +60,11 @@ export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
 export const setCoursesCount = (coursesCount) => ({ type: SET_COURSES_COUNT, coursesCount })
 export const setCurrentPage = (currentPage) => ({ type: SET_CURRENT_PAGE, currentPage })
 
-export const requestCourses = (currentPage, pageSize) => {
+export const requestCourses = (currentPage, pageSize, userID) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourses(currentPage, pageSize);
+            const data = await CoursesAPI.getCourses(currentPage, pageSize, userID);
             dispatch(setCourses(data.courses));
             dispatch(setCoursesCount(data.totalCount));
         }

@@ -7,6 +7,9 @@ export const getModules = (state) => state.courses.modules;
 export const getLessons = (state) => state.courses.lessons;
 export const getLoadingCourses = (state) => state.courses.isLoading;
 
+export const getAvailableCourses = (state) => getCourses(state).filter(course => course.is_available == 1);
+
+
 export const getCourseModules = createSelector([getModules, getLessons], (modules, lessons) => {
     return modules.map(module => ({
         ...module,  //Копируем все поля модуля и добавляем поле с уроками
