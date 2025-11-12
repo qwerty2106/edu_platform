@@ -1,13 +1,10 @@
 import { createSelector } from "reselect";
 
 export const getCourses = (state) => state.courses.courses;
-export const getCurrentPage = (state) => state.courses.currentPage;
 export const getCoursesCount = (state) => state.courses.coursesCount;
 export const getModules = (state) => state.courses.modules;
 export const getLessons = (state) => state.courses.lessons;
 export const getLoadingCourses = (state) => state.courses.isLoading;
-
-export const getAvailableCourses = (state) => getCourses(state).filter(course => course.is_available == 1);
 
 
 export const getCourseModules = createSelector([getModules, getLessons], (modules, lessons) => {

@@ -102,16 +102,16 @@ const Profile = (props) => {
                         <h4>Courses</h4>
                         <MyPagination itemsCount={props.coursesCount} pageSize={props.pageSize} currentPage={props.currentPage} onPageChange={props.handlePageChange} />
                         <div className="d-flex flex-column gap-2">
-                           {userProgressElements} 
+                            {userProgressElements}
                         </div>
-                        
+
                     </div>
                 </div>
                 <div className="d-flex flex-column align-items-center flex-grow-1 p-1">
                     {props.user.img ? <Image src={props.user.img} alt="" rounded style={{ objectFit: 'cover', width: '150px', height: '150px' }} />
                         : <PersonFill style={{ width: '150px', height: '150px' }} />}
                     <h2>{props.user.username}</h2>
-                    <span>{props.user.email}</span>
+                    {/* <span>{props.user.email}</span> */}
                     <span>Joined {props.user.created_date}</span>
                 </div>
             </div>

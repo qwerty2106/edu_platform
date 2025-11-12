@@ -53,7 +53,6 @@ exports.register = (req, res) => {
                         user: {
                             id: insertResult.insertId,
                             username,
-                            email,
                             role: 'student',
                             img: null,
                             created_date: new Date().toLocaleString()
@@ -92,7 +91,6 @@ exports.login = (req, res) => {
                 user: {
                     id: result[0].id,
                     username: result[0].username,
-                    email: result[0].email,
                     role: result[0].role,
                     img: result[0].img,
                     created_date: result[0].created_date.toLocaleString()
@@ -181,7 +179,6 @@ exports.reset = (req, res) => {
                             id: result[0].id,
                             username: result[0].username,
                             role: result[0].role,
-                            email: result[0].email,
                             img: result[0].img,
                             createdDate: result[0].created_date.toLocaleString()
                         }

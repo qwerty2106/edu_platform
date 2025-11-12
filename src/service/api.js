@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const CoursesAPI = {
-    getCourses(currentPage, pageSize, userID) {
-        return axios.get(`/app/courses?page=${currentPage}&count=${pageSize}`, { headers: { 'userID': userID } }).then(response => response.data);
+    getCourses(currentPage, pageSize, filterType, userID) {
+        return axios.get(`/app/courses?page=${currentPage}&count=${pageSize}&filter=${filterType}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
     getCourseModules(courseID, userID) {
         return axios.get(`/app/courses/${courseID}`, { headers: { 'userID': userID } }).then(response => response.data);

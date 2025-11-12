@@ -5,7 +5,6 @@ const SET_MODULES = "courses/SET-MODULES";
 const SET_LESSONS = "courses/SET-LESSONS";
 const SET_LOADING = "courses/SET-LOADING";
 const SET_COURSES_COUNT = "courses/SET-COURSES-COUNT"
-const SET_CURRENT_PAGE = "courses/SET-CURRENT-PAGE"
 
 const initialState = {
     courses: [],
@@ -13,7 +12,6 @@ const initialState = {
     lessons: [],
     isLoading: true,
     coursesCount: 0,
-    currentPage: 1,
 }
 
 export const coursesReducer = (state = initialState, action) => {
@@ -43,11 +41,6 @@ export const coursesReducer = (state = initialState, action) => {
                 ...state,
                 coursesCount: action.coursesCount
             }
-        case SET_CURRENT_PAGE:
-            return {
-                ...state,
-                currentPage: action.currentPage
-            }
         default:
             return state;
     }
@@ -58,13 +51,12 @@ export const setModules = (modules) => ({ type: SET_MODULES, modules })
 export const setLessons = (lessons) => ({ type: SET_LESSONS, lessons })
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading })
 export const setCoursesCount = (coursesCount) => ({ type: SET_COURSES_COUNT, coursesCount })
-export const setCurrentPage = (currentPage) => ({ type: SET_CURRENT_PAGE, currentPage })
 
-export const requestCourses = (currentPage, pageSize, userID) => {
+export const requestCourses = (currentPage, pageSize, filterType, userID) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourses(currentPage, pageSize, userID);
+            const data = await CoursesAPI.getCourses(currentPage, pageSize, filterType, userID);
             dispatch(setCourses(data.courses));
             dispatch(setCoursesCount(data.totalCount));
         }

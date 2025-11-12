@@ -3,29 +3,77 @@ const connection = require('../config/database');
 const QUERIES = {
     GET_COURSES: `
         SELECT c.*,
+        -- Если null, то 0
         COALESCE(uc.user_count, 0) as users_count,
         GROUP_CONCAT(CASE WHEN ui.rn <= 5 THEN ui.user_img END) as user_images,
+        -- is_available
         EXISTS (
             SELECT 1 FROM users_courses uc_check 
             WHERE uc_check.course_id = c.id AND uc_check.user_id = ?
         ) as is_available
         FROM courses c
+        -- user_images
         LEFT JOIN (
             SELECT 
             uc.course_id,
             u.img as user_img,
+            -- Группировка курсов и изображений по 5 на каждый uc.course_id
             ROW_NUMBER() OVER (PARTITION BY uc.course_id ORDER BY uc.id) as rn
             FROM users_courses uc
             INNER JOIN users u ON u.id = uc.user_id
         ) ui ON ui.course_id = c.id AND ui.rn <= 5
+        -- users_count
         LEFT JOIN (
             SELECT course_id, COUNT(*) as user_count 
             FROM users_courses 
             GROUP BY course_id
         ) uc ON uc.course_id = c.id
-        GROUP BY c.id LIMIT ? OFFSET ?`,
+        -- Группировка + конкатенация
+        GROUP BY c.id 
+        LIMIT ? OFFSET ?`,
+
+    GET_MY_COURSES: `
+        SELECT c.*,
+        -- Если null, то 0
+        COALESCE(uc.user_count, 0) as users_count,
+        GROUP_CONCAT(CASE WHEN ui.rn <= 5 THEN ui.user_img END) as user_images,
+        -- is_available
+        EXISTS (
+            SELECT 1 FROM users_courses uc_check 
+            WHERE uc_check.course_id = c.id AND uc_check.user_id = ?
+        ) as is_available
+        FROM courses c
+        -- user_images
+        LEFT JOIN (
+            SELECT 
+            uc.course_id,
+            u.img as user_img,
+            -- Группировка курсов и изображений по 5 на каждый uc.course_id
+            ROW_NUMBER() OVER (PARTITION BY uc.course_id ORDER BY uc.id) as rn
+            FROM users_courses uc
+            INNER JOIN users u ON u.id = uc.user_id
+        ) ui ON ui.course_id = c.id AND ui.rn <= 5
+        -- users_count
+        LEFT JOIN (
+            SELECT course_id, COUNT(*) as user_count 
+            FROM users_courses 
+            GROUP BY course_id
+        ) uc ON uc.course_id = c.id
+        -- Фильтрация курсов пользователя
+        WHERE EXISTS (
+            SELECT 1 FROM users_courses uc_my 
+            WHERE uc_my.course_id = c.id AND uc_my.user_id = ?
+        )
+        -- Группировка + конкатенация
+        GROUP BY c.id 
+        LIMIT ? OFFSET ?`,
 
     COUNT_COURSES: `SELECT COUNT(*) as totalCount FROM courses`,
+    COUNT_MY_COURSES: `
+        SELECT COUNT(DISTINCT c.id) as totalCount 
+        FROM courses c 
+        INNER JOIN users_courses uc ON uc.course_id = c.id 
+        WHERE uc.user_id = ?`,
 
     GET_MODULES: `SELECT * FROM modules WHERE course_id=? ORDER BY order_index`,
 
@@ -47,14 +95,35 @@ exports.getCourses = (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const count = parseInt(req.query.count) || 1;
     const userID = req.get('userID');
+    const filter = req.query.filter || 'all';
+
+    let GET_QUERY;
+    let COUNT_QUERY;
+    let queryParams;
+    let countParams;
+
+    if (filter === 'all') {
+        GET_QUERY = QUERIES.GET_COURSES;
+        COUNT_QUERY = QUERIES.COUNT_COURSES;
+        queryParams = [userID, count, (page - 1) * count];
+        countParams = [];
+    }
+
+    else {
+        GET_QUERY = QUERIES.GET_MY_COURSES;
+        COUNT_QUERY = QUERIES.COUNT_MY_COURSES;
+        queryParams = [userID, userID, count, (page - 1) * count];
+        countParams = [userID];
+    }
+
     //Все курсы
-    connection.query(QUERIES.GET_COURSES, [userID, count, (page - 1) * count], (error, coursesResult) => {
+    connection.query(GET_QUERY, queryParams, (error, coursesResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
         //Кол-во курсов
-        connection.query(QUERIES.COUNT_COURSES, (error, totalCountResult) => {
+        connection.query(COUNT_QUERY, countParams, (error, totalCountResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
