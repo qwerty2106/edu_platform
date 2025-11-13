@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import Prism from "prismjs";
 import rehypeRaw from "rehype-raw";
-import CheckAnswersButton from "../common/CheckAnswersButton";
 import Preloader from "../common/Preloader";
 import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../redux/auth-selectors";
+import { useParams } from "react-router-dom";
 import { setNotify } from "../redux/app-reducer";
 import { requestCompleteLesson } from "../redux/courses-reducer";
-import { useParams } from "react-router-dom";
-import { getUser } from "../redux/auth-selectors";
+import 'prism-themes/themes/prism-atom-dark.css';
+
 
 const Lesson = (props) => {
     // Преобразование markdown файла в html
@@ -35,8 +36,7 @@ const Lesson = (props) => {
             .finally(() => setLoading(false))
     }, [props.lesson]);
 
-
-    const checkAnswers = () => {
+    const onClickHandle = () => {
         const correct = document.querySelectorAll('input[correct]:checked');
         const questions = document.querySelectorAll('input[correct]');
 
@@ -52,20 +52,20 @@ const Lesson = (props) => {
                 dispatch(setNotify({ status: 'info', message: `Правильных ответов: ${correct.length} из ${questions.length}` }));
             }
         }
-    };
+    }
 
     //Подсветка кода
     useEffect(() => {
         if (content) {
             Prism.highlightAll();
-            const checkButtonContainer = document.getElementById('check-answers-button');
-            if (checkButtonContainer) {
-                const button = document.createElement('button');
-                button.className = 'btn btn-primary btn-sm';
-                button.textContent = 'Проверить ответы';
-                button.addEventListener('click', checkAnswers);
-                checkButtonContainer.appendChild(button);
-            }
+
+            const checkButton = document.querySelector('.check-answers-btn');
+            checkButton.addEventListener('click', onClickHandle);
+
+            //Очистка при размонтировании
+            return () => {
+                checkButton.removeEventListener('click', onClickHandle);
+            };
         }
 
     }, [content]);
@@ -74,7 +74,6 @@ const Lesson = (props) => {
     return content
         ? <div>
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
-            {/* <CheckAnswersButton /> */}
         </div >
         : <h1>No lesson yet!</h1>
 }

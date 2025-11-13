@@ -3,11 +3,11 @@ import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
-import { getLessons, getLoadingCourses, getModules } from "../redux/courses-selectors";
+import { getLessons, getLessonsCount, getLoadingCourses, getModules, getModulesCount } from "../redux/courses-selectors";
 import withRouter from "../common/WithRouter"
 import Preloader from "../common/Preloader";
 import { getUser } from "../redux/auth-selectors";
-import { AwardFill, Check2, CheckCircle, CheckCircleFill, CheckLg } from "react-bootstrap-icons";
+import { CheckCircleFill } from "react-bootstrap-icons";
 import MyPagination from "../common/Pagination";
 
 const Lesson = (props) => {
@@ -40,12 +40,29 @@ const Module = (props) => {
 class CourseModules extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { pageSize: 3, page: 1 };
+        this.state = { modulePageSize: 3, modulePage: 1, lessonPageSize: 2, lessonPage: 1 };
     }
     componentDidMount() {
-        const courseID = this.props.router.params.courseID;  //courseID из URL
-        this.props.requestCourseModules(courseID, this.props.user.id);  //Загрузка данных для аккордеона
+        this.loadData();
     }
+
+    loadData = () => {
+        const courseID = this.props.router.params.courseID;  //courseID из URL
+        const { modulePage, lessonPage, modulePageSize, lessonPageSize } = this.state;
+        this.props.requestCourseModules(courseID, this.props.user.id, modulePage, lessonPage, modulePageSize, lessonPageSize);
+    }
+
+    onModulePageChangeHandle = (modulePage) => {
+        this.setState({ modulePage }, () => {
+            this.loadData();
+        });
+    }
+    onLessonPageChangeHandle = (lessonPage) => {
+        this.setState({ lessonPage }, () => {
+            this.loadData();
+        });
+    }
+
     render() {
         //Загрузка модулей
         if (this.props.isLoading)
@@ -73,7 +90,7 @@ class CourseModules extends React.Component {
 
         return (
             <div>
-                <MyPagination />
+                <MyPagination itemsCount={this.props.modulesCount} pageSize={this.state.modulePageSize} currentPage={this.state.modulePage} onPageChange={this.onModulePageChangeHandle} />
                 <Tab.Container defaultActiveKey={firstModule}>
                     <Row>
                         <Col sm={4}>
@@ -83,7 +100,7 @@ class CourseModules extends React.Component {
                         </Col>
                         <Col sm={8}>
                             <Tab.Content>
-                                <MyPagination />
+                                <MyPagination itemsCount={this.props.lessonsCount} pageSize={this.state.lessonPageSize} currentPage={this.state.lessonPage} onPageChange={this.onLessonPageChangeHandle} />
                                 {lessonsElements}
 
                             </Tab.Content>
@@ -103,6 +120,8 @@ const mapStateToProps = (state) => {
         courseModules: getModules(state),
         courseLessons: getLessons(state),
         isLoading: getLoadingCourses(state),
+        modulesCount: getModulesCount(state),
+        lessonsCount: getLessonsCount(state),
         user: getUser(state),
     }
 }

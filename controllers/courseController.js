@@ -75,18 +75,50 @@ const QUERIES = {
         INNER JOIN users_courses uc ON uc.course_id = c.id 
         WHERE uc.user_id = ?`,
 
-    GET_MODULES: `SELECT * FROM modules WHERE course_id=? ORDER BY order_index`,
+    GET_MODULES: `
+        SELECT * FROM modules WHERE course_id = ? 
+        ORDER BY order_index
+        LIMIT ? OFFSET ?`,
 
     GET_LESSONS: `
-        SELECT DISTINCT l.id, l.title, l.module_id, l.content_path, l.order_index, l.created_date, 
-        CASE WHEN EXISTS (SELECT 1 FROM completed_lessons cl WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE)  
-        THEN TRUE ELSE FALSE END AS is_completed 
+       WITH PaginatedModules AS (
+        SELECT id
+        FROM modules
+        WHERE course_id = ?
+        ORDER BY order_index
+        LIMIT ? OFFSET ?
+    ),
+    LessonsWithRowNum AS (
+        SELECT 
+            l.*,
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1 FROM completed_lessons cl 
+                    WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
+                ) THEN TRUE 
+                ELSE FALSE 
+            END AS is_completed,
+            ROW_NUMBER() OVER (PARTITION BY l.module_id ORDER BY l.order_index) AS rn
+        FROM lessons l
+        INNER JOIN PaginatedModules pm ON pm.id = l.module_id
+    )
+    SELECT *
+    FROM LessonsWithRowNum
+    WHERE rn > ? AND rn <= ?
+    ORDER BY module_id, order_index`,
+
+    COMPLETE_LESSON: `
+        -- Игнорирование ошибки при вставке дубликата (запись не вставляется)
+        INSERT IGNORE INTO completed_lessons (user_id, course_id, module_id, lesson_id, passed) VALUES (?, ?, ?, ?, ?)`,
+
+    COUNT_MODULES: `SELECT COUNT(*) as totalCount FROM modules WHERE course_id = ?`,
+
+    COUNT_LESSONS: `
+        SELECT COUNT(*) as totalCount    
         FROM lessons l 
         INNER JOIN modules m ON m.id = l.module_id
-        WHERE m.course_id = ?
-        ORDER BY l.order_index`,
+        WHERE m.course_id = ?`,
 
-    COMPLETE_LESSON: `INSERT INTO completed_lessons(user_id, course_id, module_id, lesson_id, passed) VALUES (?, ?, ?, ?, ?)`,
 }
 
 //Получение всех курсов
@@ -135,21 +167,46 @@ exports.getCourses = (req, res) => {
 
 //Получение всех модулей и уроков курса
 exports.getCourseContent = (req, res) => {
+    const modulePage = parseInt(req.query.modulePage) || 1;
+    const moduleCount = parseInt(req.query.moduleCount) || 3;
+
+    const lessonPage = parseInt(req.query.lessonPage) || 1;
+    const lessonCount = parseInt(req.query.lessonCount) || 2;
+
     const courseID = req.params.courseID;
     const userID = req.get('userID'); //headers
     //Получение модулей
-    connection.query(QUERIES.GET_MODULES, [courseID], (error, modulesResult) => {
+    connection.query(QUERIES.GET_MODULES, [courseID, moduleCount, (modulePage - 1) * moduleCount], (error, modulesResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
         //Получение уроков
-        connection.query(QUERIES.GET_LESSONS, [userID, courseID], (error, lessonsResult) => {
+        connection.query(QUERIES.GET_LESSONS, [courseID, moduleCount, (modulePage - 1) * moduleCount, userID, (lessonPage - 1) * lessonCount, (lessonPage - 1) * lessonCount + lessonCount], (error, lessonsResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
             }
-            return res.status(200).json({ modules: modulesResult, lessons: lessonsResult });
+            //Кол-во модулей
+            connection.query(QUERIES.COUNT_MODULES, [courseID], (error, totalModulesCount) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).json({ error: "Database error on SELECT" });
+                }
+                //Кол-во уроков
+                connection.query(QUERIES.COUNT_LESSONS, [courseID], (error, totalLessonsCount) => {
+                    if (error) {
+                        console.log(error);
+                        return res.status(500).json({ error: "Database error on SELECT" });
+                    }
+                    return res.status(200).json({
+                        modules: modulesResult,
+                        lessons: lessonsResult,
+                        modulesCount: totalModulesCount[0].totalCount,
+                        lessonsCount: totalLessonsCount[0].totalCount
+                    });
+                });
+            });
         });
     });
 };

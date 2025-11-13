@@ -4,8 +4,8 @@ export const CoursesAPI = {
     getCourses(currentPage, pageSize, filterType, userID) {
         return axios.get(`/app/courses?page=${currentPage}&count=${pageSize}&filter=${filterType}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
-    getCourseModules(courseID, userID) {
-        return axios.get(`/app/courses/${courseID}`, { headers: { 'userID': userID } }).then(response => response.data);
+    getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize) {
+        return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
     completeLesson(userID, courseID, moduleID, lessonID, passed) {
         return axios.post(`/app/courses/${courseID}/${moduleID}/${lessonID}`, { userID, passed }).then(response => response.status)

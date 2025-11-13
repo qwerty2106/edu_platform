@@ -2,6 +2,8 @@ import { createSelector } from "reselect";
 
 export const getCourses = (state) => state.courses.courses;
 export const getCoursesCount = (state) => state.courses.coursesCount;
+export const getModulesCount = (state) => state.courses.modulesCount;
+export const getLessonsCount = (state) => state.courses.lessonsCount;
 export const getModules = (state) => state.courses.modules;
 export const getLessons = (state) => state.courses.lessons;
 export const getLoadingCourses = (state) => state.courses.isLoading;

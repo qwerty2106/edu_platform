@@ -18,7 +18,12 @@ class LessonContent extends React.Component {
         //Загрузка урока 
         if (this.props.isLoading)
             return <Preloader />
-        return <Lesson {...this.props} />
+        return (
+            <div className="" style={{height: '100vh'}}>
+                <Lesson {...this.props} />
+            </div>
+
+        )
     }
 }
 
