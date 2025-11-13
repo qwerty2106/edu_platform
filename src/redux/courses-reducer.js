@@ -101,11 +101,11 @@ export const requestCompleteLesson = (userID, courseID, moduleID, lessonID, pass
 }
 
 //Получение модулей и уроков выбранного курса
-export const requestCourseModules = (courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize) => {
+export const requestCourseModules = (courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize);
+            const data = await CoursesAPI.getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
             dispatch(setModules(data.modules));
             dispatch(setLessons(data.lessons));
             dispatch(setModulesCount(data.modulesCount));

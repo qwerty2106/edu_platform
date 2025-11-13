@@ -117,7 +117,7 @@ const QUERIES = {
         SELECT COUNT(*) as totalCount    
         FROM lessons l 
         INNER JOIN modules m ON m.id = l.module_id
-        WHERE m.course_id = ?`,
+        WHERE m.course_id = ? AND m.id = ?`,
 
 }
 
@@ -173,6 +173,8 @@ exports.getCourseContent = (req, res) => {
     const lessonPage = parseInt(req.query.lessonPage) || 1;
     const lessonCount = parseInt(req.query.lessonCount) || 2;
 
+    let moduleID = req.query.moduleID;
+
     const courseID = req.params.courseID;
     const userID = req.get('userID'); //headers
     //Получение модулей
@@ -181,6 +183,13 @@ exports.getCourseContent = (req, res) => {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
+
+        if (moduleID === "null") {
+            moduleID = modulesResult[0].id;
+        }
+
+        console.log(moduleID)
+
         //Получение уроков
         connection.query(QUERIES.GET_LESSONS, [courseID, moduleCount, (modulePage - 1) * moduleCount, userID, (lessonPage - 1) * lessonCount, (lessonPage - 1) * lessonCount + lessonCount], (error, lessonsResult) => {
             if (error) {
@@ -194,7 +203,7 @@ exports.getCourseContent = (req, res) => {
                     return res.status(500).json({ error: "Database error on SELECT" });
                 }
                 //Кол-во уроков
-                connection.query(QUERIES.COUNT_LESSONS, [courseID], (error, totalLessonsCount) => {
+                connection.query(QUERIES.COUNT_LESSONS, [courseID, moduleID], (error, totalLessonsCount) => {
                     if (error) {
                         console.log(error);
                         return res.status(500).json({ error: "Database error on SELECT" });

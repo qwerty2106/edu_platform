@@ -40,25 +40,38 @@ const Module = (props) => {
 class CourseModules extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { modulePageSize: 3, modulePage: 1, lessonPageSize: 2, lessonPage: 1 };
+        this.state = { modulePageSize: 3, modulePage: 1, lessonPageSize: 2, lessonPage: 1, currentModule: null };
     }
     componentDidMount() {
         this.loadData();
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.courseModules.length > 0 && !this.state.currentModule) {
+            const firstModule = this.props.courseModules[0].id;
+            this.setState({ currentModule: firstModule });
+        }
+    }
+
     loadData = () => {
         const courseID = this.props.router.params.courseID;  //courseID из URL
-        const { modulePage, lessonPage, modulePageSize, lessonPageSize } = this.state;
-        this.props.requestCourseModules(courseID, this.props.user.id, modulePage, lessonPage, modulePageSize, lessonPageSize);
+        const { modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule } = this.state;
+        this.props.requestCourseModules(courseID, this.props.user.id, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
     }
 
     onModulePageChangeHandle = (modulePage) => {
-        this.setState({ modulePage }, () => {
+        this.setState({ modulePage, currentModule: null, lessonPage: 1 }, () => {
             this.loadData();
         });
     }
     onLessonPageChangeHandle = (lessonPage) => {
         this.setState({ lessonPage }, () => {
+            this.loadData();
+        });
+    }
+
+    onClickHandle = (currentModule) => {
+        this.setState({ currentModule, lessonPage: 1 }, () => {
             this.loadData();
         });
     }
@@ -72,11 +85,12 @@ class CourseModules extends React.Component {
         if (this.props.courseModules.length === 0)
             return <h1>No modules yet!</h1>
 
-        const firstModule = this.props.courseModules[0].id;
+        const activeModule = this.state.currentModule || this.props.courseModules[0]?.id;
+
         //Список модулей
         const modulesElements = this.props.courseModules.map(module =>
             <Nav.Item>
-                <Nav.Link eventKey={module.id} >
+                <Nav.Link eventKey={module.id} onClick={() => this.onClickHandle(module.id)} active={activeModule === module.id}>
                     <Module key={module.id} id={module.id} title={module.title} lessons={module.lessons} orderIndex={module.order_index} />
                     <div className="small">{module.description}</div>
                 </Nav.Link>
@@ -91,7 +105,7 @@ class CourseModules extends React.Component {
         return (
             <div>
                 <MyPagination itemsCount={this.props.modulesCount} pageSize={this.state.modulePageSize} currentPage={this.state.modulePage} onPageChange={this.onModulePageChangeHandle} />
-                <Tab.Container defaultActiveKey={firstModule}>
+                <Tab.Container defaultActiveKey={activeModule}>
                     <Row>
                         <Col sm={4}>
                             <Nav variant="pills" className="flex-column gap-1">
@@ -102,7 +116,6 @@ class CourseModules extends React.Component {
                             <Tab.Content>
                                 <MyPagination itemsCount={this.props.lessonsCount} pageSize={this.state.lessonPageSize} currentPage={this.state.lessonPage} onPageChange={this.onLessonPageChangeHandle} />
                                 {lessonsElements}
-
                             </Tab.Content>
                         </Col>
 
