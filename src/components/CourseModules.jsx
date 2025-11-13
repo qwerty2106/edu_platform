@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, ListGroup, Nav, Pagination, Row, Tab } from "react-bootstrap";
+import { Button, Col, Nav, Row, Tab } from "react-bootstrap";
 import { connect } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { requestCourseModules } from "../redux/courses-reducer";
@@ -14,22 +14,25 @@ const Lesson = (props) => {
     const navigate = useNavigate();
     const { courseID } = useParams();
     return (
-        <ListGroup.Item onClick={() => navigate(`/app/courses/${courseID}/${props.moduleID}/${props.id}`)} style={{ cursor: "pointer" }}>
-            <div className="py-2">
+        <div>
+            <div className="d-flex flex-column">
                 <div className="fw-bold d-flex align-items-center gap-2">
-                    Урок {props.orderIndex}
+                    <span>Урок {props.orderIndex}</span>
                     {props.isCompleted ? <CheckCircleFill style={{ color: 'green' }} /> : null}
                 </div>
-                {props.title}
+                <span className="small">«{props.title}»</span>
+                <div className="mt-3">
+                    <Button size="sm" onClick={() => navigate(`/app/courses/${courseID}/${props.moduleID}/${props.id}`)} style={{ cursor: "pointer" }}>Перейти</Button>
+                </div>
             </div>
 
-        </ListGroup.Item>
+        </div>
     )
 }
 
 const Module = (props) => {
     return (
-        <span className="fw-bold">Модуль {props.orderIndex}: {props.title}</span>
+        <span className="fw-bold">Модуль {props.orderIndex}: «{props.title}»</span>
     )
 }
 
@@ -52,6 +55,7 @@ class CourseModules extends React.Component {
         if (this.props.courseModules.length === 0)
             return <h1>No modules yet!</h1>
 
+        const firstModule = this.props.courseModules[0].id;
         //Список модулей
         const modulesElements = this.props.courseModules.map(module =>
             <Nav.Item>
@@ -63,14 +67,14 @@ class CourseModules extends React.Component {
 
         //Список уроков
         const lessonsElements = this.props.courseLessons.map(lesson =>
-            <Tab.Pane eventKey={lesson.module_id}>
+            <Tab.Pane eventKey={lesson.module_id} className="mb-3 bg-dark text-white p-3 rounded">
                 <Lesson key={lesson.id} id={lesson.id} title={lesson.title} path={lesson.content_path} moduleID={lesson.module_id} isCompleted={lesson.is_completed} orderIndex={lesson.order_index} />
             </Tab.Pane>)
 
         return (
             <div>
                 <MyPagination />
-                <Tab.Container defaultActiveKey={0}>
+                <Tab.Container defaultActiveKey={firstModule}>
                     <Row>
                         <Col sm={4}>
                             <Nav variant="pills" className="flex-column gap-1">
@@ -79,7 +83,9 @@ class CourseModules extends React.Component {
                         </Col>
                         <Col sm={8}>
                             <Tab.Content>
+                                <MyPagination />
                                 {lessonsElements}
+
                             </Tab.Content>
                         </Col>
 

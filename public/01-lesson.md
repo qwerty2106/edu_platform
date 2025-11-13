@@ -13,3 +13,5 @@
 <input type="radio" name="q2" value="title" correct> title
 <input type="radio" name="q2" value="tooltip"> tooltip
 <input type="radio" name="q2" value="hint"> hint
+
+<div id="check-answers-button"></div>

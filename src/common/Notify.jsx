@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Notify = (props) => {
     useEffect(() => {
-        if (Object.keys(props.notify).length === 0) return;
+        if (Object.keys(props.notify).length === 0) return; //Проверка на пустоту
         switch (props.notify.status) {
             case 'info':
                 toast.info(props.notify.message, { transition: Slide })
@@ -18,7 +18,7 @@ const Notify = (props) => {
         }
     }, [props.notify]);
 
-    return <ToastContainer hideProgressBar={true} autoClose={2000} />
+    return <ToastContainer stacked autoClose={2000} />
 };
 
 export default Notify;

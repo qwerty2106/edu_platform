@@ -15,10 +15,10 @@ const Course = (props) => {
     const usersSmallImagesElements = usersImages.map(image => <UserSmallImage key={image} path={image} />);
     return (
         <Col>
-            <Card className={(props.is_available == 1 ? 'border-primary' : 'border-danger') + ' border-2'} onClick={() => {
+            <Card onClick={() => {
                 if (props.is_available == 1)
                     navigate(`/app/courses/${props.id}`)
-            }} style={{ cursor: props.is_available == 0 ? 'not-allowed' : 'pointer' }}>
+            }} style={{ cursor: props.is_available == 0 ? 'not-allowed' : 'pointer' }} className='p-1'>
                 <div className='d-flex justify-content-between h-100 align-items-center'>
                     <div style={{ width: '75%', flexShrink: 0 }}>
                         <Card.Body>

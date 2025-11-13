@@ -12,7 +12,7 @@ import Course from './Course';
 class Courses extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { pageSize: 1, page: 1, filterType: 'all' };
+        this.state = { pageSize: 1, page: 1, filterType: 'my' };
     }
     componentDidMount() {
         this.loadCourses();
@@ -54,7 +54,7 @@ class Courses extends React.Component {
                         <Dropdown.Item eventKey='2' active={this.state.filterType === 'my'}>Мои курсы</Dropdown.Item>
                     </DropdownButton>
                 </div>
-                <div className='d-flex flex-column gap-3'>
+                <div className='d-flex gap-3'>
                     {coursesElements}
                 </div>
 

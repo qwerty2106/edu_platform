@@ -10,25 +10,29 @@ const CheckAnswersButton = () => {
     const user = useSelector(getUser);
     console.log(user.id, courseID, lessonID);
     const handleCheck = () => {
-        const correct = document.querySelectorAll('input[correct]:checked');
-        const questions = document.querySelectorAll('input[correct]');
 
-        if (questions.length !== 0) {
-            if (correct.length === questions.length) {
-                dispatch(setNotify({ status: 'success', message: 'Excellent! All answers are correct!' }));
-                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, true));
-            }
-            else if (correct.length === 0) {
-                dispatch(setNotify({ status: 'error', message: 'No correct answers. Try again!' }));
-                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, false));
-            }
-            else {
-                dispatch(setNotify({ status: 'info', message: `You got ${correct.length} correct answers out of ${questions.length}` }));
-                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, false));
+        const checkButtonContainer = document.getElementById('check-answers-button');
+        checkButtonContainer.innerHTML = '<button className="btn btn-primary btn-sm onClick={checkAnswers}">Проверить ответы</button>'
+
+        const checkAnswers = () => {
+            const correct = document.querySelectorAll('input[correct]:checked');
+            const questions = document.querySelectorAll('input[correct]');
+
+            if (questions.length !== 0) {
+                if (correct.length === questions.length) {
+                    dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
+                    dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, true));
+                }
+                else if (correct.length === 0) {
+                    dispatch(setNotify({ status: 'error', message: 'Попробуйте еще раз!' }));
+                }
+                else {
+                    dispatch(setNotify({ status: 'info', message: `Правильных ответов: ${correct.length} из ${questions.length}` }));
+                }
             }
         }
     };
-    return <button className="btn btn-primary" onClick={handleCheck}>Check</button>
+    // return <button className="btn btn-primary" onClick={handleCheck}>Check</button>
 };
 
 
