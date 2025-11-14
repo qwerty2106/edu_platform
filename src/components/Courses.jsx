@@ -12,7 +12,7 @@ import Course from './Course';
 class Courses extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { pageSize: 1, page: 1, filterType: 'my' };
+        this.state = { pageSize: 1, page: 1, filterType: 'all' };
     }
     componentDidMount() {
         this.loadCourses();
@@ -39,8 +39,8 @@ class Courses extends React.Component {
             return <Preloader />
 
         //Курсов нет (пустой массив)
-        if (this.props.courses.length === 0)
-            return <h1>No courses yet!</h1>
+        // if (this.props.courses.length === 0)
+        //     return <h1>No courses yet!</h1>
 
         //Список курсов
         const coursesElements = this.props.courses.map(course => <Course key={course.id} {...course} />);

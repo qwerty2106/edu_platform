@@ -7,6 +7,7 @@ const SET_LOADING = "courses/SET-LOADING";
 const SET_COURSES_COUNT = "courses/SET-COURSES-COUNT";
 const SET_MODULES_COUNT = "courses/SET-MODULES-COUNT"
 const SET_LESSONS_COUNT = "courses/SET-LESSONS-COUNT";
+const SET_CURRENT_LESSON = "courses/SET-CURRENT-LESSON";
 
 const initialState = {
     courses: [],
@@ -16,6 +17,7 @@ const initialState = {
     coursesCount: 0,
     modulesCount: 0,
     lessonsCount: 0,
+    currentLesson: {}
 }
 
 export const coursesReducer = (state = initialState, action) => {
@@ -55,6 +57,11 @@ export const coursesReducer = (state = initialState, action) => {
                 ...state,
                 lessonsCount: action.lessonsCount
             }
+        case SET_CURRENT_LESSON:
+            return {
+                ...state,
+                currentLesson: action.currentLesson
+            }
         default:
             return state;
     }
@@ -67,6 +74,21 @@ export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 export const setCoursesCount = (coursesCount) => ({ type: SET_COURSES_COUNT, coursesCount });
 export const setModulesCount = (modulesCount) => ({ type: SET_MODULES_COUNT, modulesCount });
 export const setLessonsCount = (lessonsCount) => ({ type: SET_LESSONS_COUNT, lessonsCount });
+export const setCurrentLesson = (currentLesson) => ({ type: SET_CURRENT_LESSON, currentLesson });
+
+export const requestCurrentLesson = (lessonID) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            const data = await CoursesAPI.getCurrentLesson(lessonID);
+            dispatch(setCurrentLesson(data));
+        }
+        catch (error) {
+            console.log('Get lesson error', error);
+        }
+        dispatch(setLoading(false));
+    }
+}
 
 export const requestCourses = (currentPage, pageSize, filterType, userID) => {
     return async (dispatch) => {

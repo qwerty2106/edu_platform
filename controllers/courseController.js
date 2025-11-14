@@ -80,32 +80,46 @@ const QUERIES = {
         ORDER BY order_index
         LIMIT ? OFFSET ?`,
 
+    // GET_LESSONS: `
+    //    WITH PaginatedModules AS (
+    //     SELECT id
+    //     FROM modules
+    //     WHERE course_id = ?
+    //     ORDER BY order_index
+    //     LIMIT ? OFFSET ?
+    // ),
+    // LessonsWithRowNum AS (
+    //     SELECT 
+    //         l.*,
+    //         CASE 
+    //             WHEN EXISTS (
+    //                 SELECT 1 FROM completed_lessons cl 
+    //                 WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
+    //             ) THEN TRUE 
+    //             ELSE FALSE 
+    //         END AS is_completed,
+    //         ROW_NUMBER() OVER (PARTITION BY l.module_id ORDER BY l.order_index) AS rn
+    //     FROM lessons l
+    //     INNER JOIN PaginatedModules pm ON pm.id = l.module_id
+    // )
+    // SELECT *
+    // FROM LessonsWithRowNum
+    // WHERE rn > ? AND rn <= ?
+    // ORDER BY module_id, order_index`,
+
     GET_LESSONS: `
-       WITH PaginatedModules AS (
-        SELECT id
-        FROM modules
-        WHERE course_id = ?
-        ORDER BY order_index
-        LIMIT ? OFFSET ?
-    ),
-    LessonsWithRowNum AS (
-        SELECT 
-            l.*,
-            CASE 
-                WHEN EXISTS (
-                    SELECT 1 FROM completed_lessons cl 
-                    WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
-                ) THEN TRUE 
-                ELSE FALSE 
-            END AS is_completed,
-            ROW_NUMBER() OVER (PARTITION BY l.module_id ORDER BY l.order_index) AS rn
-        FROM lessons l
-        INNER JOIN PaginatedModules pm ON pm.id = l.module_id
-    )
-    SELECT *
-    FROM LessonsWithRowNum
-    WHERE rn > ? AND rn <= ?
-    ORDER BY module_id, order_index`,
+       SELECT l.*,
+       CASE 
+            WHEN EXISTS (
+                SELECT 1 FROM completed_lessons cl 
+                WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
+            ) THEN TRUE 
+            ELSE FALSE 
+       END AS is_completed
+       FROM lessons l 
+       WHERE module_id = ?
+       ORDER BY l.order_index
+       LIMIT ? OFFSET ?`,
 
     COMPLETE_LESSON: `
         -- Игнорирование ошибки при вставке дубликата (запись не вставляется)
@@ -118,6 +132,11 @@ const QUERIES = {
         FROM lessons l 
         INNER JOIN modules m ON m.id = l.module_id
         WHERE m.course_id = ? AND m.id = ?`,
+
+    GET_CURRENT_LESSONS: `
+        SELECT *    
+        FROM lessons 
+        WHERE id = ?`,
 
 }
 
@@ -165,6 +184,18 @@ exports.getCourses = (req, res) => {
     })
 };
 
+//Получение урока
+exports.getCurrentLesson = (req, res) => {
+    const lessonID = req.params.lessonID;
+    connection.query(QUERIES.GET_CURRENT_LESSONS, [lessonID], (error, result) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Database error on SELECT" });
+        }
+        return res.status(200).json(result[0])
+    })
+};
+
 //Получение всех модулей и уроков курса
 exports.getCourseContent = (req, res) => {
     const modulePage = parseInt(req.query.modulePage) || 1;
@@ -187,11 +218,9 @@ exports.getCourseContent = (req, res) => {
         if (moduleID === "null") {
             moduleID = modulesResult[0].id;
         }
-
-        console.log(moduleID)
-
+        // [courseID, moduleCount, (modulePage - 1) * moduleCount, userID, (lessonPage - 1) * lessonCount, (lessonPage - 1) * lessonCount + lessonCount],
         //Получение уроков
-        connection.query(QUERIES.GET_LESSONS, [courseID, moduleCount, (modulePage - 1) * moduleCount, userID, (lessonPage - 1) * lessonCount, (lessonPage - 1) * lessonCount + lessonCount], (error, lessonsResult) => {
+        connection.query(QUERIES.GET_LESSONS, [userID, moduleID, lessonCount, (lessonPage - 1) * lessonCount], (error, lessonsResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });

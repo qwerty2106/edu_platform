@@ -22,7 +22,7 @@ const Lesson = (props) => {
                 </div>
                 <span className="small">«{props.title}»</span>
                 <div className="mt-3">
-                    <Button size="sm" onClick={() => navigate(`/app/courses/${courseID}/${props.moduleID}/${props.id}`)} style={{ cursor: "pointer" }}>Перейти</Button>
+                    <Button size="sm" onClick={() => navigate(`/app/lessons/${props.id}`)} style={{ cursor: "pointer" }}>Перейти</Button>
                 </div>
             </div>
 
@@ -45,6 +45,19 @@ class CourseModules extends React.Component {
     componentDidMount() {
         this.loadData();
     }
+
+    // componentDidUpdate(prevProps, prevState) {
+    //     // Срабатывает когда:
+    //     // 1. Загрузились новые модули И currentModule = null
+    //     // 2. Или сменилась страница модулей
+    //     if (this.props.courseModules !== prevProps.courseModules && 
+    //         this.props.courseModules.length > 0 && 
+    //         !this.state.currentModule) {
+
+    //         const firstModule = this.props.courseModules[0].id;
+    //         this.setState({ currentModule: firstModule });
+    //     }
+    // }
 
     componentDidUpdate(prevProps) {
         if (this.props.courseModules.length > 0 && !this.state.currentModule) {

@@ -60,12 +60,16 @@ const Lesson = (props) => {
             Prism.highlightAll();
 
             const checkButton = document.querySelector('.check-answers-btn');
-            checkButton.addEventListener('click', onClickHandle);
+            if (checkButton) {
+                checkButton.addEventListener('click', onClickHandle);
+            }
 
             //Очистка при размонтировании
             return () => {
-                checkButton.removeEventListener('click', onClickHandle);
+                if (checkButton)
+                    checkButton.removeEventListener('click', onClickHandle);
             };
+
         }
 
     }, [content]);
