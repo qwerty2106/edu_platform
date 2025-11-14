@@ -1,15 +1,15 @@
 import React from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getCourses, getCoursesCount, getLoadingCourses } from '../redux/courses-selectors';
-import { requestCourses } from '../redux/courses-reducer';
-import Preloader from '../common/Preloader';
-import MyPagination from '../common/Pagination';
-import { getUser } from '../redux/auth-selectors';
+import { getCourses, getCoursesCount, getLoadingCourses } from '../../redux/courses-selectors';
+import { requestCourses } from '../../redux/courses-reducer';
+import Preloader from '../../common/Preloader';
+import MyPagination from '../../common/Pagination';
+import { getUser } from '../../redux/auth-selectors';
 import Course from './Course';
 
 
-class Courses extends React.Component {
+class CourseComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = { pageSize: 1, page: 1, filterType: 'all' };
@@ -34,24 +34,30 @@ class Courses extends React.Component {
     }
 
     render() {
+        const { isLoading, courses, coursesCount } = this.props;
+        const { pageSize, page, filterType } = this.state;
         //Спиннер (загрузка курсов)
-        if (this.props.isLoading)
+        if (isLoading)
             return <Preloader />
 
         //Курсов нет (пустой массив)
-        // if (this.props.courses.length === 0)
-        //     return <h1>No courses yet!</h1>
+        if (courses.length === 0)
+            return <h1>No courses yet!</h1>
 
         //Список курсов
-        const coursesElements = this.props.courses.map(course => <Course key={course.id} {...course} />);
+        const coursesElements = courses.map(course => <Course key={course.id} {...course} />);
 
         return (
             <div className='h-100 overflow-auto'>
                 <div className='d-flex gap-2'>
-                    <MyPagination itemsCount={this.props.coursesCount} pageSize={this.state.pageSize} currentPage={this.state.page} onPageChange={this.onPageChangeHandle} />
-                    <DropdownButton title={this.state.filterType === 'all' ? 'Все курсы' : 'Мои курсы'} onSelect={this.onSelectHandle} variant='dark'>
-                        <Dropdown.Item eventKey='1' active={this.state.filterType === 'all'}>Все курсы</Dropdown.Item>
-                        <Dropdown.Item eventKey='2' active={this.state.filterType === 'my'}>Мои курсы</Dropdown.Item>
+                    <MyPagination
+                        itemsCount={coursesCount}
+                        pageSize={pageSize}
+                        currentPage={page}
+                        onPageChange={this.onPageChangeHandle} />
+                    <DropdownButton title={filterType === 'all' ? 'Все курсы' : 'Мои курсы'} onSelect={this.onSelectHandle} variant='dark'>
+                        <Dropdown.Item eventKey='1' active={filterType === 'all'}>Все курсы</Dropdown.Item>
+                        <Dropdown.Item eventKey='2' active={filterType === 'my'}>Мои курсы</Dropdown.Item>
                     </DropdownButton>
                 </div>
                 <div className='d-flex gap-3'>
@@ -74,4 +80,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, { requestCourses })(Courses)
+export default connect(mapStateToProps, { requestCourses })(CourseComponent)

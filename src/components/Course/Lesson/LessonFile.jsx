@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import Prism from "prismjs";
 import rehypeRaw from "rehype-raw";
-import Preloader from "../common/Preloader";
+import Preloader from "../../../common/Preloader";
 import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "../redux/auth-selectors";
+import { getUser } from "../../../redux/auth-selectors";
 import { useParams } from "react-router-dom";
-import { setNotify } from "../redux/app-reducer";
-import { requestCompleteLesson } from "../redux/courses-reducer";
+import { setNotify } from "../../../redux/app-reducer";
+import { requestCompleteLesson } from "../../../redux/courses-reducer";
 import 'prism-themes/themes/prism-atom-dark.css';
 
 
-const Lesson = (props) => {
+const LessonFile = (props) => {
     // Преобразование markdown файла в html
     const [content, setContent] = useState("");
     //Загрузка (преобразование файла)
@@ -82,4 +82,4 @@ const Lesson = (props) => {
         : <h1>No lesson yet!</h1>
 }
 
-export default Lesson;
+export default LessonFile;

@@ -1,10 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Container, Spinner } from "react-bootstrap";
-import Courses from "./components/Courses";
+import Courses from "./components/Course/CourseComponent.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppContainer from "./AppContainer";
-import CourseModules from "./components/CourseModules";
+import CourseContent from "./components/Course/CourseContent.jsx";
 import Login from "./components/Login/Login";
 import Landing from "./components/Landing";
 import React from "react";
@@ -13,7 +13,7 @@ import { getInitialized, getNotify } from "./redux/app-selectors";
 import { connect } from "react-redux";
 import RequestResetForm from "./components/Login/RequestResetForm";
 import ResetForm from "./components/Login/ResetForm";
-import LessonContent from "./components/LessonContent";
+import LessonComponent from "./components/Course/Lesson/LessonComponent.jsx";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
@@ -47,8 +47,8 @@ class App extends React.Component {
             <Route path='/app' element={<AppContainer />}>
               <Route index element={<Courses />} />
               <Route path='courses' element={<Courses />} />
-              <Route path='lessons/:lessonID' element={<LessonContent />} />
-              <Route path='courses/:courseID' element={<CourseModules />} />
+              <Route path='lessons/:lessonID' element={<LessonComponent />} />
+              <Route path='courses/:courseID' element={<CourseContent />} />
               <Route path='profile/:userID' element={<Profile />} />
               <Route path='chats' element={<Rooms />} />
               <Route path='chats/:chatID' element={<Chat />} />

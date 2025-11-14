@@ -1,0 +1,11 @@
+.moduleActive {
+    background-color: #212529 !important;
+}
+
+.module {
+    color: #6c757d;
+}
+
+.module:hover {
+    color: #adb5bd;
+}

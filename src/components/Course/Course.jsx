@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Col, Card, Button, Image } from 'react-bootstrap';
-import { CalendarFill, CalendarWeek } from 'react-bootstrap-icons';
+import { CalendarWeek } from 'react-bootstrap-icons';
 
 const UserSmallImage = (props) => {
     return (
