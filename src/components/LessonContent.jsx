@@ -25,8 +25,7 @@ class LessonContent extends React.Component {
     }
 }
 
-const mapStateToProps = (state, ownProps) => {
-    // const lessonID = ownProps.router.params.lessonID; //courseID из URL
+const mapStateToProps = (state) => {
     return {
         lesson: getCurrentLesson(state),
         isLoading: getLoadingCourses(state),

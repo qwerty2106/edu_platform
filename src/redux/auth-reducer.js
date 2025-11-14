@@ -36,7 +36,7 @@ export const signUp = (username, email, password) => {
             const data = await AuthAPI.signUp(username, email, password);
             dispatch(setUser(data.user));
             localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
-            dispatch(setNotify({ status: 'success', message: 'The user was successfully created' }));
+            dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
             console.log('Sign up error', error);
@@ -61,11 +61,11 @@ export const signIn = (username, password) => {
             console.log(data.user)
             dispatch(setUser(data.user));
             localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
-            dispatch(setNotify({ status: 'success', message: 'Successful login' }));
+            dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
             console.log('Login error', error);
-            dispatch(setNotify({ status: 'error', message: 'Login error' }));
+            dispatch(setNotify({ status: 'error', message: 'Неверные данные!' }));
         }
         dispatch(setLoading(false));
     }

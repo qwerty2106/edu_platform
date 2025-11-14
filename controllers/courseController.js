@@ -80,33 +80,6 @@ const QUERIES = {
         ORDER BY order_index
         LIMIT ? OFFSET ?`,
 
-    // GET_LESSONS: `
-    //    WITH PaginatedModules AS (
-    //     SELECT id
-    //     FROM modules
-    //     WHERE course_id = ?
-    //     ORDER BY order_index
-    //     LIMIT ? OFFSET ?
-    // ),
-    // LessonsWithRowNum AS (
-    //     SELECT 
-    //         l.*,
-    //         CASE 
-    //             WHEN EXISTS (
-    //                 SELECT 1 FROM completed_lessons cl 
-    //                 WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
-    //             ) THEN TRUE 
-    //             ELSE FALSE 
-    //         END AS is_completed,
-    //         ROW_NUMBER() OVER (PARTITION BY l.module_id ORDER BY l.order_index) AS rn
-    //     FROM lessons l
-    //     INNER JOIN PaginatedModules pm ON pm.id = l.module_id
-    // )
-    // SELECT *
-    // FROM LessonsWithRowNum
-    // WHERE rn > ? AND rn <= ?
-    // ORDER BY module_id, order_index`,
-
     GET_LESSONS: `
        SELECT l.*,
        CASE 
@@ -130,8 +103,7 @@ const QUERIES = {
     COUNT_LESSONS: `
         SELECT COUNT(*) as totalCount    
         FROM lessons l 
-        INNER JOIN modules m ON m.id = l.module_id
-        WHERE m.course_id = ? AND m.id = ?`,
+        WHERE module_id = ?`,
 
     GET_CURRENT_LESSONS: `
         SELECT *    
@@ -198,16 +170,20 @@ exports.getCurrentLesson = (req, res) => {
 
 //Получение всех модулей и уроков курса
 exports.getCourseContent = (req, res) => {
+    //Пагинация модулей 
     const modulePage = parseInt(req.query.modulePage) || 1;
     const moduleCount = parseInt(req.query.moduleCount) || 3;
-
+    //Пагинация уроков
     const lessonPage = parseInt(req.query.lessonPage) || 1;
     const lessonCount = parseInt(req.query.lessonCount) || 2;
 
     let moduleID = req.query.moduleID;
+    if (moduleID === "null" || moduleID === '' || moduleID === undefined)
+        moduleID = null;
 
     const courseID = req.params.courseID;
     const userID = req.get('userID'); //headers
+
     //Получение модулей
     connection.query(QUERIES.GET_MODULES, [courseID, moduleCount, (modulePage - 1) * moduleCount], (error, modulesResult) => {
         if (error) {
@@ -215,7 +191,7 @@ exports.getCourseContent = (req, res) => {
             return res.status(500).json({ error: "Database error on SELECT" });
         }
 
-        if (moduleID === "null") {
+        if (!moduleID && modulesResult.length > 0) {
             moduleID = modulesResult[0].id;
         }
         // [courseID, moduleCount, (modulePage - 1) * moduleCount, userID, (lessonPage - 1) * lessonCount, (lessonPage - 1) * lessonCount + lessonCount],
@@ -232,7 +208,7 @@ exports.getCourseContent = (req, res) => {
                     return res.status(500).json({ error: "Database error on SELECT" });
                 }
                 //Кол-во уроков
-                connection.query(QUERIES.COUNT_LESSONS, [courseID, moduleID], (error, totalLessonsCount) => {
+                connection.query(QUERIES.COUNT_LESSONS, [moduleID], (error, totalLessonsCount) => {
                     if (error) {
                         console.log(error);
                         return res.status(500).json({ error: "Database error on SELECT" });

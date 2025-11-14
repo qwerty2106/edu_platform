@@ -14,7 +14,7 @@ const Sidebar = () => {
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <TerminalFill style={{ width: '20px', height: '20px' }} />
-              <span>Courses</span>
+              <span>Курсы</span>
             </Container>
           </ListGroup.Item>
         </NavLink>
@@ -24,7 +24,7 @@ const Sidebar = () => {
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <PersonFill style={{ width: '20px', height: '20px' }} />
-              <span>Profile</span>
+              <span>Профиль</span>
             </Container>
           </ListGroup.Item>
         </NavLink>
@@ -33,7 +33,7 @@ const Sidebar = () => {
           <ListGroup.Item action>
             <Container className='d-flex gap-3 align-items-center p-2'>
               <ChatDotsFill style={{ width: '20px', height: '20px' }} />
-              <span>Chat</span>
+              <span>Чат</span>
             </Container>
           </ListGroup.Item>
         </NavLink>

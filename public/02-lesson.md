@@ -5,3 +5,5 @@
 ```javascript
     lesson2 !!
 ```
+
+<input type="file"/>

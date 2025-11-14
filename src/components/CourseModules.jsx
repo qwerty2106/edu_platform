@@ -12,7 +12,6 @@ import MyPagination from "../common/Pagination";
 
 const Lesson = (props) => {
     const navigate = useNavigate();
-    const { courseID } = useParams();
     return (
         <div>
             <div className="d-flex flex-column">
@@ -37,6 +36,7 @@ const Module = (props) => {
 }
 
 
+
 class CourseModules extends React.Component {
     constructor(props) {
         super(props);
@@ -46,43 +46,28 @@ class CourseModules extends React.Component {
         this.loadData();
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     // Срабатывает когда:
-    //     // 1. Загрузились новые модули И currentModule = null
-    //     // 2. Или сменилась страница модулей
-    //     if (this.props.courseModules !== prevProps.courseModules && 
-    //         this.props.courseModules.length > 0 && 
-    //         !this.state.currentModule) {
-
-    //         const firstModule = this.props.courseModules[0].id;
-    //         this.setState({ currentModule: firstModule });
-    //     }
-    // }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.courseModules.length > 0 && !this.state.currentModule) {
-            const firstModule = this.props.courseModules[0].id;
-            this.setState({ currentModule: firstModule });
-        }
-    }
-
     loadData = () => {
         const courseID = this.props.router.params.courseID;  //courseID из URL
         const { modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule } = this.state;
         this.props.requestCourseModules(courseID, this.props.user.id, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
     }
 
+    //Смена пагинации модулей
     onModulePageChangeHandle = (modulePage) => {
         this.setState({ modulePage, currentModule: null, lessonPage: 1 }, () => {
             this.loadData();
         });
+
     }
+
+    //Смена пагинации страниц
     onLessonPageChangeHandle = (lessonPage) => {
         this.setState({ lessonPage }, () => {
             this.loadData();
         });
     }
 
+    //Выбор модулей
     onClickHandle = (currentModule) => {
         this.setState({ currentModule, lessonPage: 1 }, () => {
             this.loadData();
@@ -118,7 +103,7 @@ class CourseModules extends React.Component {
         return (
             <div>
                 <MyPagination itemsCount={this.props.modulesCount} pageSize={this.state.modulePageSize} currentPage={this.state.modulePage} onPageChange={this.onModulePageChangeHandle} />
-                <Tab.Container defaultActiveKey={activeModule}>
+                <Tab.Container activeKey={activeModule}>
                     <Row>
                         <Col sm={4}>
                             <Nav variant="pills" className="flex-column gap-1">
@@ -142,7 +127,6 @@ class CourseModules extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        // courseModules: getCourseModules(state),
         courseModules: getModules(state),
         courseLessons: getLessons(state),
         isLoading: getLoadingCourses(state),
