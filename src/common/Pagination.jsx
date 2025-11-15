@@ -2,7 +2,6 @@ import { Pagination } from 'react-bootstrap';
 
 const MyPagination = ({ itemsCount, pageSize, currentPage, onPageChange }) => {
     const pagesCount = Math.ceil(itemsCount / pageSize);
-    console.log(itemsCount, pageSize, currentPage);
 
     let items = [];
     for (let number = 1; number <= pagesCount; number++) {

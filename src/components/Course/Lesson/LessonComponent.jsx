@@ -5,7 +5,8 @@ import withRouter from "../../../common/WithRouter";
 import { requestCurrentLesson } from "../../../redux/courses-reducer";
 import Preloader from "../../../common/Preloader";
 import "prism-themes/themes/prism-ghcolors.css";
-import LessonInfo from "./LessonInfo";
+import LessonFile from './LessonFile';
+
 
 class LessonComponent extends React.Component {
     componentDidMount() {
@@ -13,12 +14,13 @@ class LessonComponent extends React.Component {
         this.props.requestCurrentLesson(lessonID);
     }
     render() {
-        if (this.props.isLoading)
+        const { isLoading, lesson } = this.props;
+        if (isLoading)
             return <Preloader />
 
         return (
             <div style={{ height: '100vh' }}>
-                <LessonInfo lesson={this.props.lesson} />
+                <LessonFile lesson={lesson} />
             </div>
         )
     }

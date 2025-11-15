@@ -85,7 +85,7 @@ const QUERIES = {
        CASE 
             WHEN EXISTS (
                 SELECT 1 FROM completed_lessons cl 
-                WHERE cl.lesson_id = l.id AND cl.user_id = ? AND cl.passed = TRUE
+                WHERE cl.lesson_id = l.id AND cl.user_id = ?
             ) THEN TRUE 
             ELSE FALSE 
        END AS is_completed

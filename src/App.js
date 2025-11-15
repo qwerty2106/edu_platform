@@ -13,11 +13,11 @@ import { getInitialized, getNotify } from "./redux/app-selectors";
 import { connect } from "react-redux";
 import RequestResetForm from "./components/Login/RequestResetForm";
 import ResetForm from "./components/Login/ResetForm";
-import LessonComponent from "./components/Course/Lesson/LessonComponent.jsx";
 import Rooms from "./components/Chat/Room";
 import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
 import Profile from "./components/Profile/Profile.jsx";
+import LessonComponent from "./components/Course/Lesson/LessonComponent.jsx";
 
 class App extends React.Component {
   componentDidMount() {
