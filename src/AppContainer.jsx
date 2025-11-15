@@ -1,4 +1,4 @@
-import { Button, Container, Nav, Navbar } from 'react-bootstrap';
+import { Button, Container, Navbar } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx'
 import { withAuthRedirect } from './hoc/withAuthRedirect.js';
@@ -10,15 +10,15 @@ import { getUser } from './redux/auth-selectors.js';
 const AppContainer = (props) => {
     const dispatch = useDispatch();
     return (
-        <Container fluid className='d-flex flex-column p-0' style={{ height: '100vh' }} data-bs-theme="dark" >
+        <div className='d-flex flex-column vh-100' data-bs-theme="dark" style={{ overflow: "hidden" }}>
             {/* Navbar */}
             <Navbar bg="dark" expand="sm" className='flex-shrink-0'>
                 <Container>
                     <Navbar.Brand>Logo</Navbar.Brand>
                     <Navbar.Collapse className='justify-content-end mx-4'>
-                        <Navbar.Text>Hello, {props.user ? props.user.username : ''}!</Navbar.Text>
+                        <Navbar.Text>Привет, {props.user ? props.user.username : ''}!</Navbar.Text>
                     </Navbar.Collapse>
-                    <Button className='btn btn-danger' onClick={() => dispatch(logOut())}>Log out</Button>
+                    <Button variant='danger' onClick={() => dispatch(logOut())}>Выйти</Button>
                 </Container>
             </Navbar>
 
@@ -26,12 +26,12 @@ const AppContainer = (props) => {
                 {/* Sidebar */}
                 <Sidebar />
                 {/* Content */}
-                <div className='flex-grow-1 p-3' style={{ minHeight: 0, overflow: "hidden" }}>
+                <div className='flex-grow-1 p-3' style={{ minHeight: 0, overflowY: "auto" }}>
                     {/* Отрисовка активного маршрута */}
                     <Outlet />
                 </div>
             </div>
-        </Container >
+        </div >
     )
 }
 

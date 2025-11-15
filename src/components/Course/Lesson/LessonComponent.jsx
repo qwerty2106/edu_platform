@@ -5,7 +5,10 @@ import withRouter from "../../../common/WithRouter";
 import { requestCurrentLesson } from "../../../redux/courses-reducer";
 import Preloader from "../../../common/Preloader";
 import "prism-themes/themes/prism-ghcolors.css";
-import LessonFile from './LessonFile';
+import LessonTest from './LessonTest';
+import { Nav, Tab, } from "react-bootstrap";
+import LessonContent from "./LessonContent";
+import styles from "./LessonComponent.module.css";
 
 
 class LessonComponent extends React.Component {
@@ -19,9 +22,30 @@ class LessonComponent extends React.Component {
             return <Preloader />
 
         return (
-            <div style={{ height: '100vh' }}>
-                <LessonFile lesson={lesson} />
-            </div>
+            <Tab.Container defaultActiveKey="lesson">
+                <Nav variant="pills">
+                    <Nav.Item>
+                        <Nav.Link eventKey="lesson" className={styles.tabActive}>Теория</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link eventKey="test">Тест</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+                <Tab.Content>
+                    <Tab.Pane eventKey="lesson"><LessonContent lesson={lesson} /></Tab.Pane>
+                    <Tab.Pane eventKey="test"><LessonTest lesson={lesson} /></Tab.Pane>
+                </Tab.Content>
+            </Tab.Container>
+
+            // <Tabs defaultActiveKey='lesson' fill>
+            //     <Tab eventKey='lesson' title='Теория' >
+            //         <LessonContent lesson={lesson} />
+
+            //     </Tab>
+            //     <Tab eventKey='test' title='Тест'>
+            //         <LessonTest lesson={lesson} />
+            //     </Tab>
+            // </Tabs>
         )
     }
 }

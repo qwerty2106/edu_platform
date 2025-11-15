@@ -105,11 +105,11 @@ export const requestCourses = (currentPage, pageSize, filterType, userID) => {
     }
 }
 
-export const requestCompleteLesson = (userID, courseID, moduleID, lessonID, passed) => {
+export const requestCompleteLesson = (userID, courseID, moduleID, lessonID) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const status = await CoursesAPI.completeLesson(userID, courseID, moduleID, lessonID, passed);
+            const status = await CoursesAPI.completeLesson(userID, courseID, moduleID, lessonID);
             if (status === 201)
                 console.log('Lesson completed successfully');
             else

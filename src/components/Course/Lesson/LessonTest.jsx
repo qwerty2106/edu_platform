@@ -10,8 +10,7 @@ import { setNotify } from "../../../redux/app-reducer";
 import { requestCompleteLesson } from "../../../redux/courses-reducer";
 import 'prism-themes/themes/prism-atom-dark.css';
 
-
-const LessonFile = (props) => {
+const LessonTest = (props) => {
     // Преобразование markdown файла в html
     const [content, setContent] = useState("");
     //Загрузка (преобразование файла)
@@ -26,8 +25,9 @@ const LessonFile = (props) => {
             setLoading(false);
             return;
         };
+
         //Кодировка некорректных символов в названии файла
-        const encodedPath = encodeURI(props.lesson.content_path);
+        const encodedPath = encodeURI(props.lesson.test_path);
         setLoading(true);
         fetch(encodedPath)
             .then(res => res.text()) //Запись файла в строчку
@@ -43,7 +43,7 @@ const LessonFile = (props) => {
         if (questions.length !== 0) {
             if (correct.length === questions.length) {
                 dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
-                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID, true));
+                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID));
             }
             else if (correct.length === 0) {
                 dispatch(setNotify({ status: 'error', message: 'Попробуйте еще раз!' }));
@@ -82,4 +82,4 @@ const LessonFile = (props) => {
         : <h1>No lesson yet!</h1>
 }
 
-export default LessonFile;
+export default LessonTest;

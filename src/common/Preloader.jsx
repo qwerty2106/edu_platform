@@ -1,9 +1,9 @@
-import { Container, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 const Preloader = () => {
     return (
-        <Container className='d-flex justify-content-center align-items-center h-100'>
+        <div className='d-flex justify-content-center align-items-center w-100 min-vh-100'>
             <Spinner animation='border' variant='dark'></Spinner>
-        </Container>
+        </div>
     )
 }
 export default Preloader;

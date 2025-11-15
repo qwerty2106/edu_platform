@@ -7,7 +7,7 @@ import { getUser } from '../redux/auth-selectors';
 const Sidebar = () => {
   const user = useSelector(getUser);
   return (
-    <Col xs={2} className='bg-dark p-0' style={{ height: '100vh' }}>
+    <Col xs={2} className='bg-dark'>
       <ListGroup variant='flush'>
 
         <NavLink to="/app/courses" className="text-decoration-none" end>

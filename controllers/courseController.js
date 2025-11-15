@@ -96,7 +96,7 @@ const QUERIES = {
 
     COMPLETE_LESSON: `
         -- Игнорирование ошибки при вставке дубликата (запись не вставляется)
-        INSERT IGNORE INTO completed_lessons (user_id, course_id, module_id, lesson_id, passed) VALUES (?, ?, ?, ?, ?)`,
+        INSERT IGNORE INTO completed_lessons (user_id, course_id, module_id, lesson_id) VALUES (?, ?, ?, ?)`,
 
     COUNT_MODULES: `SELECT COUNT(*) as totalCount FROM modules WHERE course_id = ?`,
 
@@ -227,9 +227,9 @@ exports.getCourseContent = (req, res) => {
 
 //Выполенние урока
 exports.completeLesson = (req, res) => {
-    const { userID, passed } = req.body;
+    const { userID } = req.body;
     const { courseID, moduleID, lessonID } = req.params;
-    connection.query(QUERIES.COMPLETE_LESSON, [userID, courseID, moduleID, lessonID, passed], (error, result) => {
+    connection.query(QUERIES.COMPLETE_LESSON, [userID, courseID, moduleID, lessonID], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on INSERT" });

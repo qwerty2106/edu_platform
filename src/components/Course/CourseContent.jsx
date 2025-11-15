@@ -56,6 +56,7 @@ class CourseModules extends React.Component {
         if (isLoading)
             return <Preloader />
 
+
         //Курс без модулей
         if (courseModules.length === 0)
             return <h1>No modules yet!</h1>
