@@ -9,12 +9,15 @@ import { useParams } from "react-router-dom";
 import { setNotify } from "../../../redux/app-reducer";
 import { requestCompleteLesson } from "../../../redux/courses-reducer";
 import 'prism-themes/themes/prism-atom-dark.css';
+import FileUploader from "./FileUploader";
 
 const LessonTest = (props) => {
     // Преобразование markdown файла в html
     const [content, setContent] = useState("");
     //Загрузка (преобразование файла)
     const [isLoading, setLoading] = useState(true);
+
+    const [showUploader, setShowUploader] = useState(false);
 
     const dispatch = useDispatch();
     const { courseID, moduleID, lessonID } = useParams();
@@ -64,6 +67,11 @@ const LessonTest = (props) => {
                 checkButton.addEventListener('click', onClickHandle);
             }
 
+            const uploadFiles = document.querySelector('.upload-files');
+            if (uploadFiles) {
+                setShowUploader(true);
+            }
+
             //Очистка при размонтировании
             return () => {
                 if (checkButton)
@@ -78,6 +86,7 @@ const LessonTest = (props) => {
     return content
         ? <div>
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
+            {showUploader && <FileUploader />}
         </div >
         : <h1>No lesson yet!</h1>
 }

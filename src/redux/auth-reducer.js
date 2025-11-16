@@ -40,7 +40,7 @@ export const signUp = (username, email, password) => {
         }
         catch (error) {
             console.log('Sign up error', error);
-            dispatch(setNotify({ status: 'error', message: 'User creation error' }));
+            dispatch(setNotify({ status: 'error', message: 'Ошибка создания аккаунта!' }));
         }
         dispatch(setLoading(false));
     }
