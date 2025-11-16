@@ -65,8 +65,8 @@ const LessonTest = (props) => {
         const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50; //50MB лимит
 
         if (isValid) {
-            dispatch(requestCompleteLesson(user.id, lessonID, `/completed-lessons/${user.username}-${lessonID}`));
-            dispatch(setNotify({ status: 'success', message: 'Файл успешно отправлен!' }));
+            dispatch(requestCompleteLesson(user.id, lessonID, file.file));
+            dispatch(setNotify({ status: 'success', message: 'Задание отправлено на проверку!' }));
         }
 
         else {

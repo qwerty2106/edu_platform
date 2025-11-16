@@ -105,11 +105,15 @@ export const requestCourses = (currentPage, pageSize, filterType, userID) => {
     }
 }
 
-export const requestCompleteLesson = (userID, lessonID, path) => {
+export const requestCompleteLesson = (userID, lessonID, file) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const status = await CoursesAPI.completeLesson(userID, lessonID, path);
+            const formData = new FormData();
+            formData.append('userID', userID);
+            formData.append('file', file);
+
+            const status = await CoursesAPI.completeLesson(lessonID, formData);
             if (status === 201)
                 console.log('Lesson completed successfully');
             else

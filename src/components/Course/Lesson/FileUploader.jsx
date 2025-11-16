@@ -12,7 +12,6 @@ registerPlugin(FilePondPluginFileEncode);
 const FileUploader = (props) => {
     const [files, setFiles] = useState([]);
 
-
     return (
         <div>
             <FilePond

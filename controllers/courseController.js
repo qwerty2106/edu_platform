@@ -1,5 +1,9 @@
 const connection = require('../config/database');
 
+const fs = require('fs');
+const path = require('path');
+
+
 const QUERIES = {
     GET_COURSES: `
         SELECT c.*,
@@ -227,14 +231,44 @@ exports.getCourseContent = (req, res) => {
 
 //Выполенние урока
 exports.completeLesson = (req, res) => {
-    const { userID, path = null } = req.body;
+    const { userID } = req.body;
     const { lessonID } = req.params;
-    connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, path], (error, result) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ error: "Database error on INSERT" });
+
+    //Сохранение файла в папку
+    if (req.files && req.files.file) {
+        const file = req.files.file;
+        const fileName = `${userID}-${lessonID}-${file.name}`;
+        const uploadPath = path.join(__dirname, '../public/completed-lessons', fileName);
+
+
+        const dir = path.join(__dirname, '../public/completed-lessons');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
         }
-        return res.status(201).json({ message: "Lesson completed successfully" });
-    })
+        file.mv(uploadPath, (err) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ error: "File saving error" });
+            }
+            const filePath = `/completed-lessons/${fileName}`;
+
+            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath], (error, result) => {
+                if (error) {
+                    console.log(error);
+                    return res.status(500).json({ error: "Database error on INSERT" });
+                }
+                return res.status(201).json({ message: "Lesson completed successfully" });
+            });
+        });
+
+    } else {
+        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null], (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on INSERT" });
+            }
+            return res.status(201).json({ message: "Lesson completed successfully" });
+        });
+    }
 };
 
