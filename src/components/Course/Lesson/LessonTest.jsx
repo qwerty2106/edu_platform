@@ -20,7 +20,7 @@ const LessonTest = (props) => {
     const [showUploader, setShowUploader] = useState(false);
 
     const dispatch = useDispatch();
-    const { courseID, moduleID, lessonID } = useParams();
+    const { lessonID } = useParams();
     const user = useSelector(getUser);
 
     useEffect(() => {
@@ -39,14 +39,14 @@ const LessonTest = (props) => {
             .finally(() => setLoading(false))
     }, [props.lesson]);
 
-    const onClickHandle = () => {
+    const checkButtonHandle = () => {
         const correct = document.querySelectorAll('input[correct]:checked');
         const questions = document.querySelectorAll('input[correct]');
 
         if (questions.length !== 0) {
             if (correct.length === questions.length) {
+                dispatch(requestCompleteLesson(user.id, lessonID));
                 dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
-                dispatch(requestCompleteLesson(user.id, courseID, moduleID, lessonID));
             }
             else if (correct.length === 0) {
                 dispatch(setNotify({ status: 'error', message: 'Попробуйте еще раз!' }));
@@ -57,6 +57,23 @@ const LessonTest = (props) => {
         }
     }
 
+    const fileUploaderHandle = (files) => {
+        const file = files[0];
+        const fileName = file.file.name.toLowerCase();
+        const fileSize = file.file.size / 1024 / 1024;  //size всегда в байтах
+
+        const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50; //50MB лимит
+
+        if (isValid) {
+            dispatch(requestCompleteLesson(user.id, lessonID, `/completed-lessons/${user.username}-${lessonID}`));
+            dispatch(setNotify({ status: 'success', message: 'Файл успешно отправлен!' }));
+        }
+
+        else {
+            dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла!' }));
+        }
+    }
+
     //Подсветка кода
     useEffect(() => {
         if (content) {
@@ -64,7 +81,7 @@ const LessonTest = (props) => {
 
             const checkButton = document.querySelector('.check-answers-btn');
             if (checkButton) {
-                checkButton.addEventListener('click', onClickHandle);
+                checkButton.addEventListener('click', checkButtonHandle);
             }
 
             const uploadFiles = document.querySelector('.upload-files');
@@ -75,7 +92,7 @@ const LessonTest = (props) => {
             //Очистка при размонтировании
             return () => {
                 if (checkButton)
-                    checkButton.removeEventListener('click', onClickHandle);
+                    checkButton.removeEventListener('click', checkButtonHandle);
             };
 
         }
@@ -86,7 +103,7 @@ const LessonTest = (props) => {
     return content
         ? <div>
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
-            {showUploader && <FileUploader />}
+            {showUploader && <FileUploader fileUploaderHandle={fileUploaderHandle} />}
         </div >
         : <h1>No lesson yet!</h1>
 }

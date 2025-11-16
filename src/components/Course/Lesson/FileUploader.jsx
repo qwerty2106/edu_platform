@@ -9,22 +9,10 @@ import 'filepond/dist/filepond.min.css';
 
 registerPlugin(FilePondPluginFileEncode);
 
-const FileUploader = () => {
-    const dispatch = useDispatch();
+const FileUploader = (props) => {
     const [files, setFiles] = useState([]);
 
-    const onClickHandle = () => {
-        const file = files[0];
-        const fileName = file.file.name.toLowerCase();
-        const fileSize = file.file.size / 1024 / 1024;  //size всегда в байтах
 
-        const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50; //50MB лимит
-
-        if (isValid)
-            dispatch(setNotify({ status: 'success', message: 'Файл успешно отправлен!' }));
-        else
-            dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла!' }));
-    }
     return (
         <div>
             <FilePond
@@ -44,7 +32,7 @@ const FileUploader = () => {
                 labelTapToRetry="Нажмите для повтора"
                 labelFileWaitingForSize="Определяем размер файла..."
             />
-            <Button variant="success" disabled={files.length === 0} onClick={onClickHandle}>Отправить</Button>
+            <Button variant="success" disabled={files.length === 0} onClick={() => props.fileUploaderHandle(files)}>Отправить</Button>
         </div>
     )
 }
