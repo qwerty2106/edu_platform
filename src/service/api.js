@@ -7,8 +7,8 @@ export const CoursesAPI = {
     getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) {
         return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}&moduleID=${currentModule}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
-    completeLesson(lessonID, payload) {
-        return axios.post(`/app/lessons/${lessonID}`, payload).then(response => response.status)
+    completeLesson(userID, lessonID, codedFile, fileName) {
+        return axios.post(`/app/lessons/${lessonID}`, {userID, codedFile, fileName}).then(response => response.status)
     },
     getCurrentLesson(lessonID) {
         return axios.get(`/app/lessons/${lessonID}`).then(response => response.data)

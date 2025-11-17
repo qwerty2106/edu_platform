@@ -229,56 +229,13 @@ exports.getCourseContent = (req, res) => {
     });
 };
 
-// //Выполенние урока
-// exports.completeLesson = (req, res) => {
-//     const { userID } = req.body;
-//     const { lessonID } = req.params;
-
-//     //Сохранение файла в папку
-//     if (req.files && req.files.file) {
-//         const file = req.files.file;
-//         const fileName = `${userID}-${lessonID}-${file.name}`;
-//         const uploadPath = path.join(__dirname, '../public/completed-lessons', fileName);
-
-//         const dir = path.join(__dirname, '../public/completed-lessons');
-//         if (!fs.existsSync(dir)) {
-//             fs.mkdirSync(dir, { recursive: true })
-//         }
-//         file.mv(uploadPath, (err) => {
-//             if (err) {
-//                 console.log(err);
-//                 return res.status(500).json({ error: "File saving error" });
-//             }
-//             const filePath = `/completed-lessons/${fileName}`;
-
-//             connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath], (error, result) => {
-//                 if (error) {
-//                     console.log(error);
-//                     return res.status(500).json({ error: "Database error on INSERT" });
-//                 }
-//                 return res.status(201).json({ message: "Lesson completed successfully" });
-//             });
-//         });
-
-//     }
-//     else {
-//         connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null], (error, result) => {
-//             if (error) {
-//                 console.log(error);
-//                 return res.status(500).json({ error: "Database error on INSERT" });
-//             }
-//             return res.status(201).json({ message: "Lesson completed successfully" });
-//         });
-//     }
-// };
-
-// Выполнение урока с File API напрямую
+// Выполнение урока
 exports.completeLesson = (req, res) => {
-    const { userID, file, fileName } = req.body;
+    const { userID, codedFile, fileName } = req.body;
     const { lessonID } = req.params;
 
     // Проверяем, есть ли файл
-    if (file && fileName) {
+    if (codedFile && fileName) {
         try {
             // Генерируем имя файла
             const fileExtension = path.extname(fileName) || '.zip';
@@ -291,31 +248,18 @@ exports.completeLesson = (req, res) => {
                 fs.mkdirSync(dir, { recursive: true });
             }
 
-            // Файл приходит как строка или объект, нужно преобразовать в buffer
-            let fileBuffer;
-            if (typeof file === 'string') {
-                // Если файл пришел как base64 строка
-                fileBuffer = Buffer.from(file, 'base64');
-            } else if (Buffer.isBuffer(file)) {
-                // Если файл пришел как buffer
-                fileBuffer = file;
-            } else if (typeof file === 'object') {
-                // Если файл пришел как объект (например, из JSON)
-                fileBuffer = Buffer.from(JSON.stringify(file));
-            } else {
-                return res.status(400).json({ error: "Invalid file format" });
-            }
+            const fileBuffer = Buffer.from(codedFile, 'base64');
 
             // Сохраняем файл
             fs.writeFileSync(uploadPath, fileBuffer);
-            
+
             const filePath = `/completed-lessons/${savedFileName}`;
 
             connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath], (error, result) => {
                 if (error) {
                     console.log(error);
                     // Удаляем файл если ошибка БД
-                    try { fs.unlinkSync(uploadPath); } catch (e) {}
+                    try { fs.unlinkSync(uploadPath); } catch (e) { }
                     return res.status(500).json({ error: "Database error on INSERT" });
                 }
                 return res.status(201).json({ message: "Lesson completed successfully" });

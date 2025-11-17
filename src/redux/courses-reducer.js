@@ -1,4 +1,5 @@
 import { CoursesAPI } from "../service/api";
+import { encode } from 'base64-arraybuffer';
 
 const SET_COURSES = "courses/SET-COURSES";
 const SET_MODULES = "courses/SET-MODULES";
@@ -109,16 +110,11 @@ export const requestCompleteLesson = (userID, lessonID, file) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            // Конвертируем файл в base64
-            const fileBase64 = await convertFileToBase64(file);
-            
-            const payload = {
-                userID,
-                file: fileBase64,
-                fileName: file.name
-            };
+            const arrayBuffer = await file.arrayBuffer();
+            const codedFile = encode(arrayBuffer);
 
-            const status = await CoursesAPI.completeLesson(lessonID, payload);
+            const status = await CoursesAPI.completeLesson(userID, lessonID, codedFile, file.name);
+
             if (status === 201)
                 console.log('Lesson completed successfully');
             else
@@ -129,19 +125,6 @@ export const requestCompleteLesson = (userID, lessonID, file) => {
         }
         dispatch(setLoading(false));
     }
-}
-
-const convertFileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            // Убираем префикс "data:*/*;base64,"
-            const base64 = reader.result.split(',')[1];
-            resolve(base64);
-        };
-        reader.onerror = error => reject(error);
-    });
 }
 
 //Получение модулей и уроков выбранного курса
