@@ -67,7 +67,7 @@ const Course = (props) => {
                     </div>
                     <div className='d-none d-lg-flex justify-content-center align-items-center' style={{ width: '25%', flexShrink: 0 }}>
                         <div>
-                            <Card.Img variant="top" src={props.img} style={{ objectFit: "cover", height: '100%', width: '100%' }} />
+                            <Card.Img variant="top" src={props.img_path} style={{ objectFit: "cover", height: '100%', width: '100%' }} />
                         </div>
                     </div>
                 </div>

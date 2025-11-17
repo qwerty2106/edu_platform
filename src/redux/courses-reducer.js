@@ -109,11 +109,17 @@ export const requestCompleteLesson = (userID, lessonID, file) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const formData = new FormData();
-            formData.append('userID', userID);
-            formData.append('file', file);
+            const payload = {
+                userID,
+                lessonID,
+                file: file, // Отправляем файл напрямую
+                fileName: file.name
+            };
+            // const formData = new FormData();
+            // formData.append('userID', userID);
+            // formData.append('file', file);
 
-            const status = await CoursesAPI.completeLesson(lessonID, formData);
+            const status = await CoursesAPI.completeLesson(lessonID, payload);
             if (status === 201)
                 console.log('Lesson completed successfully');
             else

@@ -57,7 +57,7 @@ const LessonTest = (props) => {
         }
     }
 
-    const fileUploaderHandle = (files) => {
+    const fileUploaderHandle = async (files) => {
         const file = files[0];
         const fileName = file.file.name.toLowerCase();
         const fileSize = file.file.size / 1024 / 1024;  //size всегда в байтах
@@ -65,8 +65,13 @@ const LessonTest = (props) => {
         const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50; //50MB лимит
 
         if (isValid) {
-            dispatch(requestCompleteLesson(user.id, lessonID, file.file));
-            dispatch(setNotify({ status: 'success', message: 'Задание отправлено на проверку!' }));
+            try {
+                await dispatch(requestCompleteLesson(user.id, lessonID, file.file));
+                dispatch(setNotify({ status: 'success', message: 'Задание отправлено на проверку!' }));
+            }
+            catch (err) {
+                dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла!' }));
+            }
         }
 
         else {
@@ -94,7 +99,6 @@ const LessonTest = (props) => {
                 if (checkButton)
                     checkButton.removeEventListener('click', checkButtonHandle);
             };
-
         }
 
     }, [content]);

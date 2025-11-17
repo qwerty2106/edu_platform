@@ -24,18 +24,15 @@ class LessonComponent extends React.Component {
         return (
             <Tab.Container defaultActiveKey="lesson">
                 <Nav variant="pills">
-                    {lesson.content_path ?
-                        <Nav.Item>
-                            <Nav.Link eventKey="lesson" className={styles.tabActive}>Теория</Nav.Link>
-                        </Nav.Item> : null
-                    }
+                    <Nav.Item>
+                        <Nav.Link eventKey="lesson" className={styles.tabActive}>Теория</Nav.Link>
+                    </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="test">Тест</Nav.Link>
                     </Nav.Item>
                 </Nav>
                 <Tab.Content>
-                    {lesson.content_path ?
-                        <Tab.Pane eventKey="lesson" className="p-2"><LessonContent lesson={lesson} /></Tab.Pane> : null}
+                    <Tab.Pane eventKey="lesson" className="p-2"><LessonContent lesson={lesson} /></Tab.Pane>
                     <Tab.Pane eventKey="test" className="p-2"><LessonTest lesson={lesson} /></Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
