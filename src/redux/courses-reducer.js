@@ -109,15 +109,14 @@ export const requestCompleteLesson = (userID, lessonID, file) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
+            // Конвертируем файл в base64
+            const fileBase64 = await convertFileToBase64(file);
+            
             const payload = {
                 userID,
-                lessonID,
-                file: file, // Отправляем файл напрямую
+                file: fileBase64,
                 fileName: file.name
             };
-            // const formData = new FormData();
-            // formData.append('userID', userID);
-            // formData.append('file', file);
 
             const status = await CoursesAPI.completeLesson(lessonID, payload);
             if (status === 201)
@@ -130,6 +129,19 @@ export const requestCompleteLesson = (userID, lessonID, file) => {
         }
         dispatch(setLoading(false));
     }
+}
+
+const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            // Убираем префикс "data:*/*;base64,"
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+    });
 }
 
 //Получение модулей и уроков выбранного курса

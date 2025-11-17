@@ -1,10 +1,10 @@
 import { FilePond, registerPlugin } from "react-filepond";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
+// import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
 
 import 'filepond/dist/filepond.min.css';
-registerPlugin(FilePondPluginFileEncode);
+// registerPlugin(FilePondPluginFileEncode);
 
 const FileUploader = (props) => {
     const [files, setFiles] = useState([]);
@@ -18,7 +18,7 @@ const FileUploader = (props) => {
                 maxFileSize="50MB"
                 credits={false}
                 labelIdle='Перетащите ZIP файл или <span class="filepond--label-action">выберите</span>'
-                allowFileEncode={true}
+                allowFileEncode={false}
                 allowProcess={false}
                 instantUpload={false}
                 labelFileLoading="Загрузка..."
