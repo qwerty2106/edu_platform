@@ -18,6 +18,7 @@ import Chat from "./components/Chat/Chat";
 import Notify from "./common/Notify.jsx";
 import Profile from "./components/Profile/Profile.jsx";
 import LessonComponent from "./components/Course/Lesson/LessonComponent.jsx";
+import WorkContainer from "./components/Work/WorkContainer.jsx";
 
 class App extends React.Component {
   componentDidMount() {
@@ -47,6 +48,7 @@ class App extends React.Component {
             <Route path='/app' element={<AppContainer />}>
               <Route index element={<Courses />} />
               <Route path='courses' element={<Courses />} />
+              <Route path='works' element={<WorkContainer />} />
               <Route path='lessons/:lessonID' element={<LessonComponent />} />
               <Route path='courses/:courseID' element={<CourseContent />} />
               <Route path='profile/:userID' element={<Profile />} />

@@ -5,6 +5,7 @@ import { appReducer } from "./app-reducer";
 import { chatReducer } from "./chat-reducer";
 import { roomsReducer } from "./rooms-reducer";
 import { profileReducer } from "./profile-reducer";
+import { worksReducer } from "./works-reducer";
 
 const rootReducer = combineReducers({
     courses: coursesReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     app: appReducer,
     rooms: roomsReducer,
     chat: chatReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    works: worksReducer
 });
 
 const store = configureStore({

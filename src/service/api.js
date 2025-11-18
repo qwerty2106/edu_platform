@@ -15,6 +15,12 @@ export const CoursesAPI = {
     }
 };
 
+export const WorksAPI = {
+    getWorks(currentPage, pageSize) {
+        return axios.get(`/app/works?page=${currentPage}&count=${pageSize}`).then(response => response.data);
+    },
+};
+
 export const AuthAPI = {
     signUp(username, email, password) {
         return axios.post('/auth/register', { username, email, password }).then(response => response.data)
