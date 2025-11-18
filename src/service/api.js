@@ -8,7 +8,7 @@ export const CoursesAPI = {
         return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}&moduleID=${currentModule}`, { headers: { 'userID': userID } }).then(response => response.data);
     },
     completeLesson(userID, lessonID, codedFile, fileName, comment) {
-        return axios.post(`/app/lessons/${lessonID}`, {userID, codedFile, fileName, comment}).then(response => response.status)
+        return axios.post(`/app/lessons/${lessonID}`, { userID, codedFile, fileName, comment }).then(response => response.status)
     },
     getCurrentLesson(lessonID) {
         return axios.get(`/app/lessons/${lessonID}`).then(response => response.data)
@@ -18,6 +18,12 @@ export const CoursesAPI = {
 export const WorksAPI = {
     getWorks(currentPage, pageSize) {
         return axios.get(`/app/works?page=${currentPage}&count=${pageSize}`).then(response => response.data);
+    },
+    getCurrentWork(userID, lessonID) {
+        return axios.get(`/app/works/${userID}/${lessonID}`).then(response => response.data);
+    },
+    updateWork(userID, lessonID, status, comment) {
+        return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment }).then(response => response.status);
     },
 };
 

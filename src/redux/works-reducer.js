@@ -1,11 +1,14 @@
 import { WorksAPI } from "../service/api";
+import { setNotify } from "./app-reducer";
 
 const SET_WORKS = 'works/SET-WORKS';
+const SET_CURRENT_WORK = 'works/SET-CURRENT-WORK';
 const SET_LOADING = "rooms/SET-LOADING";
 
 const initialState = {
     works: [],
     isLoading: true,
+    currentWork: {}
 }
 
 export const worksReducer = (state = initialState, action) => {
@@ -14,6 +17,11 @@ export const worksReducer = (state = initialState, action) => {
             return {
                 ...state,
                 works: action.works
+            }
+        case SET_CURRENT_WORK:
+            return {
+                ...state,
+                currentWork: action.currentWork
             }
         case SET_LOADING:
             return {
@@ -26,6 +34,7 @@ export const worksReducer = (state = initialState, action) => {
 }
 
 export const setWorks = (works) => ({ type: SET_WORKS, works });
+export const setCurrentWork = (currentWork) => ({ type: SET_CURRENT_WORK, currentWork });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 
 
@@ -38,6 +47,40 @@ export const requestWorks = (currentPage, pageSize) => {
         }
         catch (error) {
             console.log('Get works error', error);
+        }
+        dispatch(setLoading(false));
+    };
+};
+
+export const requestCurrentWork = (userID, lessonID) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            const data = await WorksAPI.getCurrentWork(userID, lessonID);
+            dispatch(setCurrentWork(data));
+        }
+        catch (error) {
+            console.log('Get work error', error);
+        }
+        dispatch(setLoading(false));
+    };
+};
+
+export const requestCheckWork = (userID, lessonID, newStatus, comment) => {
+    return async (dispatch) => {
+        dispatch(setLoading(true));
+        try {
+            const status = await WorksAPI.updateWork(userID, lessonID, newStatus, comment);
+            if (status === 200) {
+                dispatch(requestCurrentWork(userID, lessonID));
+                dispatch(setNotify({ status: 'success', message: 'Работа обновлена!' }));
+            }
+            else {
+                dispatch(setNotify({ status: 'error', message: 'Произошла ошибка!' }));
+            }
+        }
+        catch (error) {
+            console.log('Update work error', error);
         }
         dispatch(setLoading(false));
     };

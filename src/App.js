@@ -19,6 +19,7 @@ import Notify from "./common/Notify.jsx";
 import Profile from "./components/Profile/Profile.jsx";
 import LessonComponent from "./components/Course/Lesson/LessonComponent.jsx";
 import WorkContainer from "./components/Work/WorkContainer.jsx";
+import WorkContent from "./components/Work/WorkContent.jsx";
 
 class App extends React.Component {
   componentDidMount() {
@@ -49,6 +50,7 @@ class App extends React.Component {
               <Route index element={<Courses />} />
               <Route path='courses' element={<Courses />} />
               <Route path='works' element={<WorkContainer />} />
+              <Route path='works/:userID/:lessonID' element={<WorkContent />} />
               <Route path='lessons/:lessonID' element={<LessonComponent />} />
               <Route path='courses/:courseID' element={<CourseContent />} />
               <Route path='profile/:userID' element={<Profile />} />
@@ -68,4 +70,5 @@ const mapStateToProps = (state) => {
     notify: getNotify(state),
   }
 }
+
 export default connect(mapStateToProps, { initializeApp, listenNotify })(App);
