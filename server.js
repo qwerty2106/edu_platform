@@ -4,7 +4,7 @@ const { Server } = require('socket.io')
 const express = require('express');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });

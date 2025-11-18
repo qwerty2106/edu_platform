@@ -57,7 +57,7 @@ const LessonTest = (props) => {
         }
     }
 
-    const fileUploaderHandle = async (files) => {
+    const fileUploaderHandle = async (files, comment) => {
         const file = files[0];
         const fileName = file.file.name.toLowerCase();
         const fileSize = file.file.size / 1024 / 1024;  //size всегда в байтах
@@ -66,7 +66,7 @@ const LessonTest = (props) => {
 
         if (isValid) {
             try {
-                await dispatch(requestCompleteLesson(user.id, lessonID, file.file));
+                dispatch(requestCompleteLesson(user.id, lessonID, file.file, comment));
                 dispatch(setNotify({ status: 'success', message: 'Задание отправлено на проверку!' }));
             }
             catch (err) {

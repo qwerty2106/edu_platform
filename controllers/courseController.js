@@ -3,7 +3,6 @@ const connection = require('../config/database');
 const fs = require('fs');
 const path = require('path');
 
-
 const QUERIES = {
     GET_COURSES: `
         SELECT c.*,
@@ -99,8 +98,13 @@ const QUERIES = {
        LIMIT ? OFFSET ?`,
 
     COMPLETE_LESSON: `
-        -- Игнорирование ошибки при вставке дубликата (запись не вставляется)
-        INSERT IGNORE INTO completed_lessons (user_id, lesson_id, content_path) VALUES (?, ?, ?)`,
+        INSERT INTO completed_lessons (user_id, lesson_id, content_path, comment_student) 
+        VALUES (?, ?, ?, ?)
+        -- Обновление вместо вставки
+        ON DUPLICATE KEY UPDATE 
+        content_path = VALUES(content_path),
+        comment_student = VALUES(comment_student),
+        created_date = NOW()`,
 
     COUNT_MODULES: `SELECT COUNT(*) as totalCount FROM modules WHERE course_id = ?`,
 
@@ -229,50 +233,61 @@ exports.getCourseContent = (req, res) => {
     });
 };
 
-// Выполнение урока
+//Выполнение урока
 exports.completeLesson = (req, res) => {
     const { userID, codedFile, fileName } = req.body;
     const { lessonID } = req.params;
 
+    let comment = req.body.comment;
+    //Пустая строка
+    if (!comment.trim()) {
+        comment = null;
+    }
+
     // Проверяем, есть ли файл
     if (codedFile && fileName) {
         try {
-            // Генерируем имя файла
-            const fileExtension = path.extname(fileName) || '.zip';
-            const savedFileName = `${userID}-${lessonID}-${Date.now()}${fileExtension}`;
-            const uploadPath = path.join(__dirname, '../public/completed-lessons', savedFileName);
+            const saveFileName = `${userID}-${lessonID}-${fileName}`;
+            const uploadPath = path.join(__dirname, '../public/completed-lessons', saveFileName);
 
-            // Создаем директорию если не существует
-            const dir = path.join(__dirname, '../public/completed-lessons');
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
+            //Создание папки, если не существует
+            const folder = path.join(__dirname, '../public/completed-lessons');
+            if (!fs.existsSync(folder)) {
+                fs.mkdirSync(folder, { recursive: true });
             }
 
+            //Декодирование файла
             const fileBuffer = Buffer.from(codedFile, 'base64');
 
-            // Сохраняем файл
+            //Сохранение файл
             fs.writeFileSync(uploadPath, fileBuffer);
 
-            const filePath = `/completed-lessons/${savedFileName}`;
+            const filePath = `/completed-lessons/${saveFileName}`;
 
-            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath], (error, result) => {
+            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment], (error, result) => {
                 if (error) {
                     console.log(error);
-                    // Удаляем файл если ошибка БД
-                    try { fs.unlinkSync(uploadPath); } catch (e) { }
+                    //Удаление файла, если произошла ошибка сохранения в БД
+                    try {
+                        fs.unlinkSync(uploadPath)
+
+                    } catch (err) {
+                        console.log(err);
+                        return res.status(500).json({ error: "File delete error" });
+                    }
                     return res.status(500).json({ error: "Database error on INSERT" });
                 }
                 return res.status(201).json({ message: "Lesson completed successfully" });
             });
 
         } catch (error) {
-            console.log('File processing error:', error);
-            return res.status(500).json({ error: "File processing error" });
+            console.log(error);
+            return res.status(500).json({ error: "File saving error" });
         }
     }
     else {
         // Без файла
-        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null], (error, result) => {
+        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null, null], (error, result) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on INSERT" });
