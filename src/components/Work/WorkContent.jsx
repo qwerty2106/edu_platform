@@ -3,7 +3,7 @@ import { requestCheckWork, requestCurrentWork } from "../../redux/works-reducer"
 import withRouter from "../../common/WithRouter";
 import Preloader from "../../common/Preloader";
 import { getCurrentWork, getWorksLoading } from "../../redux/works-selector";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge, Button, Dropdown, DropdownButton, Form } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
@@ -12,6 +12,10 @@ const WorkContent = (props) => {
     const currentWork = props.currentWork;
     const [status, setStatus] = useState(currentWork.status);
     const [text, setText] = useState('');
+
+    useEffect(() => {
+        setStatus(currentWork.status);
+    }, [currentWork.status])
 
     const onChangeHandle = (eventKey) => {
         if (eventKey === '1') {

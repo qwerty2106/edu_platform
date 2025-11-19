@@ -12,7 +12,8 @@ const LessonInfo = (props) => {
                     {props.is_completed ? <CheckCircleFill style={{ color: 'green' }} /> : null}
                 </div>
                 <span className="small">«{props.title}»</span>
-                <Button size="sm mt-3 align-self-start" onClick={() => navigate(`/app/lessons/${props.id}`)} style={{ cursor: "pointer" }}>Перейти</Button>
+                <small className="text-muted fst-italic my-1">{props.lesson_type}</small>
+                <Button size="sm align-self-start mt-1" onClick={() => navigate(`/app/lessons/${props.id}`)} style={{ cursor: "pointer" }}>Перейти</Button>
             </div>
         </Tab.Pane>
     )

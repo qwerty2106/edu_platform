@@ -25,7 +25,7 @@ class LessonComponent extends React.Component {
             <Tab.Container defaultActiveKey="lesson">
                 <Nav variant="pills">
                     <Nav.Item>
-                        <Nav.Link eventKey="lesson" className={styles.tabActive}>Теория</Nav.Link>
+                        <Nav.Link eventKey="lesson">Теория</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="test">Тест</Nav.Link>
