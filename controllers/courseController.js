@@ -248,10 +248,10 @@ exports.completeLesson = (req, res) => {
     if (codedFile && fileName) {
         try {
             const saveFileName = `${userID}-${lessonID}-${fileName}`;
-            const uploadPath = path.join(__dirname, '../public/completed-lessons', saveFileName);
+            const uploadPath = path.join(__dirname, '../server-data/completed-lessons', saveFileName);
 
             //Создание папки, если не существует
-            const folder = path.join(__dirname, '../public/completed-lessons');
+            const folder = path.join(__dirname, '../server-data/completed-lessons');
             if (!fs.existsSync(folder)) {
                 fs.mkdirSync(folder, { recursive: true });
             }

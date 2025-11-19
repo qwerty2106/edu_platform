@@ -30,7 +30,7 @@ const LessonTest = (props) => {
         };
 
         //Кодировка некорректных символов в названии файла
-        const encodedPath = encodeURI(props.lesson.test_path);
+        const encodedPath = encodeURI(`http://localhost:3000/static${props.lesson.test_path}`);
         setLoading(true);
         fetch(encodedPath)
             .then(res => res.text()) //Запись файла в строчку
