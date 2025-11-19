@@ -98,13 +98,13 @@ const QUERIES = {
        LIMIT ? OFFSET ?`,
 
     COMPLETE_LESSON: `
-        INSERT INTO completed_lessons (user_id, lesson_id, content_path, comment_student) 
-        VALUES (?, ?, ?, ?)
-        -- Обновление вместо вставки
+        INSERT INTO completed_lessons (user_id, lesson_id, content_path, comment_student, status) 
+        VALUES (?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
         content_path = VALUES(content_path),
         comment_student = VALUES(comment_student),
-        created_date = NOW()`,
+        created_date = NOW(),
+        status = VALUES(status)`,
 
     COUNT_MODULES: `SELECT COUNT(*) as totalCount FROM modules WHERE course_id = ?`,
 
@@ -240,7 +240,7 @@ exports.completeLesson = (req, res) => {
 
     let comment = req.body.comment;
     //Пустая строка
-    if (!comment.trim()) {
+    if (comment && !comment.trim()) {
         comment = null;
     }
 
@@ -264,7 +264,7 @@ exports.completeLesson = (req, res) => {
 
             const filePath = `/completed-lessons/${saveFileName}`;
 
-            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment], (error, result) => {
+            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке'], (error, result) => {
                 if (error) {
                     console.log(error);
                     //Удаление файла, если произошла ошибка сохранения в БД
@@ -287,7 +287,7 @@ exports.completeLesson = (req, res) => {
     }
     else {
         // Без файла
-        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null, null], (error, result) => {
+        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null, null, 'Проверено'], (error, result) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on INSERT" });

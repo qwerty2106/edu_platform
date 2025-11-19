@@ -110,10 +110,16 @@ export const requestCompleteLesson = (userID, lessonID, file, comment) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const codedFile = encode(arrayBuffer);
+            let codedFile = null;
+            let fileName = null;
 
-            const status = await CoursesAPI.completeLesson(userID, lessonID, codedFile, file.name, comment);
+            if (file) {
+                const arrayBuffer = await file.arrayBuffer();
+                codedFile = encode(arrayBuffer);
+                fileName = file.name;
+            }
+
+            const status = await CoursesAPI.completeLesson(userID, lessonID, codedFile, fileName, comment);
 
             if (status === 201)
                 console.log('Lesson completed successfully');
