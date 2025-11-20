@@ -39,62 +39,79 @@ const LessonTest = (props) => {
             .finally(() => setLoading(false))
     }, [props.lesson]);
 
-    const checkButtonHandle = () => {
-        const correct = document.querySelectorAll('input[correct]:checked');
-        const questions = document.querySelectorAll('input[correct]');
+    const checkButtonHandle = async () => {
+        const correct = document.querySelectorAll('input[data-correct]:checked');
+        const questions = document.querySelectorAll('input[data-correct]');
 
         if (questions.length !== 0) {
             if (correct.length === questions.length) {
-                dispatch(requestCompleteLesson(user.id, lessonID));
-                dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
+                try {
+                    const res = await dispatch(requestCompleteLesson(user.id, lessonID, null, null));
+                    if (res === 201)
+                        dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
+                    else
+                        dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));
+                }
+                catch (err) {
+                    console.error(err);
+                    dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));
+                }
             }
             else if (correct.length === 0) {
-                dispatch(setNotify({ status: 'error', message: 'Попробуйте еще раз!' }));
+                dispatch(setNotify({ status: 'error', message: 'Попробуйте еще раз! ❌' }));
             }
             else {
-                dispatch(setNotify({ status: 'info', message: `Правильных ответов: ${correct.length} из ${questions.length}` }));
+                dispatch(setNotify({ status: 'info', message: `Правильных ответов: ${correct.length} из ${questions.length} 🎯` }));
             }
         }
     }
 
     const fileUploaderHandle = async (files, comment) => {
-        const file = files[0];
-        const fileName = file.file.name.toLowerCase();
-        const fileSize = file.file.size / 1024 / 1024;  //size всегда в байтах
+        //Первый файл из массива
+        const file = files[0].file;
+        const fileName = file.name.toLowerCase();
+        const fileSize = file.size / 1024 / 1024;  //size всегда в байтах
 
-        const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50; //50MB лимит
+        //Расширение + размер (50MB)
+        const isValid = (fileName.endsWith('.rar') || fileName.endsWith('.zip') || fileName.endsWith('.7z')) && fileSize <= 50;
 
         if (isValid) {
             try {
-                dispatch(requestCompleteLesson(user.id, lessonID, file.file, comment));
-                dispatch(setNotify({ status: 'success', message: 'Задание отправлено на проверку!' }));
+                const res = await dispatch(requestCompleteLesson(user.id, lessonID, file, comment));
+                if (res === 201)
+                    dispatch(setNotify({ status: 'success', message: 'Задание отправлено! 🎯' }));
+                else
+                    dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));
             }
             catch (err) {
-                dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла!' }));
+                console.error(err);
+                dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));
             }
         }
-
         else {
-            dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла!' }));
+            dispatch(setNotify({ status: 'error', message: 'Ошибка отправки файла! ❌' }));
         }
     }
 
-    //Подсветка кода
+    //Обработка html файла
     useEffect(() => {
         if (content) {
+            //Подсветка кода
             Prism.highlightAll();
 
+            //Поиске кнопки проверки ответов
             const checkButton = document.querySelector('.check-answers-btn');
             if (checkButton) {
                 checkButton.addEventListener('click', checkButtonHandle);
             }
 
+            //Поиск элемента загрузки файлов
             const uploadFiles = document.querySelector('.upload-files');
             if (uploadFiles) {
                 setShowUploader(true);
             }
 
-            //Очистка при размонтировании
+            //Очистка обработчика при размонтировании
             return () => {
                 if (checkButton)
                     checkButton.removeEventListener('click', checkButtonHandle);

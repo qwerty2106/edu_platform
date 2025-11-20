@@ -1,5 +1,4 @@
 import { CoursesAPI } from "../service/api";
-import { encode } from 'base64-arraybuffer';
 
 const SET_COURSES = "courses/SET-COURSES";
 const SET_MODULES = "courses/SET-MODULES";
@@ -110,26 +109,32 @@ export const requestCompleteLesson = (userID, lessonID, file, comment) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            let codedFile = null;
-            let fileName = null;
+            const formData = new FormData();
+            formData.append('userID', userID);
 
-            if (file) {
-                const arrayBuffer = await file.arrayBuffer();
-                codedFile = encode(arrayBuffer);
-                fileName = file.name;
-            }
+            if (file)
+                formData.append('file', file)
+            if (comment)
+                formData.append('comment', comment);
 
-            const status = await CoursesAPI.completeLesson(userID, lessonID, codedFile, fileName, comment);
+            const status = await CoursesAPI.completeLesson(lessonID, formData);
 
             if (status === 201)
                 console.log('Lesson completed successfully');
+
             else
-                console.error('Complete lesson error');
+                console.error('Complete lesson failed with status: ', status);
+
+            return status;
         }
         catch (error) {
             console.log('Complete lesson error', error);
+            return 500;
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
+
     }
 }
 
