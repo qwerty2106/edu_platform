@@ -1,8 +1,0 @@
-.filepondOverride :global(.filepond--drop-label) {
-    min-height: 200px !important;
-    cursor: pointer;
-}
-
-.filepondOverride :global(.filepond--drop-label label) {
-    padding: 0 !important;
-}

@@ -1,7 +1,7 @@
 import { FilePond } from "react-filepond";
 import { useState } from "react";
 import { Button, FloatingLabel, Form, Modal } from "react-bootstrap";
-import styles from './FileUpload.module.css';
+import styles from '../../../styles.module.css';
 import 'filepond/dist/filepond.min.css';
 
 const test = `

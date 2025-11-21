@@ -8,6 +8,7 @@ import "prism-themes/themes/prism-ghcolors.css";
 import LessonTest from './LessonTest';
 import { Nav, Tab, } from "react-bootstrap";
 import LessonContent from "./LessonContent";
+import styles from '../../../styles.module.css';
 
 
 class LessonComponent extends React.Component {
@@ -21,21 +22,30 @@ class LessonComponent extends React.Component {
             return <Preloader />
 
         return (
-            <Tab.Container defaultActiveKey="lesson">
-                <Nav variant="pills">
-                    <Nav.Item>
-                        <Nav.Link eventKey="lesson">Теория</Nav.Link>
+            <Tab.Container defaultActiveKey="lesson" data-bs-theme="dark">
+                <Nav variant="pills" className="w-100 pb-3">
+                    <Nav.Item className="flex-fill text-center">
+                        <Nav.Link eventKey="lesson" className={styles.navLinkOverride}>Теория</Nav.Link>
                     </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="test">Тест</Nav.Link>
+                    <Nav.Item className="flex-fill text-center">
+                        <Nav.Link eventKey="test" className={styles.navLinkOverride}>Практика</Nav.Link>
                     </Nav.Item>
                 </Nav>
-                <Tab.Content>
-                    <Tab.Pane eventKey="lesson" className="p-2"><LessonContent lesson={lesson} /></Tab.Pane>
-                    <Tab.Pane eventKey="test" className="p-2"><LessonTest lesson={lesson} /></Tab.Pane>
-                </Tab.Content>
+                <div style={{ height: 'calc(100vh - 150px)', overflowY: "auto" }}>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="lesson">
+                            <div className="p-2">
+                                <LessonContent lesson={lesson} />
+                            </div>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="test">
+                            <div className="p-2">
+                                <LessonTest lesson={lesson} />
+                            </div>
+                        </Tab.Pane>
+                    </Tab.Content>
+                </div>
             </Tab.Container>
-
         )
     }
 }
