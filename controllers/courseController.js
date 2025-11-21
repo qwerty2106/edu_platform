@@ -240,7 +240,6 @@ exports.completeLesson = (req, res) => {
     const { userID, comment } = req.body;
     const { lessonID } = req.params;
 
-    // Проверяем, есть ли файл
     if (file) {
         const fileName = `user${userID}-lesson${lessonID}-${Date.now()}-${file.name}`;
         const uploadPath = path.join(__dirname, '../server-data/completed-lessons', fileName);
@@ -259,13 +258,13 @@ exports.completeLesson = (req, res) => {
             }
             const filePath = `/completed-lessons/${fileName}`;
 
+            //С файлом
             connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке', null], (error, result) => {
                 if (error) {
                     console.error(error);
                     //Удаление файла, если произошла ошибка сохранения в БД
                     try {
                         fs.unlinkSync(uploadPath)
-
                     } catch (err) {
                         console.error(err);
                         return res.status(500).json({ error: "File delete error" });
@@ -287,3 +286,5 @@ exports.completeLesson = (req, res) => {
         });
     }
 };
+
+

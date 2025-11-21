@@ -8,7 +8,6 @@ import "prism-themes/themes/prism-ghcolors.css";
 import LessonTest from './LessonTest';
 import { Nav, Tab, } from "react-bootstrap";
 import LessonContent from "./LessonContent";
-import styles from "./LessonComponent.module.css";
 
 
 class LessonComponent extends React.Component {
