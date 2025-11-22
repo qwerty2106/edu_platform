@@ -22,7 +22,7 @@ class LessonComponent extends React.Component {
             return <Preloader />
 
         return (
-            <Tab.Container defaultActiveKey="lesson" data-bs-theme="dark">
+            <Tab.Container defaultActiveKey="lesson">
                 <Nav variant="pills" className="w-100 pb-3">
                     <Nav.Item className="flex-fill text-center">
                         <Nav.Link eventKey="lesson" className={styles.navLinkOverride}>Теория</Nav.Link>

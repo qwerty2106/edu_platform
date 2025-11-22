@@ -1,10 +1,11 @@
 import { FilePond } from "react-filepond";
 import { useState } from "react";
-import { Button, FloatingLabel, Form, Modal } from "react-bootstrap";
+import { Button, FloatingLabel, Form } from "react-bootstrap";
 import styles from '../../../styles.module.css';
 import 'filepond/dist/filepond.min.css';
+import InstuctionModal from "./InstructionModal";
 
-const test = `
+const LABEL_IDLE = `
 <div style="display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer">
     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z"/>
@@ -18,68 +19,18 @@ const FileUploader = (props) => {
     const [text, setText] = useState('');
     const [modalShow, setModalShow] = useState(false);
 
-    const InstuctionModal = (props) => {
-        return (
-            <Modal centered show={modalShow} onHide={() => setModalShow(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Инструкция по загрузке файла</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="d-flex flex-column gap-3">
-                        <div className="d-flex flex-column gap-1">
-                            <h6>Допустимые форматы</h6>
-                            <div className="d-flex gap-2">
-                                <span className="badge bg-success">ZIP</span>
-                                <span className="badge bg-success">RAR</span>
-                                <span className="badge bg-success">7Z</span>
-                            </div>
-                        </div>
-
-                        <div className="d-flex flex-column gap-1">
-                            <h6>Как загрузить</h6>
-                            <div className="d-flex align-items-center gap-2">
-                                <span className="badge bg-primary">1</span>
-                                <span>Выберите файл или перетащите в область загрузки</span>
-                            </div>
-                            <div className="d-flex align-items-center gap-2">
-                                <span className="badge bg-primary">2</span>
-                                <span>Дождитесь появления имени файла в интерфейсе</span>
-                            </div>
-                            <div className="d-flex align-items-center gap-2">
-                                <span className="badge bg-primary">3</span>
-                                <span>Нажмите кнопку «Отправить»</span>
-                            </div>
-                        </div>
-
-                        <div className="alert alert-warning">
-                            <small>
-                                <strong>⚠️ Максимальный размер файла: </strong>
-                                <span className="text-danger fw-bold">50 МБ</span>
-                            </small>
-                        </div>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={() => setModalShow(false)}>Закрыть</Button>
-                </Modal.Footer>
-            </Modal>
-        )
-    }
-
     return (
         <div className="d-flex flex-column gap-3">
             <div className="d-flex flex-column gap-2">
                 <div className="d-flex justify-content-end">
-                    <Button variant="outline-primary" size="sm" onClick={() => setModalShow(true)}>
-                        📖 Посмотреть инструкцию
-                    </Button>
+                    <Button variant="outline-primary" size="sm" onClick={() => setModalShow(true)}>📖 Посмотреть инструкцию</Button>
                 </div>
-                <InstuctionModal />
+                <InstuctionModal modalShow={modalShow} setModalShow={setModalShow} />
                 <FilePond
                     files={files}
                     onupdatefiles={setFiles}
                     credits={false}
-                    labelIdle={test}
+                    labelIdle={LABEL_IDLE}
                     className={styles.filepondOverride}
                 />
             </div>
