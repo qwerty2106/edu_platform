@@ -4,11 +4,13 @@ import { setNotify } from "./app-reducer";
 const SET_WORKS = 'works/SET-WORKS';
 const SET_CURRENT_WORK = 'works/SET-CURRENT-WORK';
 const SET_LOADING = "rooms/SET-LOADING";
+const SET_WORKS_COUNT = "rooms/SET-WORKS-COUNT";
 
 const initialState = {
     works: [],
     isLoading: true,
-    currentWork: {}
+    currentWork: {},
+    worksCount: 0,
 }
 
 export const worksReducer = (state = initialState, action) => {
@@ -28,6 +30,11 @@ export const worksReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: action.isLoading
             }
+        case SET_WORKS_COUNT:
+            return {
+                ...state,
+                worksCount: action.worksCount
+            }
         default:
             return state
     }
@@ -36,6 +43,7 @@ export const worksReducer = (state = initialState, action) => {
 export const setWorks = (works) => ({ type: SET_WORKS, works });
 export const setCurrentWork = (currentWork) => ({ type: SET_CURRENT_WORK, currentWork });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
+export const setWorksCount = (worksCount) => ({ type: SET_WORKS_COUNT, worksCount });
 
 
 export const requestWorks = (userID, currentPage, pageSize) => {
@@ -43,7 +51,8 @@ export const requestWorks = (userID, currentPage, pageSize) => {
         dispatch(setLoading(true));
         try {
             const data = await WorksAPI.getWorks(userID, currentPage, pageSize);
-            dispatch(setWorks(data));
+            dispatch(setWorks(data.works));
+            dispatch(setWorksCount(data.worksCount));
         }
         catch (error) {
             console.log('Get works error', error);

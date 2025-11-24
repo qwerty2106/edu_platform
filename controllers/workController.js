@@ -7,15 +7,17 @@ const QUERIES = {
         INNER JOIN users u ON u.id = cl.user_id
         INNER JOIN lessons l ON l.id = cl.lesson_id
         INNER JOIN modules m ON m.id = l.module_id
-        WHERE 
+        WHERE
+        ( 
             -- Для ученика - его работы
             cl.user_id = ? 
         OR
             -- Для преподавателя - работы его учеников
-        (EXISTS (
+        EXISTS (
             SELECT 1 FROM teachers_courses tc 
             WHERE tc.user_id = ? AND tc.course_id = m.course_id
         ))
+        AND l.lesson_type = 'Практика'
         LIMIT ? OFFSET ?`,
     GET_CURRENT_WORK: `
         SELECT * FROM completed_lessons 
@@ -24,23 +26,47 @@ const QUERIES = {
         UPDATE completed_lessons
         SET status = ?, comment_teacher = ?, score = ?
         WHERE user_id = ? AND lesson_id = ?`,
+    COUNT_WORKS: `
+        SELECT COUNT(*) as totalCount
+        FROM completed_lessons cl
+        INNER JOIN users u ON u.id = cl.user_id
+        INNER JOIN lessons l ON l.id = cl.lesson_id
+        INNER JOIN modules m ON m.id = l.module_id
+        WHERE 
+        (
+            -- Для ученика - его работы
+            cl.user_id = ? 
+        OR
+            -- Для преподавателя - работы его учеников
+            EXISTS (
+                SELECT 1 FROM teachers_courses tc 
+                WHERE tc.user_id = ? AND tc.course_id = m.course_id
+            )
+        )
+        AND l.lesson_type = 'Практика'`,
 }
 
 //Получение всех выполненных работ
 exports.getWorks = (req, res) => {
     //Пагинация
     const page = parseInt(req.query.page) || 1;
-    const count = parseInt(req.query.count) || 1;
+    const count = parseInt(req.query.count) || 3;
 
     const { userID } = req.params;
 
-    connection.query(QUERIES.GET_WORKS, [userID, userID, count, (page - 1) * count], (error, result) => {
+    connection.query(QUERIES.GET_WORKS, [userID, userID, count, (page - 1) * count], (error, worksResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
-        return res.status(200).json(result)
-    })
+        connection.query(QUERIES.COUNT_WORKS, [userID, userID], (error, totalCountResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            return res.status(200).json({ works: worksResult, worksCount: totalCountResult[0].totalCount });
+        });
+    });
 };
 
 //Получение выполненного урока
