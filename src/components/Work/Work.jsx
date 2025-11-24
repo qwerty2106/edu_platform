@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Work = (props) => {
     const navigate = useNavigate();
     return (
-        <Row className="text-white bg-dark rounded p-3 align-items-center g-0 " onClick={() => navigate(`/app/works/${props.user_id}/${props.lesson_id}`)} style={{ cursor: "pointer" }}>
+        <Row className="text-white bg-dark rounded p-3 align-items-center g-0 px-5" onClick={() => navigate(`/app/works/${props.user_id}/${props.lesson_id}`)} style={{ cursor: "pointer" }}>
             <Col className="d-flex gap-3 align-items-center" sm={4}>
                 <Image
                     src={props.img}
@@ -32,7 +32,7 @@ const Work = (props) => {
                 <Button variant="primary" onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/app/works/${props.user_id}/${props.lesson_id}`)
-                }}>Проверить</Button>
+                }}>Просмотреть</Button>
             </Col>
         </Row>
     )

@@ -5,10 +5,12 @@ import { requestWorks } from "../../redux/works-reducer";
 import Preloader from "../../common/Preloader";
 import Work from "./Work";
 import MyPagination from "../../common/Pagination";
+import withRouter from "../../common/WithRouter";
 
 class WorkContainer extends React.Component {
     componentDidMount() {
-        this.props.requestWorks(1, 1);
+        const { userID } = this.props.router.params;
+        this.props.requestWorks(userID, 1, 1);
     }
     render() {
         if (this.props.isLoading)
@@ -36,4 +38,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, { requestWorks })(WorkContainer);
+export default connect(mapStateToProps, { requestWorks })(withRouter(WorkContainer));

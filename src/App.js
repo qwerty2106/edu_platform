@@ -49,7 +49,7 @@ class App extends React.Component {
             <Route path='/app' element={<AppContainer />}>
               <Route index element={<Courses />} />
               <Route path='courses' element={<Courses />} />
-              <Route path='works' element={<WorkContainer />} />
+              <Route path='works/:userID' element={<WorkContainer />} />
               <Route path='works/:userID/:lessonID' element={<WorkContent />} />
               <Route path='lessons/:lessonID' element={<LessonComponent />} />
               <Route path='courses/:courseID' element={<CourseContent />} />

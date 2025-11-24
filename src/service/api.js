@@ -16,14 +16,14 @@ export const CoursesAPI = {
 };
 
 export const WorksAPI = {
-    getWorks(currentPage, pageSize) {
-        return axios.get(`/app/works?page=${currentPage}&count=${pageSize}`).then(response => response.data);
+    getWorks(userID, currentPage, pageSize) {
+        return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`).then(response => response.data);
     },
     getCurrentWork(userID, lessonID) {
         return axios.get(`/app/works/${userID}/${lessonID}`).then(response => response.data);
     },
-    updateWork(userID, lessonID, status, comment) {
-        return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment }).then(response => response.status);
+    updateWork(userID, lessonID, status, comment, score) {
+        return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment, score }).then(response => response.status);
     },
 };
 

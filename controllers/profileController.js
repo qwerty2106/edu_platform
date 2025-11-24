@@ -12,12 +12,12 @@ exports.getUserProgress = (req, res) => {
             THEN ROUND(COUNT(DISTINCT CASE WHEN cl.passed = TRUE THEN cl.lesson_id END) * 100.0 / COUNT(DISTINCT l.id)) 
         ELSE 0
         END as completion_percent
-        FROM users_courses uc 
-        INNER JOIN courses c ON uc.course_id = c.id 
+        FROM students_courses sc 
+        INNER JOIN courses c ON sc.course_id = c.id 
         LEFT JOIN modules m ON m.course_id = c.id
         LEFT JOIN lessons l ON l.module_id = m.id
-        LEFT JOIN completed_lessons cl ON cl.lesson_id = l.id AND cl.user_id = uc.user_id
-        WHERE uc.user_id = ?
+        LEFT JOIN completed_lessons cl ON cl.lesson_id = l.id AND cl.user_id = sc.user_id
+        WHERE sc.user_id = ?
         GROUP BY c.id, c.title, c.img
         LIMIT ? OFFSET ?`, [userID, count, (page - 1) * count], (error, statisticsResult) => {
         if (error) {
@@ -29,7 +29,7 @@ exports.getUserProgress = (req, res) => {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
             }
-            connection.query("SELECT COUNT(*) as totalCount FROM users_courses WHERE user_id = ?", [userID], (error, totalCountResult) => {
+            connection.query("SELECT COUNT(*) as totalCount FROM students_courses WHERE user_id = ?", [userID], (error, totalCountResult) => {
                 if (error) {
                     console.log(error);
                     return res.status(500).json({ error: "Database error on SELECT" });

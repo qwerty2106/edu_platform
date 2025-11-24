@@ -38,11 +38,11 @@ export const setCurrentWork = (currentWork) => ({ type: SET_CURRENT_WORK, curren
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 
 
-export const requestWorks = (currentPage, pageSize) => {
+export const requestWorks = (userID, currentPage, pageSize) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await WorksAPI.getWorks(currentPage, pageSize);
+            const data = await WorksAPI.getWorks(userID, currentPage, pageSize);
             dispatch(setWorks(data));
         }
         catch (error) {
@@ -66,11 +66,11 @@ export const requestCurrentWork = (userID, lessonID) => {
     };
 };
 
-export const requestCheckWork = (userID, lessonID, newStatus, comment) => {
+export const requestCheckWork = (userID, lessonID, newStatus, comment, score) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const status = await WorksAPI.updateWork(userID, lessonID, newStatus, comment);
+            const status = await WorksAPI.updateWork(userID, lessonID, newStatus, comment, score);
             if (status === 200) {
                 dispatch(requestCurrentWork(userID, lessonID));
                 dispatch(setNotify({ status: 'success', message: 'Работа обновлена!' }));

@@ -19,17 +19,15 @@ const Sidebar = () => {
           </ListGroup.Item>
         </NavLink>
 
-        {
-          user.role === "teacher" ?
-            <NavLink to={`/app/works`} className="text-decoration-none">
-              <ListGroup.Item action>
-                <Container className='d-flex gap-3 align-items-center p-2'>
-                  <PencilFill style={{ width: '20px', height: '20px' }} />
-                  <span>Проверка</span>
-                </Container>
-              </ListGroup.Item>
-            </NavLink> : null
-        }
+
+        <NavLink to={`/app/works/${user.id}`} className="text-decoration-none">
+          <ListGroup.Item action>
+            <Container className='d-flex gap-3 align-items-center p-2'>
+              <PencilFill style={{ width: '20px', height: '20px' }} />
+              <span>Работы</span>
+            </Container>
+          </ListGroup.Item>
+        </NavLink>
 
         {
           user.role === "student" ?

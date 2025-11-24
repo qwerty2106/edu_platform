@@ -7,30 +7,34 @@ const QUERIES = {
     GET_COURSES: `
         SELECT c.*,
         -- Если null, то 0
-        COALESCE(uc.user_count, 0) as users_count,
+        COALESCE(sc.user_count, 0) as users_count,
         GROUP_CONCAT(CASE WHEN ui.rn <= 5 THEN ui.user_img END) as user_images,
         -- is_available
         EXISTS (
-            SELECT 1 FROM users_courses uc_check 
-            WHERE uc_check.course_id = c.id AND uc_check.user_id = ?
-        ) as is_available
+            SELECT 1 FROM students_courses sc_check 
+            WHERE sc_check.course_id = c.id AND sc_check.user_id = ?
+        ) OR EXISTS (
+            SELECT 1 FROM teachers_courses tc_check 
+            WHERE tc_check.course_id = c.id AND tc_check.user_id = ?
+        )
+        as is_available
         FROM courses c
         -- user_images
         LEFT JOIN (
             SELECT 
-            uc.course_id,
+            sc.course_id,
             u.img as user_img,
-            -- Группировка курсов и изображений по 5 на каждый uc.course_id
-            ROW_NUMBER() OVER (PARTITION BY uc.course_id ORDER BY uc.id) as rn
-            FROM users_courses uc
-            INNER JOIN users u ON u.id = uc.user_id
+            -- Группировка курсов и изображений по 5 на каждый sc.course_id
+            ROW_NUMBER() OVER (PARTITION BY sc.course_id ORDER BY sc.id) as rn
+            FROM students_courses sc
+            INNER JOIN users u ON u.id = sc.user_id
         ) ui ON ui.course_id = c.id AND ui.rn <= 5
         -- users_count
         LEFT JOIN (
             SELECT course_id, COUNT(*) as user_count 
-            FROM users_courses 
+            FROM students_courses 
             GROUP BY course_id
-        ) uc ON uc.course_id = c.id
+        ) sc ON sc.course_id = c.id
         -- Группировка + конкатенация
         GROUP BY c.id 
         LIMIT ? OFFSET ?`,
@@ -38,34 +42,41 @@ const QUERIES = {
     GET_MY_COURSES: `
         SELECT c.*,
         -- Если null, то 0
-        COALESCE(uc.user_count, 0) as users_count,
+        COALESCE(sc.user_count, 0) as users_count,
         GROUP_CONCAT(CASE WHEN ui.rn <= 5 THEN ui.user_img END) as user_images,
         -- is_available
         EXISTS (
-            SELECT 1 FROM users_courses uc_check 
-            WHERE uc_check.course_id = c.id AND uc_check.user_id = ?
-        ) as is_available
+            SELECT 1 FROM students_courses sc_check 
+            WHERE sc_check.course_id = c.id AND sc_check.user_id = ?
+        ) OR EXISTS (
+            SELECT 1 FROM teachers_courses tc_check 
+            WHERE tc_check.course_id = c.id AND tc_check.user_id = ?
+        )            
+        as is_available
         FROM courses c
         -- user_images
         LEFT JOIN (
             SELECT 
-            uc.course_id,
+            sc.course_id,
             u.img as user_img,
-            -- Группировка курсов и изображений по 5 на каждый uc.course_id
-            ROW_NUMBER() OVER (PARTITION BY uc.course_id ORDER BY uc.id) as rn
-            FROM users_courses uc
-            INNER JOIN users u ON u.id = uc.user_id
+            -- Группировка курсов и изображений по 5 на каждый sc.course_id
+            ROW_NUMBER() OVER (PARTITION BY sc.course_id ORDER BY sc.id) as rn
+            FROM students_courses sc
+            INNER JOIN users u ON u.id = sc.user_id
         ) ui ON ui.course_id = c.id AND ui.rn <= 5
         -- users_count
         LEFT JOIN (
             SELECT course_id, COUNT(*) as user_count 
-            FROM users_courses 
+            FROM students_courses 
             GROUP BY course_id
-        ) uc ON uc.course_id = c.id
+        ) sc ON sc.course_id = c.id
         -- Фильтрация курсов пользователя
         WHERE EXISTS (
-            SELECT 1 FROM users_courses uc_my 
-            WHERE uc_my.course_id = c.id AND uc_my.user_id = ?
+            SELECT 1 FROM students_courses sc_my 
+            WHERE sc_my.course_id = c.id AND sc_my.user_id = ?
+        ) OR EXISTS (
+            SELECT 1 FROM teachers_courses tc_my 
+            WHERE tc_my.course_id = c.id AND tc_my.user_id = ?
         )
         -- Группировка + конкатенация
         GROUP BY c.id 
@@ -75,8 +86,13 @@ const QUERIES = {
     COUNT_MY_COURSES: `
         SELECT COUNT(DISTINCT c.id) as totalCount 
         FROM courses c 
-        INNER JOIN users_courses uc ON uc.course_id = c.id 
-        WHERE uc.user_id = ?`,
+        WHERE EXISTS (
+            SELECT 1 FROM students_courses sc 
+            WHERE sc.course_id = c.id AND sc.user_id = ?
+        ) OR EXISTS (
+            SELECT 1 FROM teachers_courses tc 
+            WHERE tc.course_id = c.id AND tc.user_id = ?
+        )`,
 
     GET_MODULES: `
         SELECT * FROM modules WHERE course_id = ? 
@@ -118,8 +134,6 @@ const QUERIES = {
         SELECT *    
         FROM lessons 
         WHERE id = ?`,
-
-
 }
 
 //Получение всех курсов
@@ -138,15 +152,15 @@ exports.getCourses = (req, res) => {
     if (filter === 'all') {
         GET_QUERY = QUERIES.GET_COURSES;
         COUNT_QUERY = QUERIES.COUNT_COURSES;
-        queryParams = [userID, count, (page - 1) * count];
+        queryParams = [userID, userID, count, (page - 1) * count];
         countParams = [];
     }
 
     else {
         GET_QUERY = QUERIES.GET_MY_COURSES;
         COUNT_QUERY = QUERIES.COUNT_MY_COURSES;
-        queryParams = [userID, userID, count, (page - 1) * count];
-        countParams = [userID];
+        queryParams = [userID, userID, userID, userID, count, (page - 1) * count];
+        countParams = [userID, userID];
     }
 
     //Все курсы
@@ -259,7 +273,7 @@ exports.completeLesson = (req, res) => {
             const filePath = `/completed-lessons/${fileName}`;
 
             //С файлом
-            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке', null], (error, result) => {
+            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке', 0], (error, result) => {
                 if (error) {
                     console.error(error);
                     //Удаление файла, если произошла ошибка сохранения в БД

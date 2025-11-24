@@ -10,7 +10,6 @@ import { Nav, Tab, } from "react-bootstrap";
 import LessonContent from "./LessonContent";
 import styles from '../../../styles.module.css';
 
-
 class LessonComponent extends React.Component {
     componentDidMount() {
         const { lessonID } = this.props.router.params;

@@ -2,16 +2,27 @@ const connection = require('../config/database');
 
 const QUERIES = {
     GET_WORKS: `
-        SELECT cl.*, u.username, u.img, l.title FROM completed_lessons cl
+        SELECT cl.*, u.username, u.img, l.title 
+        FROM completed_lessons cl
         INNER JOIN users u ON u.id = cl.user_id
         INNER JOIN lessons l ON l.id = cl.lesson_id
+        INNER JOIN modules m ON m.id = l.module_id
+        WHERE 
+            -- Для ученика - его работы
+            cl.user_id = ? 
+        OR
+            -- Для преподавателя - работы его учеников
+        (EXISTS (
+            SELECT 1 FROM teachers_courses tc 
+            WHERE tc.user_id = ? AND tc.course_id = m.course_id
+        ))
         LIMIT ? OFFSET ?`,
     GET_CURRENT_WORK: `
         SELECT * FROM completed_lessons 
         WHERE user_id = ? AND lesson_id = ?`,
     UPDATE_WORK: `
         UPDATE completed_lessons
-        SET status = ?, comment_teacher = ? 
+        SET status = ?, comment_teacher = ?, score = ?
         WHERE user_id = ? AND lesson_id = ?`,
 }
 
@@ -21,7 +32,9 @@ exports.getWorks = (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const count = parseInt(req.query.count) || 1;
 
-    connection.query(QUERIES.GET_WORKS, [count, (page - 1) * count], (error, result) => {
+    const { userID } = req.params;
+
+    connection.query(QUERIES.GET_WORKS, [userID, userID, count, (page - 1) * count], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
@@ -46,13 +59,13 @@ exports.getCurrentWork = (req, res) => {
 //Получение выполненного урока
 exports.updateWork = (req, res) => {
     const { userID, lessonID } = req.params
-    const { status } = req.body;
+    const { status, score } = req.body;
 
     let comment = req.body.comment;
     if (comment.trim() === '')
         comment = null;
 
-    connection.query(QUERIES.UPDATE_WORK, [status, comment, userID, lessonID], (error, result) => {
+    connection.query(QUERIES.UPDATE_WORK, [status, comment, score, userID, lessonID], (error, result) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on UPDATE" });
