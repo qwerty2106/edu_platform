@@ -92,6 +92,10 @@ exports.getCurrentWork = (req, res) => {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
             }
+            //Работы не существует
+            if (result.length === 0)
+                return res.status(404).json({ error: "Work not found" });
+
             return res.status(200).json(result[0]);
         });
     };
@@ -121,17 +125,29 @@ exports.getCurrentWork = (req, res) => {
 //Получение выполненного урока
 exports.updateWork = (req, res) => {
     const { userID, lessonID } = req.params
-    const { status, score } = req.body;
+    const { status, score, comment } = req.body;
+    const currentUser = req.user;
 
-    let comment = req.body.comment;
-    if (comment.trim() === '')
-        comment = null;
+    if (currentUser.role !== "teacher")
+        return res.status(403).json({ error: "Access denied" });
 
-    connection.query(QUERIES.UPDATE_WORK, [status, comment, score, userID, lessonID], (error, result) => {
+    connection.query(QUERIES.GET_VALID_USERS, [currentUser.id], (error, usersResult) => {
         if (error) {
             console.log(error);
-            return res.status(500).json({ error: "Database error on UPDATE" });
+            return res.status(500).json({ error: "Database error on SELECT" });
         }
-        return res.status(200).json({ message: "Work updated successfully" })
-    })
+
+        const usersID = usersResult.map(user => user.user_id);
+
+        if (!usersID.includes(parseInt(userID)))
+            return res.status(403).json({ error: "Access denied" });
+
+        connection.query(QUERIES.UPDATE_WORK, [status, comment, score, userID, lessonID], (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on UPDATE" });
+            }
+            return res.status(200).json({ message: "Work updated successfully" })
+        })
+    });
 };

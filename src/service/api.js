@@ -17,15 +17,13 @@ export const CoursesAPI = {
 
 export const WorksAPI = {
     getWorks(userID, currentPage, pageSize) {
-        const token = localStorage.getItem('authToken');
-        return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(response => response.data);
+        return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data);
     },
     getCurrentWork(userID, lessonID) {
-        const token = localStorage.getItem('authToken');
-        return axios.get(`/app/works/${userID}/${lessonID}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(response => response.data);
+        return axios.get(`/app/works/${userID}/${lessonID}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data);
     },
     updateWork(userID, lessonID, status, comment, score) {
-        return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment, score }).then(response => response.status);
+        return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment, score }, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.status);
     },
 };
 

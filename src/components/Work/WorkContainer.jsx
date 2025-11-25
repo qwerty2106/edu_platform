@@ -7,6 +7,7 @@ import Work from "./Work";
 import MyPagination from "../../common/Pagination";
 import withRouter from "../../common/WithRouter";
 import { getUser } from "../../redux/auth-selectors";
+import EmptyScreen from "../../common/EmptyScreen";
 
 class WorkContainer extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ class WorkContainer extends React.Component {
             return <Preloader />
 
         if (this.props.works.length === 0)
-            return <h1>No works yet!</h1>
+            return <EmptyScreen />
 
         const worksElements = this.props.works.map((work, index) => <Work key={index} {...work} />)
 
