@@ -1,6 +1,7 @@
 const connection = require('../config/database');
 //Шифрование пароля
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 //Сброс пароля
 const crypto = require('crypto');
@@ -48,15 +49,18 @@ exports.register = (req, res) => {
                         console.log(err)
                         return res.status(500).json({ error: "Database error on INSERT" })
                     }
+                    const token = jwt.sign({ id: insertResult.insertId, role: 'student', }, process.env.JWT_SECRET, { expiresIn: '7d' });
                     return res.status(201).json({
                         message: "User registered successfully",
                         user: {
                             id: insertResult.insertId,
                             username,
+                            email,
                             role: 'student',
                             img: null,
-                            created_date: new Date().toLocaleString()
-                        }
+                            created_date: new Date().toISOString()
+                        },
+                        token
                     })
                 })
             })
@@ -86,15 +90,18 @@ exports.login = (req, res) => {
             if (!isMatch)
                 return res.status(401).json({ error: "Invalid login or password" })
             //Пароль верный
+            const token = jwt.sign({ id: result[0].id, role: result[0].role, }, process.env.JWT_SECRET, { expiresIn: '7d' });
             return res.status(200).json({
                 message: "User authorized successfully",
                 user: {
                     id: result[0].id,
                     username: result[0].username,
+                    email: result[0].email,
                     role: result[0].role,
                     img: result[0].img,
-                    created_date: result[0].created_date.toLocaleString()
-                }
+                    created_date: result[0].created_date.toISOString()
+                },
+                token
             })
         })
     })
@@ -173,18 +180,35 @@ exports.reset = (req, res) => {
                         console.log(err)
                         return res.status(500).json({ error: "Database error on UPDATE" })
                     }
+                    const token = jwt.sign({ id: result[0].id, role: result[0].role }, process.env.JWT_SECRET, { expiresIn: '7d' });
                     return res.status(200).json({
-                        message: "User change password successfully",
+                        message: "Password changed successfully",
                         user: {
                             id: result[0].id,
                             username: result[0].username,
+                            email: result[0].email,
                             role: result[0].role,
                             img: result[0].img,
-                            createdDate: result[0].created_date.toLocaleString()
-                        }
+                            createdDate: result[0].created_date.toISOString()
+                        },
+                        token
                     })
                 })
             })
         })
+    })
+};
+
+exports.getUserData = (req, res) => {
+    const userID = req.user.id;
+    connection.query('SELECT id, username, role, email, created_date, img FROM users WHERE id = ?', [userID], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Database error on SELECT" });
+        }
+        if (result.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        return res.status(200).json(result[0])
     })
 };

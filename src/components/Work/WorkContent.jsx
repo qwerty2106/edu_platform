@@ -8,8 +8,6 @@ import { Badge } from "react-bootstrap";
 import { getUser } from "../../redux/auth-selectors";
 import WorkContentStudent from "./WorkContentStudent";
 import WorkContentTeacher from "./WorkContentTeacher";
-import { withWorkRedirect } from "../../hoc/withWorkRedirect";
-
 
 const WorkContent = ({ currentWork, requestCheckWork }) => {
     const user = useSelector(getUser);
@@ -41,9 +39,13 @@ const WorkContent = ({ currentWork, requestCheckWork }) => {
 }
 
 class WorkContentComponent extends React.Component {
-    componentDidMount() {
+    async componentDidMount() {
         const { userID, lessonID } = this.props.router.params;
-        this.props.requestCurrentWork(userID, lessonID);
+        const result = await this.props.requestCurrentWork(userID, lessonID);
+
+        if (!result.success && result.error === 403) {
+            this.props.router.navigate(`/app/works/${userID}`);
+        }
     }
     render() {
         if (this.props.isLoading)
@@ -61,4 +63,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default withRouter(connect(mapStateToProps, { requestCurrentWork, requestCheckWork })(withWorkRedirect(WorkContentComponent)));
+export default connect(mapStateToProps, { requestCurrentWork, requestCheckWork })(withRouter(WorkContentComponent));

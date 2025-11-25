@@ -9,7 +9,6 @@ const UserSmallImage = (props) => {
 }
 
 const Course = (props) => {
-    console.log(props.tech_stack)
     const navigate = useNavigate();
     const usersImages = props.user_images ? props.user_images.split(',') : [];
     const usersSmallImagesElements = usersImages.map(image => <UserSmallImage key={image} path={image} />);

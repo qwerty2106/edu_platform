@@ -44,6 +44,13 @@ const QUERIES = {
             )
         )
         AND l.lesson_type = 'Практика'`,
+    GET_VALID_USERS: `
+        SELECT DISTINCT cl.user_id
+        FROM completed_lessons cl
+        INNER JOIN lessons l ON l.id = cl.lesson_id
+        INNER JOIN modules m ON m.id = l.module_id
+        INNER JOIN teachers_courses tc ON tc.course_id = m.course_id
+        WHERE tc.user_id = ?`
 }
 
 //Получение всех выполненных работ
@@ -72,14 +79,38 @@ exports.getWorks = (req, res) => {
 //Получение выполненного урока
 exports.getCurrentWork = (req, res) => {
     const { userID, lessonID } = req.params;
+    const currentUser = req.user;
 
-    connection.query(QUERIES.GET_CURRENT_WORK, [userID, lessonID], (error, result) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ error: "Database error on SELECT" });
-        }
-        return res.status(200).json(result[0])
-    })
+    const executeQuery = () => {
+        connection.query(QUERIES.GET_CURRENT_WORK, [userID, lessonID], (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            return res.status(200).json(result[0]);
+        });
+    };
+
+    if (currentUser.role === "student" && userID != currentUser.id)
+        return res.status(403).json({ error: "Access denied" });
+
+    if (currentUser.role === "student" && userID == currentUser.id)
+        executeQuery();
+
+    if (currentUser.role === "teacher") {
+        connection.query(QUERIES.GET_VALID_USERS, [currentUser.id], (error, usersResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            const usersID = usersResult.map(user => user.user_id);
+
+            if (!usersID.includes(parseInt(userID)))
+                return res.status(403).json({ error: "Access denied" });
+
+            executeQuery();
+        })
+    }
 };
 
 //Получение выполненного урока

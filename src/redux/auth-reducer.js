@@ -35,7 +35,7 @@ export const signUp = (username, email, password) => {
         try {
             const data = await AuthAPI.signUp(username, email, password);
             dispatch(setUser(data.user));
-            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            localStorage.setItem('authToken', data.token);  //Из объекта в строку
             dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
@@ -48,7 +48,7 @@ export const signUp = (username, email, password) => {
 
 export const logOut = () => {
     return (dispatch) => {
-        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
         dispatch(setUser(null));
     }
 }
@@ -60,7 +60,7 @@ export const signIn = (username, password) => {
             const data = await AuthAPI.signIn(username, password);
             console.log(data.user)
             dispatch(setUser(data.user));
-            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            localStorage.setItem('authToken', data.token);
             dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
@@ -96,7 +96,7 @@ export const passwordReset = (resetToken, newPassword) => {
         try {
             const data = await AuthAPI.reset(resetToken, newPassword);
             dispatch(setUser(data.user));
-            localStorage.setItem('user', JSON.stringify(data.user));  //Из объекта в строку
+            localStorage.setItem('authToken', data.token);
             dispatch(setNotify({ status: 'success', message: 'Password changed successfully' }));
         }
         catch (error) {

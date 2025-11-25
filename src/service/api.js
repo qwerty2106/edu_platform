@@ -20,7 +20,8 @@ export const WorksAPI = {
         return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`).then(response => response.data);
     },
     getCurrentWork(userID, lessonID) {
-        return axios.get(`/app/works/${userID}/${lessonID}`).then(response => response.data);
+        const token = localStorage.getItem('authToken');
+        return axios.get(`/app/works/${userID}/${lessonID}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(response => response.data);
     },
     updateWork(userID, lessonID, status, comment, score) {
         return axios.put(`/app/works/${userID}/${lessonID}`, { status, comment, score }).then(response => response.status);
@@ -39,6 +40,10 @@ export const AuthAPI = {
     },
     reset(resetToken, newPassword) {
         return axios.post('/auth/reset', { resetToken, newPassword }).then(response => response.data)
+    },
+    getUserData() {
+        const token = localStorage.getItem('authToken');
+        return axios.get('/auth/me', { headers: { 'Authorization': `Bearer ${token}` } }).then(response => response.data)
     }
 };
 

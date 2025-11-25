@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { WorksAPI } from "../service/api";
 import { setNotify } from "./app-reducer";
 
@@ -67,11 +68,15 @@ export const requestCurrentWork = (userID, lessonID) => {
         try {
             const data = await WorksAPI.getCurrentWork(userID, lessonID);
             dispatch(setCurrentWork(data));
+            return { success: true };
         }
         catch (error) {
             console.log('Get work error', error);
+            return { success: false, error: error.response?.status };
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
     };
 };
 
@@ -79,17 +84,13 @@ export const requestCheckWork = (userID, lessonID, newStatus, comment, score) =>
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const status = await WorksAPI.updateWork(userID, lessonID, newStatus, comment, score);
-            if (status === 200) {
-                dispatch(requestCurrentWork(userID, lessonID));
-                dispatch(setNotify({ status: 'success', message: 'Работа обновлена!' }));
-            }
-            else {
-                dispatch(setNotify({ status: 'error', message: 'Произошла ошибка!' }));
-            }
+            await WorksAPI.updateWork(userID, lessonID, newStatus, comment, score);
+            dispatch(requestCurrentWork(userID, lessonID));
+            dispatch(setNotify({ status: 'success', message: 'Работа обновлена!' }));
         }
         catch (error) {
             console.log('Update work error', error);
+            dispatch(setNotify({ status: 'error', message: 'Произошла ошибка!' }));
         }
         dispatch(setLoading(false));
     };

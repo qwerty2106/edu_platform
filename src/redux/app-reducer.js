@@ -1,3 +1,4 @@
+import { AuthAPI } from "../service/api";
 import webSocketService from "../service/webSocketService";
 import { setUser } from "./auth-reducer";
 
@@ -32,16 +33,15 @@ export const setNotify = (notify) => ({ type: SET_NOTIFY, notify });
 //Инициализация на каждом обновлении
 export const initializeApp = () => {
     return async (dispatch) => {
-        const storedUserData = localStorage.getItem('user');
-        //Данные есть в localStorage -> загружаем в state
-        if (storedUserData) {
+        const token = localStorage.getItem('authToken');
+        if (token) {
             try {
-                const userData = JSON.parse(storedUserData);  //Из строки в объект  
+                const userData = await AuthAPI.getUserData();  //Из строки в объект  
                 await dispatch(setUser(userData));
             }
             catch (error) {
                 console.error('Error parsing user data from localStorage', error);
-                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
             }
         }
         dispatch(setInitialized());
