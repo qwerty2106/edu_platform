@@ -6,7 +6,6 @@ import Preloader from "../../common/Preloader";
 import Work from "./Work";
 import MyPagination from "../../common/Pagination";
 import withRouter from "../../common/WithRouter";
-import { withWorkListRedirect } from "../../hoc/withWorkListRedirect";
 import { getUser } from "../../redux/auth-selectors";
 
 class WorkContainer extends React.Component {
@@ -17,10 +16,18 @@ class WorkContainer extends React.Component {
     componentDidMount() {
         this.loadWorks();
     }
-    loadWorks = () => {
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.router.params.userID !== prevProps.router.params.userID || this.state.page !== prevState.page)
+            this.loadWorks();
+    }
+    loadWorks = async () => {
         const { userID } = this.props.router.params;
-        this.props.requestWorks(userID, this.state.page, this.state.pageSize);
-        console.log(this.props.worksCount)
+        const { user } = this.props;
+        const result = await this.props.requestWorks(userID, this.state.page, this.state.pageSize);
+
+        if (!result.success && result.error === 403) {
+            this.props.router.navigate(`/app/works/${user.id}`, { replace: true });
+        }
     }
     onPageChangeHandle = (page) => {
         this.setState({ page }, () => this.loadWorks());
@@ -57,4 +64,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default withRouter(connect(mapStateToProps, { requestWorks })(withWorkListRedirect(WorkContainer)));
+export default connect(mapStateToProps, { requestWorks })(withRouter(WorkContainer));

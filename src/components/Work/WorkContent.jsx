@@ -44,7 +44,7 @@ class WorkContentComponent extends React.Component {
         const result = await this.props.requestCurrentWork(userID, lessonID);
 
         if (!result.success && result.error === 403) {
-            this.props.router.navigate(`/app/works/${userID}`);
+            this.props.router.navigate(`/app/works/${userID}`, { replace: true });
         }
     }
     render() {

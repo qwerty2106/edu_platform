@@ -55,11 +55,16 @@ const QUERIES = {
 
 //Получение всех выполненных работ
 exports.getWorks = (req, res) => {
+    const currentUser = req.user;
+
     //Пагинация
     const page = parseInt(req.query.page) || 1;
     const count = parseInt(req.query.count) || 3;
 
     const { userID } = req.params;
+
+    if (userID != currentUser.id)
+        return res.status(403).json({ error: "Access denied" });
 
     connection.query(QUERIES.GET_WORKS, [userID, userID, count, (page - 1) * count], (error, worksResult) => {
         if (error) {

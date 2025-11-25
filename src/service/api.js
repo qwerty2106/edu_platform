@@ -17,7 +17,8 @@ export const CoursesAPI = {
 
 export const WorksAPI = {
     getWorks(userID, currentPage, pageSize) {
-        return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`).then(response => response.data);
+        const token = localStorage.getItem('authToken');
+        return axios.get(`/app/works/${userID}?page=${currentPage}&count=${pageSize}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(response => response.data);
     },
     getCurrentWork(userID, lessonID) {
         const token = localStorage.getItem('authToken');

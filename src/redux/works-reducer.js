@@ -54,11 +54,15 @@ export const requestWorks = (userID, currentPage, pageSize) => {
             const data = await WorksAPI.getWorks(userID, currentPage, pageSize);
             dispatch(setWorks(data.works));
             dispatch(setWorksCount(data.worksCount));
+            return { success: true };
         }
         catch (error) {
             console.log('Get works error', error);
+            return { success: false, error: error.response.status }
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
     };
 };
 
@@ -72,7 +76,7 @@ export const requestCurrentWork = (userID, lessonID) => {
         }
         catch (error) {
             console.log('Get work error', error);
-            return { success: false, error: error.response?.status };
+            return { success: false, error: error.response.status };
         }
         finally {
             dispatch(setLoading(false));
