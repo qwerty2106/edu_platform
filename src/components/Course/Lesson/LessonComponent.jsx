@@ -56,5 +56,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-//withRouter доступен в mapStateToProps
-export default withRouter(connect(mapStateToProps, { requestCurrentLesson })(LessonComponent));
+export default connect(mapStateToProps, { requestCurrentLesson })(withRouter(LessonComponent));

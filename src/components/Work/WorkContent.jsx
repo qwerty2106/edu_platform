@@ -8,11 +8,11 @@ import { Badge } from "react-bootstrap";
 import { getUser } from "../../redux/auth-selectors";
 import WorkContentStudent from "./WorkContentStudent";
 import WorkContentTeacher from "./WorkContentTeacher";
+import { withWorkRedirect } from "../../hoc/withWorkRedirect";
 
 
 const WorkContent = ({ currentWork, requestCheckWork }) => {
     const user = useSelector(getUser);
-
     return (
         <div>
             <h2>Информация о работе</h2>
@@ -57,7 +57,8 @@ const mapStateToProps = (state) => {
     return {
         currentWork: getCurrentWork(state),
         isLoading: getWorksLoading(state),
+        user: getUser(state),
     }
 }
 
-export default connect(mapStateToProps, { requestCurrentWork, requestCheckWork })(withRouter(WorkContentComponent));
+export default withRouter(connect(mapStateToProps, { requestCurrentWork, requestCheckWork })(withWorkRedirect(WorkContentComponent)));

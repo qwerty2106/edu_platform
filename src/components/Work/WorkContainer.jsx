@@ -6,6 +6,8 @@ import Preloader from "../../common/Preloader";
 import Work from "./Work";
 import MyPagination from "../../common/Pagination";
 import withRouter from "../../common/WithRouter";
+import { withWorkListRedirect } from "../../hoc/withWorkListRedirect";
+import { getUser } from "../../redux/auth-selectors";
 
 class WorkContainer extends React.Component {
     constructor(props) {
@@ -50,8 +52,9 @@ const mapStateToProps = (state) => {
         works: getWorks(state),
         isLoading: getWorksLoading(state),
         worksCount: getWorksCount(state),
+        user: getUser(state),
     }
 }
 
 
-export default connect(mapStateToProps, { requestWorks })(withRouter(WorkContainer));
+export default withRouter(connect(mapStateToProps, { requestWorks })(withWorkListRedirect(WorkContainer)));
