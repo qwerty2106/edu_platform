@@ -24,7 +24,7 @@ exports.authMiddleware = (req, res, next) => {
             role: decoded.role
         };
 
-        next();
+        next();  //Следующий middleware
 
     } catch (error) {
         console.log('Auth middleware error:', error);

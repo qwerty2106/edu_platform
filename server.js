@@ -6,10 +6,9 @@ const path = require('path');
 const fileUpload = require('express-fileupload');
 
 const app = express();
+
 app.use(express.json());
-
-app.use(fileUpload())
-
+app.use(fileUpload());
 app.use('/static', express.static(path.join(__dirname, 'static')));
 
 const server = http.createServer(app);
