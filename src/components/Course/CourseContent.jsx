@@ -5,10 +5,10 @@ import { requestCourseModules } from "../../redux/courses-reducer";
 import { getLessons, getLessonsCount, getLoadingCourses, getModules, getModulesCount } from "../../redux/courses-selectors";
 import withRouter from "../../common/WithRouter"
 import Preloader from "../../common/Preloader";
-import { getUser } from "../../redux/auth-selectors";
 import MyPagination from "../../common/Pagination";
 import LessonInfo from "./Lesson/LessonInfo";
 import ModuleInfo from "./Module/ModuleInfo";
+import EmptyScreen from "../../common/EmptyScreen";
 
 class CourseModules extends React.Component {
     constructor(props) {
@@ -19,11 +19,13 @@ class CourseModules extends React.Component {
         this.loadData();
     }
 
-    loadData = () => {
+    loadData = async () => {
         const { modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule } = this.state;
         const courseID = this.props.router.params.courseID;  //courseID из URL
-        const { user } = this.props;
-        this.props.requestCourseModules(courseID, user.id, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
+        const result = await this.props.requestCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
+
+        if (!result.success && (result.error === 403 || result.error === 404))
+            this.props.router.navigate('/app/courses', { replace: true });
     }
 
     //Смена пагинации модулей
@@ -31,7 +33,6 @@ class CourseModules extends React.Component {
         this.setState({ modulePage, currentModule: null, lessonPage: 1 }, () => {
             this.loadData();
         });
-
     }
 
     //Смена пагинации страниц
@@ -56,10 +57,9 @@ class CourseModules extends React.Component {
         if (isLoading)
             return <Preloader />
 
-
         //Курс без модулей
         if (courseModules.length === 0)
-            return <h1>No modules yet!</h1>
+            return <EmptyScreen />
 
         const activeModule = currentModule || courseModules[0]?.id;
 
@@ -76,7 +76,6 @@ class CourseModules extends React.Component {
             key={lesson.id}
             {...lesson}
         />)
-
 
         return (
             <>
@@ -116,7 +115,6 @@ const mapStateToProps = (state) => {
         isLoading: getLoadingCourses(state),
         modulesCount: getModulesCount(state),
         lessonsCount: getLessonsCount(state),
-        user: getUser(state),
     }
 }
 

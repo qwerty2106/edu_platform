@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export const CoursesAPI = {
-    getCourses(currentPage, pageSize, filterType, userID) {
-        return axios.get(`/app/courses?page=${currentPage}&count=${pageSize}&filter=${filterType}`, { headers: { 'userID': userID } }).then(response => response.data);
+    getCourses(currentPage, pageSize, filterType) {
+        return axios.get(`/app/courses?page=${currentPage}&count=${pageSize}&filter=${filterType}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data);
     },
-    getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) {
-        return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}&moduleID=${currentModule}`, { headers: { 'userID': userID } }).then(response => response.data);
+    getCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) {
+        return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}&moduleID=${currentModule}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data);
     },
     completeLesson(lessonID, formData) {
         return axios.post(`/app/lessons/${lessonID}`, formData).then(response => response.status)

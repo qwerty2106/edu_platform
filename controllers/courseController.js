@@ -134,6 +134,11 @@ const QUERIES = {
         SELECT *    
         FROM lessons 
         WHERE id = ?`,
+    GET_VALID_COURSES: `
+        SELECT DISTINCT course_id
+        FROM students_courses 
+        WHERE user_id = ?
+    `,
 }
 
 //Получение всех курсов
@@ -141,7 +146,7 @@ exports.getCourses = (req, res) => {
     //Пагинация
     const page = parseInt(req.query.page) || 1;
     const count = parseInt(req.query.count) || 1;
-    const userID = req.get('userID');
+    const userID = req.user.id;
     const filter = req.query.filter || 'all';
 
     let GET_QUERY;
@@ -169,6 +174,11 @@ exports.getCourses = (req, res) => {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
+
+        //Курсов нет
+        if (coursesResult.length === 0)
+            return res.status(200).json({ courses: [], totalCount: 0 });
+
         //Кол-во курсов
         connection.query(COUNT_QUERY, countParams, (error, totalCountResult) => {
             if (error) {
@@ -202,50 +212,77 @@ exports.getCourseContent = (req, res) => {
     const lessonCount = parseInt(req.query.lessonCount) || 2;
 
     let moduleID = req.query.moduleID;
-    if (moduleID === "null" || moduleID === '' || moduleID === undefined)
-        moduleID = null;
 
     const courseID = req.params.courseID;
-    const userID = req.get('userID'); //headers
+    const userID = req.user.id;
 
-    //Получение модулей
-    connection.query(QUERIES.GET_MODULES, [courseID, moduleCount, (modulePage - 1) * moduleCount], (error, modulesResult) => {
+    connection.query(QUERIES.GET_VALID_COURSES, [userID], (error, coursesResult) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Database error on SELECT" });
         }
 
-        if (!moduleID && modulesResult.length > 0) {
-            moduleID = modulesResult[0].id;
-        }
-        //Получение уроков
-        connection.query(QUERIES.GET_LESSONS, [userID, moduleID, lessonCount, (lessonPage - 1) * lessonCount], (error, lessonsResult) => {
+        //Проверка доступа курса пользователю
+        const coursesID = coursesResult.map(course => course.course_id);
+        if (!coursesID.includes(parseInt(courseID)))
+            return res.status(403).json({ error: "Access denied" });
+
+        //Получение модулей
+        connection.query(QUERIES.GET_MODULES, [courseID, moduleCount, (modulePage - 1) * moduleCount], (error, modulesResult) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({ error: "Database error on SELECT" });
             }
-            //Кол-во модулей
-            connection.query(QUERIES.COUNT_MODULES, [courseID], (error, totalModulesCount) => {
+
+            //Если у курса нет модулей возвращем пустой массив
+            if (modulesResult.length === 0)
+                return res.status(200).json({
+                    modules: [],
+                    lessons: [],
+                    modulesCount: 0,
+                    lessonsCount: 0
+                });
+
+            //Если модуль не передан (не выбран)
+            if (!moduleID || moduleID === "null" || moduleID === '') {
+                moduleID = modulesResult[0].id;
+            }
+            else {
+                //Проверка принадлежности модуля курсу
+                const modulesID = modulesResult.map(module => module.id);
+                if (!modulesID.includes(parseInt(moduleID)))
+                    return res.status(404).json({ error: "Module not found" });
+            }
+
+            //Получение уроков
+            connection.query(QUERIES.GET_LESSONS, [userID, moduleID, lessonCount, (lessonPage - 1) * lessonCount], (error, lessonsResult) => {
                 if (error) {
                     console.log(error);
                     return res.status(500).json({ error: "Database error on SELECT" });
                 }
-                //Кол-во уроков
-                connection.query(QUERIES.COUNT_LESSONS, [moduleID], (error, totalLessonsCount) => {
+                //Кол-во модулей
+                connection.query(QUERIES.COUNT_MODULES, [courseID], (error, totalModulesCount) => {
                     if (error) {
                         console.log(error);
                         return res.status(500).json({ error: "Database error on SELECT" });
                     }
-                    return res.status(200).json({
-                        modules: modulesResult,
-                        lessons: lessonsResult,
-                        modulesCount: totalModulesCount[0].totalCount,
-                        lessonsCount: totalLessonsCount[0].totalCount
+                    //Кол-во уроков
+                    connection.query(QUERIES.COUNT_LESSONS, [moduleID], (error, totalLessonsCount) => {
+                        if (error) {
+                            console.log(error);
+                            return res.status(500).json({ error: "Database error on SELECT" });
+                        }
+                        return res.status(200).json({
+                            modules: modulesResult,
+                            lessons: lessonsResult,
+                            modulesCount: totalModulesCount[0].totalCount,
+                            lessonsCount: totalLessonsCount[0].totalCount
+                        });
                     });
                 });
             });
         });
-    });
+    })
 };
 
 //Выполнение урока

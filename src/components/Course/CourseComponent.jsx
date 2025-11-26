@@ -7,6 +7,7 @@ import Preloader from '../../common/Preloader';
 import MyPagination from '../../common/Pagination';
 import { getUser } from '../../redux/auth-selectors';
 import Course from './Course';
+import EmptyScreen from '../../common/EmptyScreen';
 
 
 class CourseComponent extends React.Component {
@@ -20,7 +21,7 @@ class CourseComponent extends React.Component {
     //Загрузка курсов
     loadCourses = () => {
         const { page, pageSize, filterType } = this.state;
-        this.props.requestCourses(page, pageSize, filterType, this.props.user.id);
+        this.props.requestCourses(page, pageSize, filterType);
     }
     //Смена пагинации
     onPageChangeHandle = (page) => {
@@ -42,7 +43,7 @@ class CourseComponent extends React.Component {
 
         //Курсов нет (пустой массив)
         if (courses.length === 0)
-            return <h1>No courses yet!</h1>
+            return <EmptyScreen />
 
         //Список курсов
         const coursesElements = courses.map(course => <Course key={course.id} {...course} />);

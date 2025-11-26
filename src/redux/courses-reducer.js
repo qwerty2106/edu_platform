@@ -90,18 +90,20 @@ export const requestCurrentLesson = (lessonID) => {
     }
 }
 
-export const requestCourses = (currentPage, pageSize, filterType, userID) => {
+export const requestCourses = (currentPage, pageSize, filterType) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourses(currentPage, pageSize, filterType, userID);
+            const data = await CoursesAPI.getCourses(currentPage, pageSize, filterType);
             dispatch(setCourses(data.courses));
             dispatch(setCoursesCount(data.totalCount));
         }
         catch (error) {
             console.log('Get courses error', error);
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
     }
 }
 
@@ -139,19 +141,23 @@ export const requestCompleteLesson = (userID, lessonID, file, comment) => {
 }
 
 //Получение модулей и уроков выбранного курса
-export const requestCourseModules = (courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) => {
+export const requestCourseModules = (courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourseModules(courseID, userID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
+            const data = await CoursesAPI.getCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
             dispatch(setModules(data.modules));
             dispatch(setLessons(data.lessons));
             dispatch(setModulesCount(data.modulesCount));
             dispatch(setLessonsCount(data.lessonsCount));
+            return { success: true };
         }
         catch (error) {
             console.log('Get course content error', error);
+            return { success: false, error: error.response.status };
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
     }
 }

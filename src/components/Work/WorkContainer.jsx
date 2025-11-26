@@ -26,9 +26,9 @@ class WorkContainer extends React.Component {
         const { user } = this.props;
         const result = await this.props.requestWorks(userID, this.state.page, this.state.pageSize);
 
-        if (!result.success && result.error === 403) {
+        if (!result.success && result.error === 403) 
             this.props.router.navigate(`/app/works/${user.id}`, { replace: true });
-        }
+        
     }
     onPageChangeHandle = (page) => {
         this.setState({ page }, () => this.loadWorks());
