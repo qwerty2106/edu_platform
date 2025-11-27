@@ -140,13 +140,21 @@ const QUERIES = {
         FROM students_courses 
         WHERE user_id = ?
     `,
-    GET_VALID_LESSONS: `
+    GET_VALID_STUDENT_LESSONS: `
         SELECT l.id 
         FROM students_courses sc
         INNER JOIN courses c ON c.id = sc.course_id
         INNER JOIN modules m ON m.course_id = c.id
         INNER JOIN lessons l ON l.module_id = m.id
         WHERE sc.user_id = ?
+    `,
+    GET_VALID_TEACHER_LESSONS: `
+        SELECT l.id 
+        FROM teachers_courses tc
+        INNER JOIN courses c ON c.id = tc.course_id
+        INNER JOIN modules m ON m.course_id = c.id
+        INNER JOIN lessons l ON l.module_id = m.id
+        WHERE tc.user_id = ?
     `
 }
 
@@ -202,13 +210,53 @@ exports.getCourses = (req, res) => {
 //Получение урока
 exports.getCurrentLesson = (req, res) => {
     const lessonID = req.params.lessonID;
-    connection.query(QUERIES.GET_CURRENT_LESSONS, [lessonID], (error, result) => {
-        if (error) {
-            console.log(error);
-            return res.status(500).json({ error: "Database error on SELECT" });
-        }
-        return res.status(200).json(result[0])
-    })
+    const user = req.user;
+
+    const executeQuery = () => {
+        connection.query(QUERIES.GET_CURRENT_LESSONS, [lessonID], (error, result) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+            //Урок не существует
+            if (result.length === 0)
+                return res.status(404).json({error: "Lesson not found"});
+
+            return res.status(200).json(result[0]);
+        })
+    }
+
+    if (user.role === "teacher") {
+        connection.query(QUERIES.GET_VALID_TEACHER_LESSONS, [user.id], (error, lessonsTeacherResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+
+            const lessonsID = lessonsTeacherResult.map(lesson => lesson.id);
+            if (!lessonsID.includes(parseInt(lessonID)))
+                return res.status(403).json({ error: "Access denied" });
+
+            executeQuery();
+        })
+    }
+    else if (user.role === "student") {
+        connection.query(QUERIES.GET_VALID_STUDENT_LESSONS, [user.id], (error, lessonsStudentResult) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Database error on SELECT" });
+            }
+
+            const lessonsID = lessonsStudentResult.map(lesson => lesson.id);
+            if (!lessonsID.includes(parseInt(lessonID)))
+                return res.status(403).json({ error: "Access denied" });
+
+            executeQuery();
+        })
+    }
+    else {
+        return res.status(403).json({ error: "Access denied" });
+    }
 };
 
 //Получение всех модулей и уроков курса
@@ -305,7 +353,7 @@ exports.completeLesson = (req, res) => {
     if (req.user.role !== "student")
         return res.status(403).json({ error: "Access denied" });
 
-    connection.query(QUERIES.GET_VALID_LESSONS, [userID], (error, lessonsResult) => {
+    connection.query(QUERIES.GET_VALID_STUDENT_LESSONS, [userID], (error, lessonsResult) => {
         if (error) {
             console.error(error);
             return res.status(500).json({ error: "Database error on SELECT" });

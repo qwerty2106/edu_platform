@@ -6,7 +6,7 @@ const courseRouter = express.Router();
 
 courseRouter.get('/courses', authMiddleware, courseController.getCourses);
 courseRouter.get('/courses/:courseID', authMiddleware, courseController.getCourseContent);
-courseRouter.get('/lessons/:lessonID', courseController.getCurrentLesson);
+courseRouter.get('/lessons/:lessonID', authMiddleware, courseController.getCurrentLesson);
 courseRouter.post('/lessons/:lessonID', authMiddleware, courseController.completeLesson);
 
 

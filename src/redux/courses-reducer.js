@@ -82,11 +82,15 @@ export const requestCurrentLesson = (lessonID) => {
         try {
             const data = await CoursesAPI.getCurrentLesson(lessonID);
             dispatch(setCurrentLesson(data));
+            return { success: true };
         }
         catch (error) {
             console.log('Get lesson error', error);
+            return { success: false, error: error.response.status };
         }
-        dispatch(setLoading(false));
+        finally {
+            dispatch(setLoading(false));
+        }
     }
 }
 

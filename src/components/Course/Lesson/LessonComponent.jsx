@@ -9,16 +9,21 @@ import LessonTest from './LessonTest';
 import { Nav, Tab, } from "react-bootstrap";
 import LessonContent from "./LessonContent";
 import styles from '../../../styles.module.css';
+import EmptyScreen from "../../../common/EmptyScreen";
 
 class LessonComponent extends React.Component {
-    componentDidMount() {
+    async componentDidMount() {
         const { lessonID } = this.props.router.params;
-        this.props.requestCurrentLesson(lessonID);
+        const result = await this.props.requestCurrentLesson(lessonID);
+        if (!result.success && (result.error === 403 || result.error === 404))
+            this.props.router.navigate('/app/courses', { replace: true });
     }
     render() {
         const { isLoading, lesson } = this.props;
         if (isLoading)
             return <Preloader />
+        if (Object.keys(lesson) === 0 || lesson.content_path == null)
+            return <EmptyScreen />
 
         return (
             <Tab.Container defaultActiveKey="lesson">

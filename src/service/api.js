@@ -11,7 +11,7 @@ export const CoursesAPI = {
         return axios.post(`/app/lessons/${lessonID}`, formData, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data)
     },
     getCurrentLesson(lessonID) {
-        return axios.get(`/app/lessons/${lessonID}`).then(response => response.data)
+        return axios.get(`/app/lessons/${lessonID}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data)
     }
 };
 
