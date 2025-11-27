@@ -8,7 +8,7 @@ export const CoursesAPI = {
         return axios.get(`/app/courses/${courseID}?modulePage=${modulePage}&lessonPage=${lessonPage}&moduleCount=${modulePageSize}&lessonCount=${lessonPageSize}&moduleID=${currentModule}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data);
     },
     completeLesson(lessonID, formData) {
-        return axios.post(`/app/lessons/${lessonID}`, formData).then(response => response.status)
+        return axios.post(`/app/lessons/${lessonID}`, formData, { headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } }).then(response => response.data)
     },
     getCurrentLesson(lessonID) {
         return axios.get(`/app/lessons/${lessonID}`).then(response => response.data)

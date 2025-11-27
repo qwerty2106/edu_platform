@@ -21,7 +21,6 @@ const LessonTest = (props) => {
 
     const dispatch = useDispatch();
     const { lessonID } = useParams();
-    const user = useSelector(getUser);
 
     useEffect(() => {
         if (!props.lesson) {
@@ -46,8 +45,8 @@ const LessonTest = (props) => {
         if (questions.length !== 0) {
             if (correct.length === questions.length) {
                 try {
-                    const res = await dispatch(requestCompleteLesson(user.id, lessonID, null, null));
-                    if (res === 201)
+                    const result = await dispatch(requestCompleteLesson(lessonID, null, null));
+                    if (result.success)
                         dispatch(setNotify({ status: 'success', message: 'Вы справились на все 100%! 🎉' }));
                     else
                         dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));
@@ -77,8 +76,8 @@ const LessonTest = (props) => {
 
         if (isValid) {
             try {
-                const res = await dispatch(requestCompleteLesson(user.id, lessonID, file, comment));
-                if (res === 201)
+                const result = await dispatch(requestCompleteLesson(lessonID, file, comment));
+                if (result.success)
                     dispatch(setNotify({ status: 'success', message: 'Задание отправлено! 🎯' }));
                 else
                     dispatch(setNotify({ status: 'error', message: 'Произошла ошибка! ⚠️' }));

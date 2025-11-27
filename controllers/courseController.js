@@ -134,11 +134,20 @@ const QUERIES = {
         SELECT *    
         FROM lessons 
         WHERE id = ?`,
+
     GET_VALID_COURSES: `
         SELECT DISTINCT course_id
         FROM students_courses 
         WHERE user_id = ?
     `,
+    GET_VALID_LESSONS: `
+        SELECT l.id 
+        FROM students_courses sc
+        INNER JOIN courses c ON c.id = sc.course_id
+        INNER JOIN modules m ON m.course_id = c.id
+        INNER JOIN lessons l ON l.module_id = m.id
+        WHERE sc.user_id = ?
+    `
 }
 
 //Получение всех курсов
@@ -288,54 +297,80 @@ exports.getCourseContent = (req, res) => {
 //Выполнение урока
 exports.completeLesson = (req, res) => {
     const file = req.files?.file;
-    const { userID, comment } = req.body;
+    const comment = req.body?.comment;
     const { lessonID } = req.params;
+    const userID = req.user.id;
 
-    if (file) {
-        const fileName = `user${userID}-lesson${lessonID}-${Date.now()}-${file.name}`;
-        const uploadPath = path.join(__dirname, '../static/completed-lessons', fileName);
+    //Выполнение урока доступно только студентам
+    if (req.user.role !== "student")
+        return res.status(403).json({ error: "Access denied" });
 
-        //Создание папки, если не существует
-        const folder = path.join(__dirname, '../static/completed-lessons');
-        if (!fs.existsSync(folder)) {
-            fs.mkdirSync(folder, { recursive: true });
+    connection.query(QUERIES.GET_VALID_LESSONS, [userID], (error, lessonsResult) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Database error on SELECT" });
         }
 
-        //Сохранение файла
-        file.mv(uploadPath, (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: "File saving error" });
-            }
-            const filePath = `/completed-lessons/${fileName}`;
+        //Проверка доступа пользователя к уроку
+        const lessonsID = lessonsResult.map(lesson => lesson.id);
+        if (!lessonsID.includes(parseInt(lessonID)))
+            return res.status(403).json({ error: "Access denied" });
 
-            //С файлом
-            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке', 0], (error, result) => {
+        if (file) {
+            //Валидация
+            const ext = path.extname(file.name).toLowerCase();
+            if (!['.7z', '.zip', '.rar'].includes(ext))
+                return res.status(400).json({ error: "Invalid file type" });
+
+            if (file.size > 50 * 1024 * 1024)  //50МБ
+                return res.status(400).json({ error: "Invalid file size" });
+
+            const saveFileName = path.basename(file.name);
+            const fileName = `user${userID}-lesson${lessonID}-${Date.now()}-${saveFileName}`;
+            const uploadPath = path.join(__dirname, '../static/completed-lessons', fileName);
+
+            //Создание папки, если не существует
+            const folder = path.join(__dirname, '../static/completed-lessons');
+            if (!fs.existsSync(folder)) {
+                fs.mkdirSync(folder, { recursive: true });
+            }
+
+            //Сохранение файла
+            file.mv(uploadPath, (err) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: "File saving error" });
+                }
+                const filePath = `/completed-lessons/${fileName}`;
+
+                //С файлом
+                connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, filePath, comment, 'На проверке', 0], (error, result) => {
+                    if (error) {
+                        console.error(error);
+                        //Удаление файла, если произошла ошибка сохранения в БД
+                        try {
+                            fs.unlinkSync(uploadPath)
+                        } catch (err) {
+                            console.error(err);
+                            return res.status(500).json({ error: "File delete error" });
+                        }
+                        return res.status(500).json({ error: "Database error on INSERT" });
+                    }
+                    return res.status(201).json({ message: "Lesson completed successfully" });
+                });
+            });
+
+        }
+        else {
+            // Без файла
+            connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null, null, 'Проверено', 1], (error, result) => {
                 if (error) {
                     console.error(error);
-                    //Удаление файла, если произошла ошибка сохранения в БД
-                    try {
-                        fs.unlinkSync(uploadPath)
-                    } catch (err) {
-                        console.error(err);
-                        return res.status(500).json({ error: "File delete error" });
-                    }
                     return res.status(500).json({ error: "Database error on INSERT" });
                 }
                 return res.status(201).json({ message: "Lesson completed successfully" });
             });
-        });
-    }
-    else {
-        // Без файла
-        connection.query(QUERIES.COMPLETE_LESSON, [userID, lessonID, null, null, 'Проверено', 1], (error, result) => {
-            if (error) {
-                console.error(error);
-                return res.status(500).json({ error: "Database error on INSERT" });
-            }
-            return res.status(201).json({ message: "Lesson completed successfully" });
-        });
-    }
-};
-
+        }
+    });
+}
 

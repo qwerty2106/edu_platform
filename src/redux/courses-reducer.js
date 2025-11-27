@@ -107,31 +107,23 @@ export const requestCourses = (currentPage, pageSize, filterType) => {
     }
 }
 
-export const requestCompleteLesson = (userID, lessonID, file, comment) => {
+export const requestCompleteLesson = (lessonID, file, comment) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
             const formData = new FormData();
-            formData.append('userID', userID);
 
             if (file)
                 formData.append('file', file)
             if (comment)
                 formData.append('comment', comment);
 
-            const status = await CoursesAPI.completeLesson(lessonID, formData);
-
-            if (status === 201)
-                console.log('Lesson completed successfully');
-
-            else
-                console.error('Complete lesson failed with status: ', status);
-
-            return status;
+            await CoursesAPI.completeLesson(lessonID, formData);
+            return { success: true };
         }
         catch (error) {
             console.log('Complete lesson error', error);
-            return 500;
+            return { success: false, error: error.response.status };
         }
         finally {
             dispatch(setLoading(false));
