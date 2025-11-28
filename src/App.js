@@ -36,9 +36,8 @@ class App extends React.Component {
       )
 
     return (
-      <>
-        <Notify notify={this.props.notify} />
         <BrowserRouter>
+          <Notify notify={this.props.notify} />
           <Routes>
             <Route path='/' element={<Landing />} />
             <Route path='/auth/login' element={<Login />} />
@@ -59,7 +58,6 @@ class App extends React.Component {
             </Route>
           </Routes>
         </BrowserRouter>
-      </>
     );
   }
 }
