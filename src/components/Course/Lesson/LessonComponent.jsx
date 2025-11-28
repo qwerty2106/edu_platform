@@ -16,7 +16,7 @@ class LessonComponent extends React.Component {
         const { lessonID } = this.props.router.params;
         const result = await this.props.requestCurrentLesson(lessonID);
         if (!result.success && (result.error === 403 || result.error === 404))
-            this.props.router.navigate('/app/courses', { replace: true });
+            this.props.router.navigate('/app', { replace: true });
     }
     render() {
         const { isLoading, lesson } = this.props;

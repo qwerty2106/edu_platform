@@ -25,7 +25,7 @@ class CourseModules extends React.Component {
         const result = await this.props.requestCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
 
         if (!result.success && (result.error === 403 || result.error === 404))
-            this.props.router.navigate('/app/courses', { replace: true });
+            this.props.router.navigate('/app', { replace: true });
     }
 
     //Смена пагинации модулей

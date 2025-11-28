@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Container, Spinner } from "react-bootstrap";
 import Courses from "./components/Course/CourseComponent.jsx";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppContainer from "./AppContainer";
 import CourseContent from "./components/Course/CourseContent.jsx";
 import Login from "./components/Login/Login";
@@ -36,28 +36,28 @@ class App extends React.Component {
       )
 
     return (
-        <BrowserRouter>
-          <Notify notify={this.props.notify} />
-          <Routes>
-            <Route path='/' element={<Landing />} />
-            <Route path='/auth/login' element={<Login />} />
-            <Route path='/auth/request-reset' element={<RequestResetForm />} />
-            <Route path='/auth/reset' element={<ResetForm />} />
-            <Route path='*' element={<h1>Not Found</h1>} />
+      <BrowserRouter>
+        <Notify notify={this.props.notify} />
+        <Routes>
+          <Route path='/auth/login' element={<Login />} />
+          <Route path='/auth/request-reset' element={<RequestResetForm />} />
+          <Route path='/auth/reset' element={<ResetForm />} />
 
-            <Route path='/app' element={<AppContainer />}>
-              <Route index element={<Courses />} />
-              <Route path='courses' element={<Courses />} />
-              <Route path='works/:userID' element={<WorkContainer />} />
-              <Route path='works/:userID/:lessonID' element={<WorkContent />} />
-              <Route path='lessons/:lessonID' element={<LessonComponent />} />
-              <Route path='courses/:courseID' element={<CourseContent />} />
-              <Route path='profile/:userID' element={<Profile />} />
-              <Route path='chats' element={<Rooms />} />
-              <Route path='chats/:chatID' element={<Chat />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+          <Route path='/app' element={<AppContainer />}>
+            <Route index element={<Courses />} />
+            {/* <Route path='courses' element={<Courses />} /> */}
+            <Route path='works/:userID/:lessonID' element={<WorkContent />} />
+            <Route path='works/:userID' element={<WorkContainer />} />
+            <Route path='lessons/:lessonID' element={<LessonComponent />} />
+            <Route path='courses/:courseID' element={<CourseContent />} />
+            <Route path='profile/:userID' element={<Profile />} />
+            <Route path='chats/:chatID' element={<Chat />} />
+            <Route path='chats' element={<Rooms />} />
+          </Route>
+          <Route path='/' element={<Landing />} />
+          <Route path='*' element={<h1>Not Found</h1>} />
+        </Routes>
+      </BrowserRouter>
     );
   }
 }

@@ -11,7 +11,7 @@ const Sidebar = () => {
       <ListGroup variant='flush' className='border-0'>
 
         <ListGroup.Item action className='p-0 border-top'>
-          <NavLink to="/app/courses" className="text-decoration-none">{({ isActive }) => (
+          <NavLink to="/app" className="text-decoration-none" end>{({ isActive }) => (
             <div className='d-flex gap-3 align-items-center p-4' style={{ backgroundColor: isActive ? '#343a40' : '', color: isActive ? '#ffffff' : '#dee2e6' }}>
               <TerminalFill style={{ width: '20px', height: '20px' }} />
               <span>Курсы</span>
