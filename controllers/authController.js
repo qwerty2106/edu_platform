@@ -49,7 +49,12 @@ exports.register = (req, res) => {
                         console.log(err)
                         return res.status(500).json({ error: "Database error on INSERT" })
                     }
-                    const token = jwt.sign({ id: insertResult.insertId, role: 'student', }, process.env.JWT_SECRET, { expiresIn: '7d' });
+                    //Токен доступа
+                    const accessToken = jwt.sign({ id: insertResult.insertId, role: 'student' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+                    //Токен обновления
+                    const refreshToken = jwt.sign({ id: insertResult.insertId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 });
+
                     return res.status(201).json({
                         message: "User registered successfully",
                         user: {
@@ -60,7 +65,7 @@ exports.register = (req, res) => {
                             img: null,
                             created_date: new Date().toISOString()
                         },
-                        token
+                        accessToken
                     })
                 })
             })
@@ -90,18 +95,24 @@ exports.login = (req, res) => {
             if (!isMatch)
                 return res.status(401).json({ error: "Invalid login or password" })
             //Пароль верный
-            const token = jwt.sign({ id: result[0].id, role: result[0].role, }, process.env.JWT_SECRET, { expiresIn: '7d' });
+            const user = result[0];
+            //Токен доступа
+            const accessToken = jwt.sign({ id: user.id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+            //Токен обновления
+            const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+            res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 });
+
             return res.status(200).json({
                 message: "User authorized successfully",
                 user: {
-                    id: result[0].id,
-                    username: result[0].username,
-                    email: result[0].email,
-                    role: result[0].role,
-                    img: result[0].img,
-                    created_date: result[0].created_date.toISOString()
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    img: user.img,
+                    created_date: user.created_date.toISOString()
                 },
-                token
+                accessToken
             })
         })
     })
@@ -180,18 +191,24 @@ exports.reset = (req, res) => {
                         console.log(err)
                         return res.status(500).json({ error: "Database error on UPDATE" })
                     }
-                    const token = jwt.sign({ id: result[0].id, role: result[0].role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+                    const user = result[0];
+                    //Токен доступа
+                    const accessToken = jwt.sign({ id: user.id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+                    //Токен обновления
+                    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+                    res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 });
+
                     return res.status(200).json({
                         message: "Password changed successfully",
                         user: {
-                            id: result[0].id,
-                            username: result[0].username,
-                            email: result[0].email,
-                            role: result[0].role,
-                            img: result[0].img,
-                            createdDate: result[0].created_date.toISOString()
+                            id: user.id,
+                            username: user.username,
+                            email: user.email,
+                            role: user.role,
+                            img: user.img,
+                            createdDate: user.created_date.toISOString()
                         },
-                        token
+                        accessToken
                     })
                 })
             })
@@ -211,4 +228,76 @@ exports.getUserData = (req, res) => {
         }
         return res.status(200).json(result[0])
     })
+};
+
+//Обновление токена доступа
+exports.refreshToken = (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ error: "Refresh token required" });
+    }
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+        //Токен невалиден
+        if (err) {
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
+            return res.status(403).json({ error: "Invalid or expired refresh token" });
+        }
+
+        connection.query('SELECT id, role FROM users WHERE id = ?', [decoded.id], (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ error: "Database error" });
+            }
+
+            // Если пользователь не найден
+            if (result.length === 0) {
+                res.clearCookie('refreshToken', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict'
+                });
+                return res.status(403).json({ error: "User not found" });
+            }
+
+            const user = result[0];
+
+            //Генерация нового accessToken
+            const newAccessToken = jwt.sign(
+                {
+                    id: user.id,
+                    role: user.role
+                },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: '15m' } // 15 минут
+            );
+
+            // Возвращаем новый access token
+            res.json({
+                accessToken: newAccessToken
+            });
+        });
+
+    });
+
+};
+
+//Обновление токена доступа
+exports.logout = (req, res) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+
+    // Возвращаем новый access token
+    res.json({
+        message: "Logged out successfully"
+    });
+
 };

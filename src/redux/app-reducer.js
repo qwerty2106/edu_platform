@@ -1,6 +1,8 @@
+import { useSelector } from "react-redux";
 import { AuthAPI } from "../service/api";
 import webSocketService from "../service/webSocketService";
-import { setUser } from "./auth-reducer";
+import { setAccessToken, setUser } from "./auth-reducer";
+import { getAccessToken } from "./auth-selectors";
 
 const SET_INITIALIZED = 'SET-INITIALIZED';
 const SET_NOTIFY = 'SET-NOTIFY';
@@ -33,18 +35,19 @@ export const setNotify = (notify) => ({ type: SET_NOTIFY, notify });
 //Инициализация на каждом обновлении
 export const initializeApp = () => {
     return async (dispatch) => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            try {
-                const userData = await AuthAPI.getUserData();  //Из строки в объект  
-                await dispatch(setUser(userData));
-            }
-            catch (error) {
-                console.error('Error parsing user data from localStorage', error);
-                localStorage.removeItem('authToken');
-            }
+        try {
+            const tokenData = await AuthAPI.refreshToken();
+            dispatch(setAccessToken(tokenData.accessToken));
+
+            const userData = await AuthAPI.getUserData(tokenData.accessToken);
+            dispatch(setUser(userData));
         }
-        dispatch(setInitialized());
+        catch (error) {
+            console.error('Auto-login failed', error);
+        }
+        finally {
+            dispatch(setInitialized());
+        }
     }
 }
 

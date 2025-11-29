@@ -77,10 +77,13 @@ export const setLessonsCount = (lessonsCount) => ({ type: SET_LESSONS_COUNT, les
 export const setCurrentLesson = (currentLesson) => ({ type: SET_CURRENT_LESSON, currentLesson });
 
 export const requestCurrentLesson = (lessonID) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCurrentLesson(lessonID);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            const data = await CoursesAPI.getCurrentLesson(lessonID, accessToken);
             dispatch(setCurrentLesson(data));
             return { success: true };
         }
@@ -95,10 +98,13 @@ export const requestCurrentLesson = (lessonID) => {
 }
 
 export const requestCourses = (currentPage, pageSize, filterType) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourses(currentPage, pageSize, filterType);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            const data = await CoursesAPI.getCourses(currentPage, pageSize, filterType, accessToken);
             dispatch(setCourses(data.courses));
             dispatch(setCoursesCount(data.totalCount));
         }
@@ -112,9 +118,12 @@ export const requestCourses = (currentPage, pageSize, filterType) => {
 }
 
 export const requestCompleteLesson = (lessonID, file, comment) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
             const formData = new FormData();
 
             if (file)
@@ -122,7 +131,7 @@ export const requestCompleteLesson = (lessonID, file, comment) => {
             if (comment)
                 formData.append('comment', comment);
 
-            await CoursesAPI.completeLesson(lessonID, formData);
+            await CoursesAPI.completeLesson(lessonID, formData, accessToken);
             return { success: true };
         }
         catch (error) {
@@ -138,10 +147,13 @@ export const requestCompleteLesson = (lessonID, file, comment) => {
 
 //Получение модулей и уроков выбранного курса
 export const requestCourseModules = (courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            const data = await CoursesAPI.getCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            const data = await CoursesAPI.getCourseModules(courseID, modulePage, lessonPage, modulePageSize, lessonPageSize, currentModule, accessToken);
             dispatch(setModules(data.modules));
             dispatch(setLessons(data.lessons));
             dispatch(setModulesCount(data.modulesCount));

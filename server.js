@@ -4,10 +4,12 @@ const { Server } = require('socket.io')
 const express = require('express');
 const path = require('path');
 const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(fileUpload({ safeFileNames: true, preserveExtension: true }));
 app.use('/static', express.static(path.join(__dirname, 'static')));
 

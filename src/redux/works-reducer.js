@@ -47,10 +47,13 @@ export const setWorksCount = (worksCount) => ({ type: SET_WORKS_COUNT, worksCoun
 
 
 export const requestWorks = (userID, currentPage, pageSize) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            const data = await WorksAPI.getWorks(userID, currentPage, pageSize);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            const data = await WorksAPI.getWorks(userID, currentPage, pageSize, accessToken);
             dispatch(setWorks(data.works));
             dispatch(setWorksCount(data.worksCount));
             return { success: true };
@@ -66,10 +69,13 @@ export const requestWorks = (userID, currentPage, pageSize) => {
 };
 
 export const requestCurrentWork = (userID, lessonID) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            const data = await WorksAPI.getCurrentWork(userID, lessonID);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            const data = await WorksAPI.getCurrentWork(userID, lessonID, accessToken);
             dispatch(setCurrentWork(data));
             return { success: true };
         }
@@ -84,10 +90,13 @@ export const requestCurrentWork = (userID, lessonID) => {
 };
 
 export const requestCheckWork = (userID, lessonID, newStatus, comment, score) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(setLoading(true));
         try {
-            await WorksAPI.updateWork(userID, lessonID, newStatus, comment, score);
+            const state = getState();
+            const accessToken = state.auth.accessToken;
+
+            await WorksAPI.updateWork(userID, lessonID, newStatus, comment, score, accessToken);
             dispatch(requestCurrentWork(userID, lessonID));
             dispatch(setNotify({ status: 'success', message: 'Работа обновлена!' }));
         }

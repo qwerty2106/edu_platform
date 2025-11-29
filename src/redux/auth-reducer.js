@@ -2,11 +2,13 @@ import { AuthAPI } from "../service/api";
 import { setNotify } from "./app-reducer.js";
 
 const SET_USER = 'auth/SET-USER';
+const SET_ACCESS_TOKEN = 'auth/SET-ACCESS-TOKEN';
 const SET_LOADING = 'auth/SET-LOADING';
 
 const initialState = {
     user: null,
     isLoading: false,
+    accessToken: null,
 }
 
 export const authReducer = (state = initialState, action) => {
@@ -21,21 +23,28 @@ export const authReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: action.isLoading
             }
+        case SET_ACCESS_TOKEN:
+            return {
+                ...state,
+                accessToken: action.accessToken
+            }
         default:
             return state
     }
 }
 
 export const setUser = (user) => ({ type: SET_USER, user });
+export const setAccessToken = (accessToken) => ({ type: SET_ACCESS_TOKEN, accessToken });
 export const setLoading = (isLoading) => ({ type: SET_LOADING, isLoading });
 
+//Регистрация
 export const signUp = (username, email, password) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
         try {
             const data = await AuthAPI.signUp(username, email, password);
             dispatch(setUser(data.user));
-            localStorage.setItem('authToken', data.token);  //Из объекта в строку
+            dispatch(setAccessToken(data.accessToken));
             dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
@@ -47,12 +56,21 @@ export const signUp = (username, email, password) => {
 }
 
 export const logOut = () => {
-    return (dispatch) => {
-        localStorage.removeItem('authToken');
-        dispatch(setUser(null));
+    return async (dispatch) => {
+        try {
+            await AuthAPI.logOut();
+        }
+        catch (error) {
+            console.log('Logout error', error);
+        }
+        finally {
+            dispatch(setAccessToken(null));
+            dispatch(setUser(null));
+        }
     }
 }
 
+//Авторизация
 export const signIn = (username, password) => {
     return async (dispatch) => {
         dispatch(setLoading(true));
@@ -60,7 +78,7 @@ export const signIn = (username, password) => {
             const data = await AuthAPI.signIn(username, password);
             console.log(data.user)
             dispatch(setUser(data.user));
-            localStorage.setItem('authToken', data.token);
+            dispatch(setAccessToken(data.accessToken));
             dispatch(setNotify({ status: 'success', message: 'Успешный вход!' }));
         }
         catch (error) {
@@ -70,7 +88,6 @@ export const signIn = (username, password) => {
         dispatch(setLoading(false));
     }
 }
-
 
 export const requestPasswordReset = (email) => {
     return async (dispatch) => {
@@ -96,7 +113,7 @@ export const passwordReset = (resetToken, newPassword) => {
         try {
             const data = await AuthAPI.reset(resetToken, newPassword);
             dispatch(setUser(data.user));
-            localStorage.setItem('authToken', data.token);
+            dispatch(setAccessToken(data.accessToken));
             dispatch(setNotify({ status: 'success', message: 'Password changed successfully' }));
         }
         catch (error) {
@@ -106,3 +123,4 @@ export const passwordReset = (resetToken, newPassword) => {
         dispatch(setLoading(false));
     }
 }
+
