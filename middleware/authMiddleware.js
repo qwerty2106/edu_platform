@@ -9,8 +9,10 @@ exports.authMiddleware = (req, res, next) => {
             return res.status(401).json({ error: "No token provided" });
         }
 
+        //Проверка подписи
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
+        //Токен невалиден
         if (!decoded) {
             return res.status(401).json({ error: "Invalid token" });
         }
